@@ -105,7 +105,13 @@ export default function Header() {
                     href="/auth/login"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Sign out
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Sign up
                   </Link>
                 </div>
               )}
