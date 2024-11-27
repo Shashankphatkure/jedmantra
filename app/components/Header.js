@@ -74,16 +74,17 @@ export default function Header() {
               <div>
                 <button
                   type="button"
-                  className="flex rounded-full bg-white text-sm focus:outline-none"
+                  className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 >
                   <span className="sr-only">Open user menu</span>
                   <Image
-                    className="h-8 w-8 rounded-full"
-                    src="https://via.placeholder.com/32"
-                    alt=""
+                    className="h-8 w-8 rounded-full object-cover"
+                    src="https://picsum.photos/seed/user-avatar/32/32"
+                    alt="User profile"
                     width={32}
                     height={32}
+                    priority
                   />
                 </button>
               </div>
