@@ -47,13 +47,13 @@ export default function Home() {
             </div>
             <div className="flex items-center">
               <Link
-                href="/login"
+                href="/auth/login"
                 className="text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md"
               >
                 Login
               </Link>
               <Link
-                href="/register"
+                href="/auth/register"
                 className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
                 Register
