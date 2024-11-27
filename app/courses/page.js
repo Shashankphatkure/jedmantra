@@ -5,37 +5,6 @@ export default function Courses() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex-shrink-0 flex items-center">
-                <Image
-                  src="/logo.svg"
-                  alt="JedMantra Logo"
-                  width={150}
-                  height={40}
-                  className="h-8 w-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/auth/login"
-                className="text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/auth/register"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-              >
-                Register
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
 
       {/* Search Section */}
       <div className="bg-white border-b">
@@ -175,8 +144,8 @@ export default function Courses() {
                 >
                   <div className="relative h-48">
                     <Image
-                      src={`/course-${course}.jpg`}
-                      alt="Course thumbnail"
+                      src={`https://picsum.photos/seed/course-${course}/800/400`}
+                      alt={`Course ${course} thumbnail`}
                       fill
                       className="object-cover rounded-t-lg"
                     />
@@ -220,7 +189,7 @@ export default function Courses() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <Image
-                            src="/instructor-avatar.jpg"
+                            src={`https://picsum.photos/seed/instructor-${course}/24/24`}
                             alt="Instructor"
                             width={24}
                             height={24}

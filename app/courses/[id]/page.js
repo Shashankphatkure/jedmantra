@@ -3,44 +3,13 @@ import Link from "next/link";
 
 export default function CourseDetail() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex-shrink-0 flex items-center">
-                <Image
-                  src="/logo.svg"
-                  alt="JedMantra Logo"
-                  width={150}
-                  height={40}
-                  className="h-8 w-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/auth/login"
-                className="text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/auth/register"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-              >
-                Register
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
 
       {/* Course Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
               <h1 className="text-3xl font-bold text-gray-900">
                 Complete Web Development Bootcamp 2024
@@ -73,7 +42,7 @@ export default function CourseDetail() {
               </div>
               <div className="mt-4 flex items-center">
                 <Image
-                  src="/instructor-avatar.jpg"
+                  src="https://picsum.photos/seed/instructor/40/40"
                   alt="Instructor"
                   width={40}
                   height={40}
@@ -93,7 +62,7 @@ export default function CourseDetail() {
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <div className="relative aspect-video mb-4">
                   <Image
-                    src="/course-preview.jpg"
+                    src="https://picsum.photos/seed/course-preview/800/450"
                     alt="Course preview"
                     fill
                     className="rounded-lg object-cover"
@@ -166,12 +135,12 @@ export default function CourseDetail() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-12">
             {/* What You'll Learn */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 What You'll Learn
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -206,11 +175,11 @@ export default function CourseDetail() {
             </div>
 
             {/* Course Content */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Course Content
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {[
                   {
                     title: "Introduction to Web Development",
@@ -289,8 +258,8 @@ export default function CourseDetail() {
             </div>
 
             {/* Requirements */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Requirements
               </h2>
               <ul className="space-y-2">
@@ -321,8 +290,8 @@ export default function CourseDetail() {
             </div>
 
             {/* Reviews */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Student Reviews
               </h2>
               <div className="space-y-6">
@@ -333,7 +302,7 @@ export default function CourseDetail() {
                   >
                     <div className="flex items-start">
                       <Image
-                        src={`/student-${review}.jpg`}
+                        src={`https://picsum.photos/seed/student-${review}/40/40`}
                         alt="Student"
                         width={40}
                         height={40}
@@ -377,13 +346,13 @@ export default function CourseDetail() {
 
           {/* Instructor */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6 sticky top-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-8 sticky top-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Your Instructor
               </h2>
               <div className="flex items-center mb-4">
                 <Image
-                  src="/instructor-avatar.jpg"
+                  src="https://picsum.photos/seed/instructor-large/64/64"
                   alt="Instructor"
                   width={64}
                   height={64}
