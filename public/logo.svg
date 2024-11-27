@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="40" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <text x="10" y="28" font-family="Arial" font-weight="bold" font-size="24" fill="#2563EB">JedMantra</text>
+  <circle cx="135" cy="20" r="8" fill="#2563EB"/>
+  <path d="M131 20L135 24L139 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg> 
