@@ -4,27 +4,6 @@ import Link from "next/link";
 export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                My Learning Dashboard
-              </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Track your progress and continue learning
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                Browse Courses
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content */}

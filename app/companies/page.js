@@ -2,6 +2,69 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Companies() {
+  const featuredCompanies = [
+    {
+      name: "Tech Innovators Ltd",
+      logo: "https://picsum.photos/seed/tech-innovators/150/150",
+      industry: "Technology",
+      location: "London, UK",
+      description: "Leading software development and innovation company",
+      openPositions: 12,
+      rating: 4.8,
+      featured: true,
+    },
+    {
+      name: "Healthcare Plus",
+      logo: "https://picsum.photos/seed/healthcare-plus/150/150",
+      industry: "Healthcare",
+      location: "Manchester, UK",
+      description: "Revolutionary healthcare technology solutions",
+      openPositions: 8,
+      rating: 4.6,
+      featured: true,
+    },
+    {
+      name: "EduTech Solutions",
+      logo: "https://picsum.photos/seed/edutech/150/150",
+      industry: "Education",
+      location: "Remote",
+      description: "Transforming education through technology",
+      openPositions: 5,
+      rating: 4.7,
+      featured: true,
+    },
+  ];
+
+  const allCompanies = [
+    {
+      name: "FinTech Solutions",
+      logo: "https://picsum.photos/seed/fintech/150/150",
+      industry: "Finance",
+      location: "London, UK",
+      description: "Innovative financial technology solutions",
+      openPositions: 6,
+      rating: 4.5,
+    },
+    {
+      name: "Creative Studios",
+      logo: "https://picsum.photos/seed/creative/150/150",
+      industry: "Design",
+      location: "Birmingham, UK",
+      description: "Creative design and branding agency",
+      openPositions: 4,
+      rating: 4.3,
+    },
+    {
+      name: "Data Analytics Pro",
+      logo: "https://picsum.photos/seed/data-analytics/150/150",
+      industry: "Technology",
+      location: "Remote",
+      description: "Advanced data analytics and insights",
+      openPositions: 7,
+      rating: 4.4,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -72,39 +135,7 @@ export default function Companies() {
             Featured Companies
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                name: "Tech Innovators Ltd",
-                logo: "https://via.placeholder.com/150",
-                industry: "Technology",
-                location: "London, UK",
-                description:
-                  "Leading software development and innovation company",
-                openPositions: 12,
-                rating: 4.8,
-                featured: true,
-              },
-              {
-                name: "Healthcare Plus",
-                logo: "https://via.placeholder.com/150",
-                industry: "Healthcare",
-                location: "Manchester, UK",
-                description: "Revolutionary healthcare technology solutions",
-                openPositions: 8,
-                rating: 4.6,
-                featured: true,
-              },
-              {
-                name: "EduTech Solutions",
-                logo: "https://via.placeholder.com/150",
-                industry: "Education",
-                location: "Remote",
-                description: "Transforming education through technology",
-                openPositions: 5,
-                rating: 4.7,
-                featured: true,
-              },
-            ].map((company) => (
+            {featuredCompanies.map((company) => (
               <Link
                 href={`/companies/${company.name
                   .toLowerCase()
@@ -117,10 +148,10 @@ export default function Companies() {
                     <div className="flex items-center justify-between mb-4">
                       <Image
                         src={company.logo}
-                        alt={company.name}
+                        alt={`${company.name} logo`}
                         width={80}
                         height={80}
-                        className="rounded"
+                        className="rounded object-cover"
                       />
                       {company.featured && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -211,35 +242,7 @@ export default function Companies() {
             All Companies
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                name: "FinTech Solutions",
-                logo: "https://via.placeholder.com/150",
-                industry: "Finance",
-                location: "London, UK",
-                description: "Innovative financial technology solutions",
-                openPositions: 6,
-                rating: 4.5,
-              },
-              {
-                name: "Creative Studios",
-                logo: "https://via.placeholder.com/150",
-                industry: "Design",
-                location: "Birmingham, UK",
-                description: "Creative design and branding agency",
-                openPositions: 4,
-                rating: 4.3,
-              },
-              {
-                name: "Data Analytics Pro",
-                logo: "https://via.placeholder.com/150",
-                industry: "Technology",
-                location: "Remote",
-                description: "Advanced data analytics and insights",
-                openPositions: 7,
-                rating: 4.4,
-              },
-            ].map((company) => (
+            {allCompanies.map((company) => (
               <Link
                 href={`/companies/${company.name
                   .toLowerCase()
@@ -252,10 +255,10 @@ export default function Companies() {
                     <div className="flex items-center mb-4">
                       <Image
                         src={company.logo}
-                        alt={company.name}
+                        alt={`${company.name} logo`}
                         width={80}
                         height={80}
-                        className="rounded"
+                        className="rounded object-cover"
                       />
                     </div>
                     <h3 className="text-lg font-medium text-gray-900">
