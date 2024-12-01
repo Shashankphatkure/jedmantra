@@ -14,110 +14,59 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-pink-500 to-pink-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 relative z-10">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Left Content */}
-            <div className="text-white">
-              <h1 className="text-5xl md:text-6xl font-bold mb-4">
-                Love
-                <br />
-                <span className="flex items-center">
-                  M
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-12 h-12 mx-1 text-white"
-                  >
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                  ndays
-                </span>
-              </h1>
-              <p className="text-2xl md:text-3xl text-white/90 mb-8">
-                Find a job you'll love
-              </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
+          <div className="max-w-2xl mx-auto text-center">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              Find Your Dream Job Today
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 mb-12">
+              Search through thousands of job listings and courses to advance
+              your career
+            </p>
 
-              {/* Search Form */}
-              <div className="bg-white p-4 rounded-lg shadow-lg">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <label className="block text-gray-700 text-sm font-medium mb-2">
-                      What
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                      placeholder="e.g. 'data engineer'"
-                    />
-                  </div>
-                  <div className="relative">
-                    <label className="block text-gray-700 text-sm font-medium mb-2">
-                      Where
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                      placeholder="town or postcode"
-                    />
-                    <button className="absolute right-3 top-9 text-gray-400 hover:text-pink-500">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+            {/* Search Form */}
+            <div className="bg-white p-6 rounded-xl shadow-xl">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                    What
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Job title, skill or company"
+                  />
                 </div>
-                <button className="w-full mt-4 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors">
-                  Search jobs
-                </button>
+                <div className="relative">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                    Where
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="City or postcode"
+                  />
+                  <button className="absolute right-3 top-9 text-gray-400 hover:text-pink-500">
+                    <MapPinIcon className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
-
-              {/* Job Stats */}
-              <div className="mt-6 text-white/90">
-                <p className="text-lg">
-                  Search 139,056 new jobs - 1,598 added in the last 24 hours
-                </p>
-                <button className="mt-4 text-white font-medium hover:text-white/80 flex items-center">
-                  Browse jobs
-                  <svg
-                    className="w-5 h-5 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-              </div>
+              <button className="w-full mt-4 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group">
+                Search Jobs
+                <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </button>
             </div>
 
-            {/* Right Image */}
-            <div className="hidden md:block relative">
-              <img
-                src="/happy-worker.png" // Make sure to add this image to your public folder
-                alt="Happy Worker"
-                className="w-full max-w-md mx-auto transform translate-y-4 hover:-translate-y-2 transition-transform duration-300"
-              />
+            {/* Job Stats */}
+            <div className="mt-8 text-white/90">
+              <p className="text-lg mb-4">
+                <span className="font-semibold">139,056</span> new jobs -
+                <span className="font-semibold"> 1,598</span> added today
+              </p>
+              <button className="inline-flex items-center text-white font-medium hover:text-white/80 group">
+                Browse All Jobs
+                <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </button>
             </div>
           </div>
         </div>
@@ -134,7 +83,7 @@ export default function Home() {
             href="/courses"
             className="text-lg text-gray-900 hover:text-pink-600 flex items-center justify-center gap-2 group"
           >
-            Your next skill, from just £12. Browse thousands of courses now
+            Your next skill, from just ₹999. Browse thousands of courses now
             <svg
               className="w-5 h-5 group-hover:translate-x-1 transition-transform"
               fill="none"
@@ -153,55 +102,130 @@ export default function Home() {
       </div>
 
       {/* User Type Selection */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-3xl font-bold text-center mb-12">
-          Choose Your Path
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Job Seeker",
-              description: "Find your dream job and advance your career",
-              icon: BriefcaseIcon,
-              gradient: "from-blue-500 to-purple-500",
-            },
-            {
-              title: "Course Learner",
-              description: "Enhance your skills with expert-led courses",
-              icon: AcademicCapIcon,
-              gradient: "from-purple-500 to-pink-500",
-            },
-            {
-              title: "Recruiter/Tutor",
-              description: "Post jobs or create courses to reach talent",
-              icon: UserGroupIcon,
-              gradient: "from-pink-500 to-red-500",
-            },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className="group bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
-              <div className="relative z-10">
-                <div className="flex justify-center mb-6">
-                  <div className="p-3 rounded-full bg-gray-50 group-hover:bg-white transition-colors duration-300">
-                    <item.icon className="h-10 w-10 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" />
+      <div className="bg-gradient-to-b from-white to-gray-50 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Choose Your Path
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Select your journey and unlock opportunities tailored just for you
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Job Seeker",
+                description:
+                  "Find your dream job and advance your career with thousands of opportunities",
+                icon: BriefcaseIcon,
+                gradient: "from-blue-500 to-indigo-600",
+                features: [
+                  "Smart job matching",
+                  "Application tracking",
+                  "Salary insights",
+                ],
+                cta: "Find Jobs",
+              },
+              {
+                title: "Course Learner",
+                description:
+                  "Enhance your skills with expert-led courses and get certified",
+                icon: AcademicCapIcon,
+                gradient: "from-purple-500 to-pink-600",
+                features: [
+                  "Self-paced learning",
+                  "Industry certificates",
+                  "Expert mentorship",
+                ],
+                cta: "Start Learning",
+              },
+              {
+                title: "Recruiter/Tutor",
+                description:
+                  "Post jobs or create courses to reach talented individuals",
+                icon: UserGroupIcon,
+                gradient: "from-pink-500 to-rose-600",
+                features: [
+                  "Smart candidate matching",
+                  "Analytics dashboard",
+                  "Applicant tracking",
+                ],
+                cta: "Get Started",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="group relative bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                />
+
+                <div className="p-8">
+                  <div className="flex justify-center mb-6">
+                    <div
+                      className={`p-4 rounded-2xl bg-gradient-to-br ${item.gradient} text-white shadow-lg`}
+                    >
+                      <item.icon className="h-8 w-8" />
+                    </div>
                   </div>
+
+                  <h3 className="text-2xl font-bold text-gray-900 text-center mb-4">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-gray-600 text-center mb-8">
+                    {item.description}
+                  </p>
+
+                  <div className="space-y-4 mb-8">
+                    {item.features.map((feature, featureIndex) => (
+                      <div
+                        key={featureIndex}
+                        className="flex items-center gap-3"
+                      >
+                        <svg
+                          className={`w-5 h-5 ${
+                            index === 0
+                              ? "text-blue-500"
+                              : index === 1
+                              ? "text-purple-500"
+                              : "text-pink-500"
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <span className="text-gray-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    className={`w-full py-4 rounded-xl font-medium text-white transition-all duration-300 flex items-center justify-center group/btn ${
+                      index === 0
+                        ? "bg-blue-500 hover:bg-blue-600"
+                        : index === 1
+                        ? "bg-purple-500 hover:bg-purple-600"
+                        : "bg-pink-500 hover:bg-pink-600"
+                    }`}
+                  >
+                    {item.cta}
+                    <ArrowRightIcon className="w-5 h-5 ml-2 transform group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-800">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600 mb-6 text-lg">{item.description}</p>
-                <button className="w-full bg-blue-600 text-white rounded-lg px-6 py-3 font-medium hover:bg-blue-700 transform transition-all duration-300 hover:shadow-lg flex items-center justify-center space-x-2 group">
-                  <span>Get Started</span>
-                  <span className="transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">
-                    →
-                  </span>
-                </button>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -251,7 +275,7 @@ export default function Home() {
                 company: "Tech Innovators Ltd",
                 type: "Full-time",
                 location: "London, UK",
-                salary: "£65,000 - £85,000",
+                salary: "₹15,00,000 - ₹25,00,000",
                 tags: ["React", "Node.js", "AWS"],
                 color: "blue",
               },
@@ -260,7 +284,7 @@ export default function Home() {
                 company: "Creative Studios",
                 type: "Remote",
                 location: "Manchester, UK",
-                salary: "£45,000 - £60,000",
+                salary: "₹8,00,000 - ₹15,00,000",
                 tags: ["Figma", "Adobe XD", "User Research"],
                 color: "purple",
               },
@@ -269,7 +293,7 @@ export default function Home() {
                 company: "Analytics Pro",
                 type: "Hybrid",
                 location: "Edinburgh, UK",
-                salary: "£55,000 - £75,000",
+                salary: "₹12,00,000 - ₹20,00,000",
                 tags: ["Python", "Machine Learning", "SQL"],
                 color: "green",
               },
@@ -278,7 +302,7 @@ export default function Home() {
                 company: "Global Brands Inc",
                 type: "Full-time",
                 location: "Birmingham, UK",
-                salary: "£40,000 - £50,000",
+                salary: "₹8,00,000 - ₹12,00,000",
                 tags: ["Digital Marketing", "SEO", "Content Strategy"],
                 color: "pink",
               },
@@ -287,7 +311,7 @@ export default function Home() {
                 company: "Cloud Solutions",
                 type: "Remote",
                 location: "Bristol, UK",
-                salary: "£60,000 - £80,000",
+                salary: "₹14,00,000 - ₹22,00,000",
                 tags: ["Docker", "Kubernetes", "CI/CD"],
                 color: "indigo",
               },
@@ -296,7 +320,7 @@ export default function Home() {
                 company: "Innovation Hub",
                 type: "Full-time",
                 location: "Glasgow, UK",
-                salary: "£50,000 - £70,000",
+                salary: "₹12,00,000 - ₹18,00,000",
                 tags: ["Agile", "Product Strategy", "Scrum"],
                 color: "blue",
               },
@@ -375,7 +399,7 @@ export default function Home() {
                 instructor: "Sarah Johnson",
                 rating: 4.8,
                 reviews: 2431,
-                price: 89.99,
+                price: 4999,
                 level: "Beginner",
                 duration: "12 weeks",
                 category: "Development",
@@ -386,7 +410,7 @@ export default function Home() {
                 instructor: "Dr. Michael Chen",
                 rating: 4.9,
                 reviews: 1876,
-                price: 129.99,
+                price: 6999,
                 level: "Advanced",
                 duration: "16 weeks",
                 category: "Data Science",
@@ -397,7 +421,7 @@ export default function Home() {
                 instructor: "Emma Thompson",
                 rating: 4.7,
                 reviews: 3254,
-                price: 69.99,
+                price: 3999,
                 level: "Intermediate",
                 duration: "8 weeks",
                 category: "Marketing",
@@ -408,7 +432,7 @@ export default function Home() {
                 instructor: "Alex Rodriguez",
                 rating: 4.8,
                 reviews: 1543,
-                price: 79.99,
+                price: 4499,
                 level: "Beginner",
                 duration: "10 weeks",
                 category: "Design",
@@ -419,7 +443,7 @@ export default function Home() {
                 instructor: "James Wilson",
                 rating: 4.9,
                 reviews: 987,
-                price: 149.99,
+                price: 7999,
                 level: "Advanced",
                 duration: "14 weeks",
                 category: "Cloud Computing",
@@ -430,7 +454,7 @@ export default function Home() {
                 instructor: "Lisa Anderson",
                 rating: 4.7,
                 reviews: 2198,
-                price: 99.99,
+                price: 5999,
                 level: "Intermediate",
                 duration: "12 weeks",
                 category: "Management",
@@ -471,7 +495,7 @@ export default function Home() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-2xl">£{course.price}</span>
+                    <span className="font-bold text-2xl">₹{course.price}</span>
                     <button className="flex items-center text-blue-600 font-medium hover:text-blue-800 group">
                       Learn More
                       <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
