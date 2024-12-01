@@ -17,7 +17,10 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
+      <nav
+        className="mx-auto px-4 sm:px-6 lg:px-8  px-4 sm:px-6 lg:px-8"
+        aria-label="Top"
+      >
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
