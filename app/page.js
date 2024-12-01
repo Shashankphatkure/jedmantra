@@ -6,12 +6,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-              <span className="block">Find Your Dream Job &</span>
-              <span className="block text-blue-600">Advance Your Skills</span>
+              <span className="block">Find Your Dream Job</span>
             </h1>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Discover thousands of job opportunities and courses to accelerate
-              your career growth.
+              Explore unlimited Jobs "Connecting You to the Right Opportunities"
             </p>
             <div className="mt-10 max-w-xl mx-auto">
               <div className="flex shadow-sm rounded-md">

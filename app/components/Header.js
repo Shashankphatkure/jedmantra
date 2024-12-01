@@ -12,7 +12,6 @@ export default function Header() {
     { name: "Home", href: "/" },
     { name: "Courses", href: "/courses" },
     { name: "Jobs", href: "/jobs" },
-    { name: "Companies", href: "/companies" },
     { name: "Career Advice", href: "/career-advice" },
   ];
 
@@ -24,7 +23,7 @@ export default function Header() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image
-                src="/logo.svg"
+                src="/Logo.png"
                 alt="JedMantra"
                 width={150}
                 height={40}
@@ -106,13 +105,13 @@ export default function Header() {
                     href="/auth/login"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Sign in
+                    Login
                   </Link>
                   <Link
                     href="/auth/register"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Sign up
+                    Register
                   </Link>
                 </div>
               )}
