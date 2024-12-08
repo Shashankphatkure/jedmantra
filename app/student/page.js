@@ -3,8 +3,8 @@ import Link from "next/link";
 
 export default function StudentDashboard() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-100">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
@@ -44,7 +44,7 @@ export default function StudentDashboard() {
                 {[
                   {
                     title: "Advanced Web Development",
-                    image: "https://via.placeholder.com/80",
+                    image: "https://picsum.photos/seed/webdev/400/300",
                     progress: 75,
                     nextLesson: "React Hooks Deep Dive",
                     instructor: "John Smith",
@@ -52,7 +52,7 @@ export default function StudentDashboard() {
                   },
                   {
                     title: "UI/UX Design Fundamentals",
-                    image: "https://via.placeholder.com/80",
+                    image: "https://picsum.photos/seed/uidesign/400/300",
                     progress: 45,
                     nextLesson: "User Research Methods",
                     instructor: "Sarah Johnson",
@@ -61,15 +61,15 @@ export default function StudentDashboard() {
                 ].map((course) => (
                   <div
                     key={course.title}
-                    className="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow"
+                    className="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
                   >
                     <div className="flex items-start gap-6">
                       <Image
                         src={course.image}
                         alt={course.title}
-                        width={100}
-                        height={100}
-                        className="rounded-lg object-cover"
+                        width={160}
+                        height={120}
+                        className="rounded-lg object-cover shadow-md"
                       />
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900">
@@ -244,26 +244,29 @@ export default function StudentDashboard() {
                 {[
                   {
                     title: "Data Science Fundamentals",
-                    image: "https://via.placeholder.com/60",
+                    image: "https://picsum.photos/seed/datascience/400/300",
                     instructor: "Michael Chen",
                     rating: 4.8,
                     students: 1234,
                   },
                   {
                     title: "Mobile App Development",
-                    image: "https://via.placeholder.com/60",
+                    image: "https://picsum.photos/seed/mobiledev/400/300",
                     instructor: "Emma Wilson",
                     rating: 4.7,
                     students: 987,
                   },
                 ].map((course) => (
-                  <div key={course.title} className="flex items-start">
+                  <div 
+                    key={course.title} 
+                    className="flex items-start p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <Image
                       src={course.image}
                       alt={course.title}
-                      width={60}
+                      width={80}
                       height={60}
-                      className="rounded"
+                      className="rounded-lg shadow-sm"
                     />
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">
