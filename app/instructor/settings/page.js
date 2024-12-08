@@ -1,29 +1,88 @@
+import {
+  UserCircleIcon,
+  BellIcon,
+  CreditCardIcon,
+  LockClosedIcon,
+  CameraIcon,
+  ArrowUpTrayIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 export default function InstructorSettings() {
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-violet-600 to-indigo-700 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+          <div className="max-w-4xl">
+            <h1 className="text-4xl font-bold text-white mb-4">Settings</h1>
+            <p className="text-xl text-white/90">
+              Manage your account preferences and profile settings
+            </p>
+          </div>
+        </div>
 
-        <div className="mt-8 max-w-3xl">
-          {/* Profile Settings */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900">
-                Profile Settings
-              </h2>
-              <div className="mt-6">
-                <div className="flex items-center">
-                  <Image
-                    className="h-24 w-24 rounded-full"
-                    src="https://via.placeholder.com/96"
-                    alt="Profile"
-                    width={96}
-                    height={96}
-                  />
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-violet-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 pb-12">
+        <div className="grid grid-cols-12 gap-8">
+          {/* Settings Navigation */}
+          <div className="col-span-12 md:col-span-3">
+            <div className="bg-white rounded-xl shadow-lg p-4">
+              <nav className="space-y-1">
+                {[
+                  { name: "Profile", icon: UserCircleIcon, current: true },
+                  { name: "Notifications", icon: BellIcon, current: false },
+                  { name: "Payment", icon: CreditCardIcon, current: false },
+                  { name: "Security", icon: LockClosedIcon, current: false },
+                ].map((item) => (
+                  <button
+                    key={item.name}
+                    className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg ${
+                      item.current
+                        ? "bg-violet-50 text-violet-700"
+                        : "text-gray-600 hover:bg-gray-50"
+                    }`}
+                  >
+                    <item.icon
+                      className={`h-5 w-5 mr-3 ${
+                        item.current ? "text-violet-500" : "text-gray-400"
+                      }`}
+                    />
+                    {item.name}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+
+          {/* Settings Content */}
+          <div className="col-span-12 md:col-span-9 space-y-8">
+            {/* Profile Settings */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div className="p-8">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Settings</h2>
+                
+                {/* Profile Photo */}
+                <div className="flex items-center mb-8">
+                  <div className="relative">
+                    <Image
+                      src="https://via.placeholder.com/96"
+                      alt="Profile"
+                      width={96}
+                      height={96}
+                      className="rounded-full"
+                    />
+                    <button className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-lg border border-gray-200 hover:bg-gray-50">
+                      <CameraIcon className="h-5 w-5 text-gray-500" />
+                    </button>
+                  </div>
                   <div className="ml-6">
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                    <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-violet-600 hover:bg-violet-700">
+                      <ArrowUpTrayIcon className="h-5 w-5 mr-2" />
                       Change Photo
                     </button>
                     <p className="mt-2 text-sm text-gray-500">
@@ -32,305 +91,100 @@ export default function InstructorSettings() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="first_name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      First name
+                {/* Form Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="first_name"
-                        id="first_name"
-                        defaultValue="John"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      defaultValue="John"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    />
                   </div>
 
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="last_name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Last name
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="last_name"
-                        id="last_name"
-                        defaultValue="Smith"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      defaultValue="Smith"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    />
                   </div>
 
-                  <div className="sm:col-span-6">
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Email address
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        defaultValue="john.smith@example.com"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                    <input
+                      type="email"
+                      defaultValue="john.smith@example.com"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    />
                   </div>
 
-                  <div className="sm:col-span-6">
-                    <label
-                      htmlFor="bio"
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Bio
                     </label>
-                    <div className="mt-1">
-                      <textarea
-                        id="bio"
-                        name="bio"
-                        rows={4}
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                        defaultValue="Experienced web developer and instructor with a passion for teaching."
-                      />
-                    </div>
-                    <p className="mt-2 text-sm text-gray-500">
-                      Brief description for your profile.
-                    </p>
+                    <textarea
+                      rows={4}
+                      defaultValue="Experienced web developer and instructor with a passion for teaching."
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    />
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Notification Settings */}
-          <div className="mt-8 bg-white shadow rounded-lg">
-            <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900">
-                Notification Settings
-              </h2>
-              <div className="mt-6">
-                <div className="space-y-6">
-                  <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="email_notifications"
-                        name="email_notifications"
-                        type="checkbox"
-                        defaultChecked
-                        className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <label
-                        htmlFor="email_notifications"
-                        className="font-medium text-gray-700"
-                      >
-                        Email Notifications
-                      </label>
-                      <p className="text-sm text-gray-500">
-                        Receive email notifications when students enroll, leave
-                        reviews, or complete your courses.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="marketing_emails"
-                        name="marketing_emails"
-                        type="checkbox"
-                        defaultChecked
-                        className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <label
-                        htmlFor="marketing_emails"
-                        className="font-medium text-gray-700"
-                      >
-                        Marketing Emails
-                      </label>
-                      <p className="text-sm text-gray-500">
-                        Receive updates about new features, teaching tips, and
-                        promotional opportunities.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="course_updates"
-                        name="course_updates"
-                        type="checkbox"
-                        defaultChecked
-                        className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <label
-                        htmlFor="course_updates"
-                        className="font-medium text-gray-700"
-                      >
-                        Course Updates
-                      </label>
-                      <p className="text-sm text-gray-500">
-                        Get notified when you need to update your course content
-                        or when new teaching tools are available.
-                      </p>
-                    </div>
-                  </div>
+              <div className="px-8 py-4 bg-gray-50 border-t border-gray-200">
+                <div className="flex justify-end space-x-4">
+                  <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                  </button>
+                  <button className="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700">
+                    Save Changes
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Payment Settings */}
-          <div className="mt-8 bg-white shadow rounded-lg">
-            <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900">
-                Payment Settings
-              </h2>
-              <div className="mt-6">
-                <div className="space-y-6">
-                  <div>
-                    <label
-                      htmlFor="payment_method"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Default Payment Method
-                    </label>
-                    <select
-                      id="payment_method"
-                      name="payment_method"
-                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                    >
-                      <option>PayPal</option>
-                      <option>Bank Transfer</option>
-                      <option>Stripe</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="payout_threshold"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Payout Threshold
-                    </label>
-                    <select
-                      id="payout_threshold"
-                      name="payout_threshold"
-                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                    >
-                      <option>$50</option>
-                      <option>$100</option>
-                      <option>$250</option>
-                      <option>$500</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="tax_info"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Tax Information
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="tax_info"
-                        id="tax_info"
-                        placeholder="Enter your tax ID"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Privacy Settings */}
-          <div className="mt-8 bg-white shadow rounded-lg">
-            <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900">
-                Privacy Settings
-              </h2>
-              <div className="mt-6">
-                <div className="space-y-6">
-                  <div className="flex items-start">
+            {/* Notification Settings */}
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Notification Settings</h2>
+              <div className="space-y-6">
+                {[
+                  {
+                    title: "Email Notifications",
+                    description: "Receive email notifications when students enroll or leave reviews",
+                  },
+                  {
+                    title: "Course Updates",
+                    description: "Get notified when you need to update your course content",
+                  },
+                  {
+                    title: "Marketing Emails",
+                    description: "Receive updates about new features and promotional opportunities",
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="flex items-start">
                     <div className="flex items-center h-5">
                       <input
-                        id="profile_visibility"
-                        name="profile_visibility"
                         type="checkbox"
                         defaultChecked
-                        className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                        className="h-4 w-4 text-violet-600 border-gray-300 rounded focus:ring-violet-500"
                       />
                     </div>
                     <div className="ml-3">
-                      <label
-                        htmlFor="profile_visibility"
-                        className="font-medium text-gray-700"
-                      >
-                        Public Profile
-                      </label>
-                      <p className="text-sm text-gray-500">
-                        Make your profile visible to all students and potential
-                        learners.
-                      </p>
+                      <label className="font-medium text-gray-700">{item.title}</label>
+                      <p className="text-sm text-gray-500">{item.description}</p>
                     </div>
                   </div>
-
-                  <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="course_stats"
-                        name="course_stats"
-                        type="checkbox"
-                        defaultChecked
-                        className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <label
-                        htmlFor="course_stats"
-                        className="font-medium text-gray-700"
-                      >
-                        Course Statistics
-                      </label>
-                      <p className="text-sm text-gray-500">
-                        Show course statistics publicly on your profile and
-                        course pages.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
-          </div>
-
-          {/* Save Button */}
-          <div className="mt-8 flex justify-end">
-            <button
-              type="submit"
-              className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Save Changes
-            </button>
           </div>
         </div>
       </div>

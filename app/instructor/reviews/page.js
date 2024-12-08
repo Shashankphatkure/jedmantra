@@ -1,3 +1,15 @@
+import {
+  StarIcon,
+  ChatBubbleLeftIcon,
+  UserCircleIcon,
+  ArrowUpIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  HandThumbUpIcon,
+} from "@heroicons/react/24/outline";
+import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import Image from "next/image";
 
 export default function InstructorReviews() {
@@ -7,24 +19,32 @@ export default function InstructorReviews() {
       stat: "1,234",
       change: "+12%",
       changeType: "increase",
+      icon: ChatBubbleLeftIcon,
+      color: "blue",
     },
     {
       name: "Average Rating",
       stat: "4.8/5.0",
       change: "+0.3",
       changeType: "increase",
+      icon: StarIcon,
+      color: "yellow",
     },
     {
       name: "Response Rate",
       stat: "95%",
       change: "+2.3%",
       changeType: "increase",
+      icon: CheckCircleIcon,
+      color: "green",
     },
     {
       name: "Pending Reviews",
       stat: "12",
       change: "-3",
       changeType: "decrease",
+      icon: ClockIcon,
+      color: "purple",
     },
   ];
 
@@ -71,225 +91,160 @@ export default function InstructorReviews() {
   ];
 
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Reviews</h1>
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search reviews..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-yellow-500 to-orange-600 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+          <div className="max-w-4xl">
+            <h1 className="text-4xl font-bold text-white mb-4">Course Reviews</h1>
+            <p className="text-xl text-white/90 mb-8">
+              Manage student feedback and maintain course quality
+            </p>
+
+            {/* Search and Filter */}
+            <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-lg rounded-xl p-4 w-fit">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search reviews..."
+                  className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+                />
+                <MagnifyingGlassIcon className="h-5 w-5 text-white/60 absolute left-3 top-1/2 -translate-y-1/2" />
               </div>
+              <select className="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50">
+                <option value="">All Courses</option>
+                <option value="react">React Fundamentals</option>
+                <option value="javascript">Advanced JavaScript</option>
+                <option value="webdev">Web Development</option>
+              </select>
+              <button className="inline-flex items-center px-4 py-2 bg-white text-orange-600 rounded-lg font-medium hover:bg-white/90 transition-colors">
+                <FunnelIcon className="h-5 w-5 mr-2" />
+                Filters
+              </button>
             </div>
-            <select className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-              <option>All Courses</option>
-              <option>React Fundamentals</option>
-              <option>Advanced JavaScript</option>
-              <option>Web Development Bootcamp</option>
-            </select>
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-yellow-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {stats.map((item) => (
             <div
               key={item.name}
-              className="bg-white overflow-hidden shadow rounded-lg"
+              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
             >
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="rounded-md bg-blue-500 p-3">
-                      <svg
-                        className="h-6 w-6 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        {item.name}
-                      </dt>
-                      <dd className="flex items-baseline">
-                        <div className="text-2xl font-semibold text-gray-900">
-                          {item.stat}
-                        </div>
-                        <div
-                          className={`ml-2 flex items-baseline text-sm font-semibold ${
-                            item.changeType === "increase"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {item.change}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
+              <div className="flex items-center justify-between mb-4">
+                <div className={`p-3 rounded-lg bg-${item.color}-100`}>
+                  <item.icon className={`h-6 w-6 text-${item.color}-600`} />
+                </div>
+                <div className={`flex items-center text-sm ${
+                  item.changeType === "increase" ? "text-green-600" : "text-red-600"
+                }`}>
+                  <ArrowUpIcon className="h-4 w-4 mr-1" />
+                  {item.change}
                 </div>
               </div>
+              <h3 className="text-gray-500 text-sm font-medium">{item.name}</h3>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{item.stat}</p>
             </div>
           ))}
         </div>
 
         {/* Reviews List */}
-        <div className="mt-8">
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul className="divide-y divide-gray-200">
-              {reviews.map((review) => (
-                <li key={review.id} className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Image
-                        className="h-10 w-10 rounded-full"
-                        src={review.avatar}
-                        alt=""
-                        width={40}
-                        height={40}
-                      />
-                      <div className="ml-4">
-                        <div className="flex items-center">
-                          <h3 className="text-sm font-medium text-gray-900">
-                            {review.author}
-                          </h3>
-                          <span className="ml-2 text-sm text-gray-500">
-                            &middot;
-                          </span>
-                          <span className="ml-2 text-sm text-gray-500">
-                            {review.date}
-                          </span>
-                        </div>
-                        <div className="mt-1 flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <svg
-                              key={i}
-                              className={`h-5 w-5 ${
-                                i < review.rating
-                                  ? "text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          review.status === "pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-green-100 text-green-800"
-                        }`}
-                      >
-                        {review.status === "pending"
-                          ? "Pending Response"
-                          : "Responded"}
-                      </span>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {reviews.map((review, index) => (
+            <div
+              key={review.id}
+              className={`p-6 ${
+                index !== reviews.length - 1 ? "border-b border-gray-200" : ""
+              }`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <Image
+                    src={review.avatar}
+                    alt={review.author}
+                    width={48}
+                    height={48}
+                    className="rounded-full"
+                  />
+                  <div className="ml-4">
+                    <h3 className="font-medium text-gray-900">{review.author}</h3>
+                    <div className="flex items-center mt-1">
+                      <p className="text-sm text-gray-500 mr-2">{review.course}</p>
+                      <span className="text-gray-300">•</span>
+                      <p className="text-sm text-gray-500 ml-2">{review.date}</p>
                     </div>
                   </div>
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-500">{review.content}</p>
-                    {review.response && (
-                      <div className="mt-4 bg-gray-50 rounded-lg p-4">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <Image
-                              className="h-10 w-10 rounded-full"
-                              src="https://via.placeholder.com/40"
-                              alt="Instructor"
-                              width={40}
-                              height={40}
-                            />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              Your Response
-                            </div>
-                            <div className="mt-1 text-sm text-gray-500">
-                              {review.response}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                </div>
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                    review.status === "pending"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-green-100 text-green-800"
+                  }`}
+                >
+                  {review.status === "pending" ? "Pending Response" : "Responded"}
+                </span>
+              </div>
+
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <StarIconSolid
+                    key={i}
+                    className={`h-5 w-5 ${
+                      i < review.rating ? "text-yellow-400" : "text-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <p className="text-gray-600 mb-4">{review.content}</p>
+
+              {review.response && (
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <div className="flex items-center mb-2">
+                    <UserCircleIcon className="h-5 w-5 text-gray-400 mr-2" />
+                    <p className="font-medium text-gray-900">Your Response</p>
                   </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <button className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
-                        <svg
-                          className="h-5 w-5 mr-1"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-                          />
-                        </svg>
-                        {review.helpful} people found this helpful
-                      </button>
-                    </div>
-                    {review.status === "pending" && (
-                      <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-                        Respond
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+                  <p className="text-gray-600">{review.response}</p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center text-gray-500">
+                  <button className="flex items-center hover:text-gray-700">
+                    <HandThumbUpIcon className="h-5 w-5 mr-1" />
+                    {review.helpful} helpful
+                  </button>
+                </div>
+                {review.status === "pending" && (
+                  <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                    Reply to Review
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Pagination */}
         <div className="mt-8 flex items-center justify-between">
-          <div className="flex items-center">
-            <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">1</span> to{" "}
-              <span className="font-medium">10</span> of{" "}
-              <span className="font-medium">97</span> reviews
-            </p>
-          </div>
+          <p className="text-sm text-gray-700">
+            Showing <span className="font-medium">1</span> to{" "}
+            <span className="font-medium">10</span> of{" "}
+            <span className="font-medium">97</span> reviews
+          </p>
           <div className="flex items-center space-x-2">
-            <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
               Previous
             </button>
-            <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
               Next
             </button>
           </div>
