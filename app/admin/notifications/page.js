@@ -1,7 +1,14 @@
+'use client';
+
+import { useState } from 'react';
+import {
+  BellIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 export default function AdminNotifications() {
-  const notifications = [
+  const [notifications] = useState([
     {
       id: 1,
       title: "New Course Published",
@@ -29,25 +36,36 @@ export default function AdminNotifications() {
       time: "5 hours ago",
       avatar: "https://via.placeholder.com/40",
     },
-  ];
+  ]);
 
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Notifications
-          </h1>
-          <div className="flex items-center space-x-4">
-            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-              Mark All as Read
-            </button>
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              Clear All
-            </button>
+    <div className="min-h-screen bg-gray-100">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-purple-600 to-purple-700 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Notifications</h1>
+              <p className="mt-2 text-purple-100">
+                Manage and monitor all system notifications
+              </p>
+            </div>
+            <div className="flex space-x-4">
+              <button className="inline-flex items-center px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors">
+                <BellIcon className="w-5 h-5 mr-2" />
+                Mark All as Read
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
         <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center space-x-4">

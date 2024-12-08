@@ -9,6 +9,7 @@ import {
   AcademicCapIcon,
   ChartBarIcon,
   Cog6ToothIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
@@ -17,6 +18,7 @@ const navigation = [
   { name: "Jobs", href: "/admin/jobs", icon: BriefcaseIcon },
   { name: "Courses", href: "/admin/courses", icon: AcademicCapIcon },
   { name: "Reports", href: "/admin/reports", icon: ChartBarIcon },
+  { name: "Notifications", href: "/admin/notifications", icon: BellIcon },
   { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
 ];
 
