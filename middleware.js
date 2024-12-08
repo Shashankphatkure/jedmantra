@@ -21,7 +21,8 @@ export async function middleware(req) {
       req.nextUrl.pathname.startsWith("/become-mentor") ||
       req.nextUrl.pathname.startsWith("/admin") ||
       req.nextUrl.pathname.startsWith("/student") ||
-      req.nextUrl.pathname.startsWith("/recruiter")) &&
+      req.nextUrl.pathname.startsWith("/recruiter") ||
+      req.nextUrl.pathname.startsWith("/settings")) &&
     !session
   ) {
     return NextResponse.redirect(new URL("/login", req.url));
@@ -47,5 +48,6 @@ export const config = {
     "/student/",
     "/recruiter/:path*",
     "/recruiter/",
+    "/settings/",
   ],
 };

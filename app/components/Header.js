@@ -53,6 +53,18 @@ export default function Header() {
     return () => subscription?.unsubscribe();
   }, [supabase]);
 
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isUserMenuOpen && !event.target.closest('.user-menu-container')) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isUserMenuOpen]);
+
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -128,7 +140,7 @@ export default function Header() {
 
             {user ? (
               /* User Menu - Only show when logged in */
-              <div className="ml-4 relative flex-shrink-0">
+              <div className="ml-4 relative flex-shrink-0 user-menu-container">
                 <div>
                   <button
                     type="button"
@@ -146,37 +158,41 @@ export default function Header() {
                     />
                   </button>
                 </div>
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
-                    <div className="px-4 py-2 text-sm text-gray-900 border-b">
-                      <div className="font-medium">{user.name}</div>
-                      <div className="text-gray-500">{user.email}</div>
-                    </div>
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      href="/settings"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Settings
-                    </Link>
-                    <button
-                      onClick={() => {
-                        handleSignOut();
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Sign out
-                    </button>
+                <div
+                  className={`absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out ${
+                    isUserMenuOpen
+                      ? 'transform opacity-100 scale-100'
+                      : 'transform opacity-0 scale-95 pointer-events-none'
+                  }`}
+                >
+                  <div className="px-4 py-3 text-sm text-gray-900 border-b border-gray-200">
+                    <div className="font-medium">{user.name}</div>
+                    <div className="text-gray-500">{user.email}</div>
                   </div>
-                )}
+                  <Link
+                    href="/profile"
+                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsUserMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    Sign out
+                  </button>
+                </div>
               </div>
             ) : (
               /* Login/Signup buttons - Show when not logged in */
