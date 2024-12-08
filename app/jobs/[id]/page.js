@@ -1,3 +1,6 @@
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -17,7 +20,64 @@ import {
   GiftIcon
 } from "@heroicons/react/24/outline";
 
-export default function JobDetail() {
+async function getJobDetails(jobId) {
+  const supabase = createServerComponentClient({ cookies });
+
+  // First, check if the job exists
+  const { data: job, error: jobError } = await supabase
+    .from('jobs')
+    .select(`
+      *,
+      job_recruiters (
+        recruiters (
+          *
+        )
+      ),
+      job_skill_requirements (
+        job_skills (
+          name
+        )
+      )
+    `)
+    .eq('id', jobId)
+    .single();
+
+  if (jobError) {
+    console.error('Error fetching job:', jobError);
+    return null;
+  }
+
+  return job;
+}
+
+export default async function JobDetail({ params }) {
+  const job = await getJobDetails(params.id);
+
+  if (!job) {
+    notFound();
+  }
+
+  // Extract recruiter info from the nested structure (handle optional chaining)
+  const recruiter = job.job_recruiters?.[0]?.recruiters || null;
+  
+  // Extract skills from the nested structure (handle optional chaining)
+  const skills = job.job_skill_requirements?.map(skill => skill.job_skills.name) || [];
+
+  // Format salary for display
+  const formatSalary = (amount) => {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: job.salary_currency,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  // Calculate time since posting
+  const getTimeAgo = (timestamp) => {
+    const days = Math.floor((new Date() - new Date(timestamp)) / (1000 * 60 * 60 * 24));
+    return `Posted ${days} days ago`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -26,29 +86,29 @@ export default function JobDetail() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              
-
               {/* Job Title and Tags */}
               <h1 className="text-4xl font-bold text-white mb-6">
-                Senior Software Engineer
+                {job.title}
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 mb-8">
                 <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
                   <BriefcaseIcon className="h-5 w-5 text-white/90 mr-2" />
-                  <span className="text-white/90">Full-time</span>
+                  <span className="text-white/90">{job.job_type}</span>
                 </div>
-                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
-                  <GlobeAltIcon className="h-5 w-5 text-white/90 mr-2" />
-                  <span className="text-white/90">Remote Available</span>
-                </div>
+                {job.is_remote && (
+                  <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
+                    <GlobeAltIcon className="h-5 w-5 text-white/90 mr-2" />
+                    <span className="text-white/90">Remote Available</span>
+                  </div>
+                )}
                 <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
                   <AcademicCapIcon className="h-5 w-5 text-white/90 mr-2" />
-                  <span className="text-white/90">Senior Level</span>
+                  <span className="text-white/90">{job.experience_level} Level</span>
                 </div>
                 <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
                   <ClockIcon className="h-5 w-5 text-white/90 mr-2" />
-                  <span className="text-white/90">Posted 2 days ago</span>
+                  <span className="text-white/90">{getTimeAgo(job.posted_at)}</span>
                 </div>
               </div>
 
@@ -56,79 +116,83 @@ export default function JobDetail() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                   <div className="text-white/70 text-sm mb-1">Experience</div>
-                  <div className="text-white font-semibold">5+ years</div>
+                  <div className="text-white font-semibold">{job.required_experience_years}+ years</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                   <div className="text-white/70 text-sm mb-1">Salary Range</div>
-                  <div className="text-white font-semibold">£65K - £85K</div>
+                  <div className="text-white font-semibold">
+                    {formatSalary(job.salary_min)} - {formatSalary(job.salary_max)}
+                  </div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                   <div className="text-white/70 text-sm mb-1">Department</div>
-                  <div className="text-white font-semibold">Engineering</div>
+                  <div className="text-white font-semibold">{job.department}</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                   <div className="text-white/70 text-sm mb-1">Team Size</div>
-                  <div className="text-white font-semibold">15-20 people</div>
+                  <div className="text-white font-semibold">{job.team_size}</div>
                 </div>
               </div>
-
-              
 
               {/* Recruiter Details */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                <h3 className="text-xl font-semibold text-white mb-4">Your Recruiter</h3>
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <img
-                      src="https://randomuser.me/api/portraits/women/45.jpg"
-                      alt="Sarah Wilson"
-                      className="h-12 w-12 rounded-full border-2 border-white/20"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="text-white font-medium">Sarah Wilson</h4>
-                      <span className="bg-green-500/20 text-green-100 text-xs px-2 py-0.5 rounded-full">
-                        Online
-                      </span>
+              {recruiter && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">Your Recruiter</h3>
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0">
+                      <img
+                        src={recruiter.avatar_url || "https://randomuser.me/api/portraits/women/45.jpg"}
+                        alt={`${recruiter.first_name} ${recruiter.last_name}`}
+                        className="h-12 w-12 rounded-full border-2 border-white/20"
+                      />
                     </div>
-                    <p className="text-white/70 text-sm">Senior Tech Recruiter at Tech Company Ltd</p>
-                    
-                    <div className="mt-4 grid grid-cols-2 gap-4">
-                      <div className="bg-white/5 rounded-lg p-3">
-                        <div className="text-white/60 text-xs mb-1">Response Rate</div>
-                        <div className="text-white font-medium">95%</div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="text-white font-medium">
+                          {recruiter.first_name} {recruiter.last_name}
+                        </h4>
+                        <span className={`${recruiter.is_online ? 'bg-green-500/20 text-green-100' : 'bg-gray-500/20 text-gray-100'} text-xs px-2 py-0.5 rounded-full`}>
+                          {recruiter.is_online ? 'Online' : 'Offline'}
+                        </span>
                       </div>
-                      <div className="bg-white/5 rounded-lg p-3">
-                        <div className="text-white/60 text-xs mb-1">Avg. Response</div>
-                        <div className="text-white font-medium"> 24 hours</div>
+                      <p className="text-white/70 text-sm">{recruiter.title} at {recruiter.company}</p>
+                      
+                      <div className="mt-4 grid grid-cols-2 gap-4">
+                        <div className="bg-white/5 rounded-lg p-3">
+                          <div className="text-white/60 text-xs mb-1">Response Rate</div>
+                          <div className="text-white font-medium">95%</div>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3">
+                          <div className="text-white/60 text-xs mb-1">Avg. Response</div>
+                          <div className="text-white font-medium"> 24 hours</div>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="mt-4 flex items-center space-x-4">
-                      <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
-                        <EnvelopeIcon className="h-4 w-4" />
-                        <span className="text-sm">Message</span>
-                      </button>
-                      <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
-                        <CalendarIcon className="h-4 w-4" />
-                        <span className="text-sm">Schedule Call</span>
-                      </button>
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <div className="flex items-center space-x-2 text-white/70 text-sm">
-                        <UserGroupIcon className="h-4 w-4" />
-                        <span>Currently hiring for 12 positions</span>
+                      <div className="mt-4 flex items-center space-x-4">
+                        <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
+                          <EnvelopeIcon className="h-4 w-4" />
+                          <span className="text-sm">Message</span>
+                        </button>
+                        <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
+                          <CalendarIcon className="h-4 w-4" />
+                          <span className="text-sm">Schedule Call</span>
+                        </button>
                       </div>
-                      <div className="flex items-center space-x-2 text-white/70 text-sm mt-2">
-                        <BuildingOfficeIcon className="h-4 w-4" />
-                        <span>Based in London Office</span>
+
+                      <div className="mt-4 pt-4 border-t border-white/10">
+                        <div className="flex items-center space-x-2 text-white/70 text-sm">
+                          <UserGroupIcon className="h-4 w-4" />
+                          <span>Currently hiring for 12 positions</span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-white/70 text-sm mt-2">
+                          <BuildingOfficeIcon className="h-4 w-4" />
+                          <span>Based in London Office</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Application Card */}
