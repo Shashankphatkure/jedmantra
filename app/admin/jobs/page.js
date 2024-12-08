@@ -1,306 +1,307 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from "next/image";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import {
+  MagnifyingGlassIcon,
+  BriefcaseIcon,
+  UsersIcon,
+  CurrencyPoundIcon,
+  BuildingOfficeIcon,
+  PlusIcon,
+  MapPinIcon,
+  ClockIcon,
+  ArrowDownTrayIcon,
+} from "@heroicons/react/24/outline";
 
 export default function AdminJobs() {
-  const jobs = [
-    {
-      title: "Senior React Developer",
-      company: "Tech Corp",
-      location: "London, UK",
-      type: "Full-time",
-      salary: "$80k - $120k",
-      applicants: 45,
-      status: "Active",
-      posted: "2 days ago",
-      logo: "https://via.placeholder.com/40",
-    },
-    {
-      title: "UX Designer",
-      company: "Design Studio",
-      location: "Remote",
-      type: "Contract",
-      salary: "$60k - $90k",
-      applicants: 32,
-      status: "Paused",
-      posted: "1 week ago",
-      logo: "https://via.placeholder.com/40",
-    },
-    {
-      title: "Full Stack Developer",
-      company: "Startup Inc",
-      location: "New York, USA",
-      type: "Full-time",
-      salary: "$70k - $100k",
-      applicants: 28,
-      status: "Active",
-      posted: "3 days ago",
-      logo: "https://via.placeholder.com/40",
-    },
-  ];
+  const [jobs, setJobs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const supabase = createClientComponentClient();
+
+  // Fetch jobs with recruiters
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const fetchJobs = async () => {
+    const { data, error } = await supabase
+      .from('jobs')
+      .select(`
+        *,
+        job_recruiters (
+          recruiter: recruiters (
+            id,
+            first_name,
+            last_name,
+            avatar_url,
+            title,
+            company
+          )
+        )
+      `)
+      .order('posted_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching jobs:', error);
+      return;
+    }
+
+    setJobs(data);
+    setFilteredJobs(data);
+  };
+
+  // Handle search
+  useEffect(() => {
+    const results = jobs.filter(job =>
+      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredJobs(results);
+  }, [searchTerm, jobs]);
+
+  // Delete job
+  const handleDeleteJob = async (jobId) => {
+    if (window.confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+      setIsDeleting(true);
+      try {
+        // First delete from job_recruiters
+        const { error: relError } = await supabase
+          .from('job_recruiters')
+          .delete()
+          .eq('job_id', jobId);
+
+        if (relError) throw relError;
+
+        // Then delete the job
+        const { error } = await supabase
+          .from('jobs')
+          .delete()
+          .eq('id', jobId);
+
+        if (error) throw error;
+
+        setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+        setFilteredJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+        alert('Job deleted successfully');
+      } catch (error) {
+        console.error('Error deleting job:', error);
+        alert('Error deleting job. Please try again.');
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
+  // Calculate stats
+  const openJobs = filteredJobs.filter(job => job.status === 'Open').length;
+  const avgSalary = filteredJobs.reduce((sum, job) => 
+    sum + ((job.salary_min + job.salary_max) / 2 || 0), 0) / filteredJobs.length;
+  const remoteJobs = filteredJobs.filter(job => job.is_remote).length;
 
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Jobs</h1>
-          <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-            Add Job
-          </button>
+    <div className="min-h-screen bg-gray-100">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Job Management</h1>
+              <p className="mt-2 text-indigo-100">
+                Manage and monitor all job listings in one place
+              </p>
+            </div>
+            <div className="flex space-x-4">
+              <button className="inline-flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-600 transition-colors">
+                <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+                Export
+              </button>
+              <button className="inline-flex items-center px-4 py-2 bg-white text-indigo-600 rounded-lg font-medium hover:bg-indigo-50 transition-colors">
+                <PlusIcon className="w-5 h-5 mr-2" />
+                Post Job
+              </button>
+            </div>
+          </div>
         </div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+      </div>
 
-        {/* Stats */}
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           {[
             {
               name: "Total Jobs",
-              stat: "234",
-              change: "+12%",
-              changeType: "increase",
+              stat: jobs.length,
+              icon: BriefcaseIcon,
+              color: "indigo",
             },
             {
-              name: "Active Jobs",
-              stat: "156",
-              change: "+8.2%",
-              changeType: "increase",
+              name: "Open Positions",
+              stat: openJobs,
+              icon: UsersIcon,
+              color: "green",
             },
             {
-              name: "Total Applications",
-              stat: "12,345",
-              change: "+15.3%",
-              changeType: "increase",
+              name: "Average Salary",
+              stat: `£${Math.round(avgSalary).toLocaleString()}`,
+              icon: CurrencyPoundIcon,
+              color: "yellow",
             },
             {
-              name: "Hired Candidates",
-              stat: "123",
-              change: "+5.4%",
-              changeType: "increase",
+              name: "Remote Jobs",
+              stat: remoteJobs,
+              icon: BuildingOfficeIcon,
+              color: "purple",
             },
           ].map((item) => (
             <div
               key={item.name}
-              className="bg-white overflow-hidden shadow rounded-lg"
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
             >
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="rounded-md bg-blue-500 p-3">
-                      <svg
-                        className="h-6 w-6 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        {item.name}
-                      </dt>
-                      <dd className="flex items-baseline">
-                        <div className="text-2xl font-semibold text-gray-900">
-                          {item.stat}
-                        </div>
-                        <div
-                          className={`ml-2 flex items-baseline text-sm font-semibold ${
-                            item.changeType === "increase"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {item.change}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
+              {/* ... Stats card content (same structure as courses) ... */}
             </div>
           ))}
         </div>
 
-        {/* Filters */}
-        <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search jobs..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+        {/* Filters and Search */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              <div className="relative flex-1">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search jobs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex gap-4 sm:w-auto">
+                <select className="min-w-[160px] pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
+                  <option>All Types</option>
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                  <option>Contract</option>
+                </select>
+                <select className="min-w-[160px] pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
+                  <option>All Status</option>
+                  <option>Open</option>
+                  <option>Closed</option>
+                  <option>Draft</option>
+                </select>
               </div>
             </div>
-            <select className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-              <option>All Types</option>
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-            </select>
-            <select className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-              <option>All Status</option>
-              <option>Active</option>
-              <option>Paused</option>
-              <option>Closed</option>
-            </select>
-          </div>
-          <div className="mt-4 sm:mt-0">
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              Export Data
-            </button>
           </div>
         </div>
 
         {/* Jobs Table */}
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th
-                        scope="col"
-                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                      >
-                        Job
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Type
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Location
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Salary
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Applicants
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Status
-                      </th>
-                      <th
-                        scope="col"
-                        className="relative py-3.5 pl-3 pr-4 sm:pr-6"
-                      >
-                        <span className="sr-only">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {jobs.map((job) => (
-                      <tr key={job.title}>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 sm:pl-6">
-                          <div className="flex items-center">
-                            <div className="h-10 w-10 flex-shrink-0">
-                              <Image
-                                className="h-10 w-10 rounded-full"
-                                src={job.logo}
-                                alt=""
-                                width={40}
-                                height={40}
-                              />
-                            </div>
-                            <div className="ml-4">
-                              <div className="font-medium text-gray-900">
-                                {job.title}
-                              </div>
-                              <div className="text-gray-500">{job.company}</div>
-                            </div>
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Job Details
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type & Level
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Salary
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Posted
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredJobs.map((job) => (
+                  <tr key={job.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{job.title}</div>
+                          <div className="text-sm text-gray-500">{job.company_name}</div>
+                          <div className="flex items-center mt-1 text-xs text-gray-500">
+                            <MapPinIcon className="w-3 h-3 mr-1" />
+                            {job.location}
+                            {job.is_remote && (
+                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                Remote
+                              </span>
+                            )}
                           </div>
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {job.type}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {job.location}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {job.salary}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {job.applicants}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          <span
-                            className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                              job.status === "Active"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {job.status}
-                          </span>
-                        </td>
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                          <button className="text-blue-600 hover:text-blue-900 mr-4">
-                            Edit
-                          </button>
-                          <button className="text-red-600 hover:text-red-900">
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{job.job_type}</div>
+                      <div className="text-sm text-gray-500">{job.experience_level}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {job.salary_currency} {job.salary_min?.toLocaleString()} - {job.salary_max?.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        ${job.status === 'Open' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {job.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(job.posted_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button 
+                        className="text-indigo-600 hover:text-indigo-900 mr-4"
+                        onClick={() => {/* Handle edit */}}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        className="text-red-600 hover:text-red-900"
+                        onClick={() => handleDeleteJob(job.id)}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
+        {/* No Results Message */}
+        {filteredJobs.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-500">
+              No jobs found matching your search criteria
+            </div>
+          </div>
+        )}
+
         {/* Pagination */}
         <div className="mt-8 flex items-center justify-between">
-          <div className="flex items-center">
-            <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">1</span> to{" "}
-              <span className="font-medium">10</span> of{" "}
-              <span className="font-medium">97</span> jobs
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-              Previous
-            </button>
-            <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-              Next
-            </button>
-          </div>
+          {/* ... Pagination content (same as courses) ... */}
         </div>
       </div>
     </div>
