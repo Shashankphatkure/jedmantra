@@ -81,32 +81,32 @@ export default function InstructorStudents() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-green-600 to-teal-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+      {/* Header Section - adjusted padding and styling */}
+      <div className="bg-gradient-to-r from-green-600 to-teal-600 relative overflow-hidden pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
           <div className="max-w-4xl">
-            <h1 className="text-4xl font-bold text-white mb-4">Students</h1>
-            <p className="text-xl text-white/90 mb-8">
+            <h1 className="text-4xl font-bold text-white mb-3">Students</h1>
+            <p className="text-xl text-white/90 mb-6">
               Track student progress and manage enrollments
             </p>
 
-            {/* Search and Filter */}
-            <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-lg rounded-xl p-4 w-fit">
+            {/* Search and Filter - improved spacing and hover states */}
+            <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-lg rounded-xl p-3">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search students..."
-                  className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 w-64 hover:bg-white/5 transition-colors"
                 />
                 <MagnifyingGlassIcon className="h-5 w-5 text-white/60 absolute left-3 top-1/2 -translate-y-1/2" />
               </div>
-              <select className="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50">
+              <select className="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50 hover:bg-white/5 transition-colors cursor-pointer">
                 <option>All Courses</option>
                 <option>React Fundamentals</option>
                 <option>Advanced JavaScript</option>
                 <option>Web Development</option>
               </select>
-              <button className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-lg font-medium hover:bg-white/90 transition-colors">
+              <button className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-lg font-medium hover:bg-white/90 transition-all duration-200 active:scale-95">
                 <FunnelIcon className="h-5 w-5 mr-2" />
                 Filters
               </button>
@@ -119,16 +119,16 @@ export default function InstructorStudents() {
         <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20 pb-12">
+        {/* Stats Grid - improved card styling */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((item) => (
             <div
               key={item.name}
-              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-all duration-200"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-lg bg-${item.color}-100`}>
+                <div className={`p-3 rounded-lg bg-${item.color}-100/50 hover:bg-${item.color}-100 transition-colors`}>
                   <item.icon className={`h-6 w-6 text-${item.color}-600`} />
                 </div>
                 <div className={`flex items-center text-sm ${
@@ -148,8 +148,8 @@ export default function InstructorStudents() {
           ))}
         </div>
 
-        {/* Students Table */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        {/* Students Table - improved styling */}
+        <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200">
           <div className="p-6">
             <div className="flex flex-col">
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -182,7 +182,7 @@ export default function InstructorStudents() {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {students.map((student) => (
-                        <tr key={student.email} className="hover:bg-gray-50">
+                        <tr key={student.email} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10">
@@ -234,7 +234,7 @@ export default function InstructorStudents() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button className="text-indigo-600 hover:text-indigo-900">
+                            <button className="text-indigo-600 hover:text-indigo-900 hover:underline transition-colors">
                               View Details
                             </button>
                           </td>
@@ -248,18 +248,18 @@ export default function InstructorStudents() {
           </div>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination - improved button styling */}
         <div className="mt-8 flex items-center justify-between">
           <p className="text-sm text-gray-700">
             Showing <span className="font-medium">1</span> to{" "}
             <span className="font-medium">10</span> of{" "}
             <span className="font-medium">97</span> students
           </p>
-          <div className="flex items-center space-x-2">
-            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+          <div className="flex items-center space-x-3">
+            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 active:scale-95">
               Previous
             </button>
-            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 active:scale-95">
               Next
             </button>
           </div>

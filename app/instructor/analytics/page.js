@@ -74,25 +74,25 @@ export default function InstructorAnalytics() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-700 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+      {/* Header Section - adjusted padding and spacing */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-700 relative overflow-hidden pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
           <div className="max-w-4xl">
-            <h1 className="text-4xl font-bold text-white mb-4">Analytics</h1>
-            <p className="text-xl text-white/90 mb-8">
+            <h1 className="text-4xl font-bold text-white mb-3">Analytics</h1>
+            <p className="text-xl text-white/90 mb-6">
               Track your performance metrics and course insights
             </p>
 
-            {/* Date Range Selector */}
-            <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-lg rounded-xl p-4 w-fit">
-              <select className="bg-transparent text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50">
+            {/* Date Range Selector - improved spacing and hover states */}
+            <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-lg rounded-xl p-3">
+              <select className="bg-transparent text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer hover:bg-white/5">
                 <option value="7">Last 7 days</option>
                 <option value="30">Last 30 days</option>
                 <option value="90">Last 3 months</option>
                 <option value="365">Last 12 months</option>
                 <option value="all">All time</option>
               </select>
-              <button className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-medium hover:bg-white/90 transition-colors">
+              <button className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-medium hover:bg-white/90 transition-all duration-200 active:scale-95">
                 Export Report
               </button>
             </div>
@@ -104,13 +104,13 @@ export default function InstructorAnalytics() {
         <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20 pb-12">
+        {/* Stats Grid - improved card styling */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((item) => (
             <div
               key={item.name}
-              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-all duration-200"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-3 rounded-lg bg-${item.color}-100`}>
@@ -133,15 +133,16 @@ export default function InstructorAnalytics() {
           ))}
         </div>
 
+        {/* Charts Grid - improved spacing and consistency */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Revenue Chart */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-6">
+          {/* Revenue Chart - adjusted internal spacing */}
+          <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-all duration-200">
+            <div className="flex items-center justify-between mb-8">
               <h2 className="text-lg font-semibold text-gray-900">Revenue Overview</h2>
               <div className="flex space-x-2">
-                <button className="px-3 py-1 rounded-lg text-sm font-medium bg-indigo-100 text-indigo-600">Daily</button>
-                <button className="px-3 py-1 rounded-lg text-sm font-medium bg-gray-100 text-gray-600">Weekly</button>
-                <button className="px-3 py-1 rounded-lg text-sm font-medium bg-gray-100 text-gray-600">Monthly</button>
+                <button className="px-4 py-1.5 rounded-lg text-sm font-medium bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors">Daily</button>
+                <button className="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">Weekly</button>
+                <button className="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">Monthly</button>
               </div>
             </div>
             <div className="h-80 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-center">
@@ -149,10 +150,10 @@ export default function InstructorAnalytics() {
             </div>
           </div>
 
-          {/* Course Performance */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Top Performing Courses</h2>
-            <div className="space-y-6">
+          {/* Course Performance - adjusted spacing between items */}
+          <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-all duration-200">
+            <h2 className="text-lg font-semibold text-gray-900 mb-8">Top Performing Courses</h2>
+            <div className="space-y-8">
               {topCourses.map((course, index) => (
                 <div key={index} className="flex items-center space-x-4">
                   <Image
