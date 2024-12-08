@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { StarIcon, PlayIcon, HeartIcon, VideoCameraIcon, CodeBracketIcon, ArrowDownTrayIcon, LockClosedIcon, CheckBadgeIcon, ChevronDownIcon, ChevronRightIcon, PlayCircleIcon, SpeakerWaveIcon, PuzzlePieceIcon, AcademicCapIcon, BriefcaseIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
 export default function CourseDetail() {
   return (
@@ -26,9 +28,7 @@ export default function CourseDetail() {
 
               <div className="flex items-center space-x-4 text-white/90 mb-6">
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+                  <StarIconSolid className="h-5 w-5 text-yellow-400" />
                   <span className="ml-1">4.8 (2.5k reviews)</span>
                 </div>
                 <span>•</span>
@@ -43,34 +43,9 @@ export default function CourseDetail() {
                 <h3 className="text-xl font-semibold text-white mb-4">About This Course</h3>
                 <div className="space-y-4 text-white/90">
                   <p>
-                    This comprehensive web development bootcamp is designed to take you from absolute beginner to professional developer. You'll learn:
+                    This comprehensive web development bootcamp is your complete guide to becoming a professional developer. Starting from the absolute basics, we'll take you through a carefully structured curriculum that covers everything you need to know. With over 60 hours of content, 25+ real-world projects, and continuous hands-on practice, you'll gain the skills and confidence to build any web application. Whether you're starting from zero or looking to level up your development skills, this course provides the perfect roadmap to success. You'll learn:
                   </p>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 ml-4">
-                    <li className="flex items-center space-x-2">
-                      <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>HTML5 & Modern CSS3</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>JavaScript & ES6+</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>React.js & Redux</span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Node.js & Express</span>
-                    </li>
-                  </ul>
+                  
                   <p>
                     Through hands-on projects and real-world examples, you'll build a strong foundation in modern web development. Perfect for:
                   </p>
@@ -123,13 +98,7 @@ export default function CourseDetail() {
                     className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/50 transition-colors group"
                     aria-label="Play preview video"
                   >
-                    <svg
-                      className="h-20 w-20 text-white opacity-90 group-hover:opacity-100 transition-opacity transform group-hover:scale-110"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
-                    </svg>
+                    <PlayIcon className="h-20 w-20 text-white opacity-90 group-hover:opacity-100 transition-opacity transform group-hover:scale-110" />
                   </button>
                 </div>
 
@@ -157,7 +126,7 @@ export default function CourseDetail() {
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
-                      Add to Wishlist
+                      <span className="text-sm text-gray-600">Add to Wishlist</span>
                     </div>
                   </button>
                 </div>
@@ -173,14 +142,8 @@ export default function CourseDetail() {
                         text: "40 hours of video content",
                         icon: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                       },
-                      {
-                        text: "75 coding exercises",
-                        icon: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                      },
-                      {
-                        text: "15 downloadable resources",
-                        icon: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                      },
+                      
+                      
                       {
                         text: "Full lifetime access",
                         icon: "M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
@@ -194,19 +157,7 @@ export default function CourseDetail() {
                         key={item.text}
                         className="flex items-center gap-3 text-gray-600 hover:text-gray-900 transition-colors"
                       >
-                        <svg
-                          className="h-5 w-5 flex-shrink-0 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d={item.icon}
-                          />
-                        </svg>
+                        <VideoCameraIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
                         <span>{item.text}</span>
                       </li>
                     ))}
@@ -267,7 +218,7 @@ export default function CourseDetail() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Course Content
               </h2>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {[
                   {
                     title: "Introduction to Web Development",
@@ -275,13 +226,13 @@ export default function CourseDetail() {
                     duration: "2h 30m",
                     items: [
                       "Welcome to the Course",
-                      "Web Development Overview",
+                      "Web Development Overview", 
                       "Setting Up Your Development Environment",
                     ],
                   },
                   {
                     title: "HTML Fundamentals",
-                    lectures: 8,
+                    lectures: 8, 
                     duration: "4h 15m",
                     items: [
                       "HTML Document Structure",
@@ -289,54 +240,65 @@ export default function CourseDetail() {
                       "Links and Images",
                     ],
                   },
-                ].map((section) => (
-                  <div key={section.title} className="border rounded-lg">
-                    <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50">
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900">
-                          {section.title}
-                        </h3>
-                        <p className="mt-1 text-sm text-gray-500">
-                          {section.lectures} lectures • {section.duration}
-                        </p>
+                ].map((section, index) => (
+                  <div key={section.title} className="border border-gray-200 rounded-lg hover:border-blue-500 transition-colors duration-200">
+                    <button className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors duration-200 group">
+                      <div className="flex items-center space-x-4">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold">
+                          {index + 1}
+                        </span>
+                        <div>
+                          <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                            {section.title}
+                          </h3>
+                          <p className="mt-1 text-sm text-gray-500 flex items-center space-x-3">
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                              {section.lectures} lectures
+                            </span>
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {section.duration}
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                      <svg
-                        className="h-5 w-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
                     </button>
-                    <div className="px-4 pb-4">
-                      {section.items.map((item) => (
-                        <div key={item} className="flex items-center py-2">
-                          <svg
-                            className="h-5 w-5 text-gray-400 mr-2"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-sm text-gray-600">{item}</span>
+                    <div className="px-5 pb-4 border-t border-gray-100">
+                      {section.items.map((item, itemIndex) => (
+                        <div key={item} className="flex items-center py-3 group cursor-pointer hover:bg-gray-50 px-3 rounded-lg transition-colors duration-200">
+                          <div className="flex items-center flex-1">
+                            <svg
+                              className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mr-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                              {itemIndex + 1}. {item}
+                            </span>
+                          </div>
+                          <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors duration-200">
+                            Preview
+                          </span>
                         </div>
                       ))}
                     </div>
