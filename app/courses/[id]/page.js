@@ -5,43 +5,135 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default async function CourseDetail({ params }) {
+  // Helper function to parse JSON fields safely
+  const parseJsonField = (field, defaultValue = []) => {
+    try {
+      // Log the incoming field for debugging
+      console.log('Parsing field:', {
+        type: typeof field,
+        value: field,
+        defaultValue: defaultValue
+      });
+
+      // If field is null or undefined, return default
+      if (field == null) {
+        console.log('Field is null or undefined, returning default:', defaultValue);
+        return defaultValue;
+      }
+
+      // If field is already an object/array, return as is
+      if (typeof field === 'object') {
+        console.log('Field is already an object, returning:', field);
+        return field;
+      }
+
+      // Attempt to parse string
+      const parsed = JSON.parse(field);
+      console.log('Successfully parsed JSON:', parsed);
+      return parsed;
+    } catch (e) {
+      console.error('Error parsing JSON field:', {
+        field: field,
+        error: e.message,
+        stack: e.stack
+      });
+      return defaultValue;
+    }
+  };
+
   const supabase = createClientComponentClient();
   
-  // Fetch course data
+  // Log the params for debugging
+  console.log('Fetching course with ID:', params.id);
+
+  // Fetch course data with error logging
   const { data: course, error } = await supabase
     .from('courses')
     .select('*')
     .eq('id', params.id)
     .single();
 
+  // Detailed error logging
   if (error) {
-    console.error('Error fetching course:', error);
-    return <div>Error loading course</div>;
+    console.error('Supabase Error Details:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      status: error.status
+    });
+    return <div>Error loading course: {error.message}</div>;
   }
 
+  // Log the raw course data
+  console.log('Raw course data:', course);
+
   if (!course) {
+    console.log('No course found for ID:', params.id);
     return <div>Course not found</div>;
   }
 
-  // Helper function to parse JSON fields safely
-  const parseJsonField = (field, defaultValue = []) => {
-    try {
-      return field ? JSON.parse(field) : defaultValue;
-    } catch (e) {
-      return defaultValue;
+  // Provide default values for JSON fields
+  const defaultTargetAudience = [
+    {
+      title: "Beginners",
+      description: "No prior experience needed"
     }
-  };
+  ];
 
-  // Parse JSON fields from database
-  const targetAudience = parseJsonField(course.target_audience, []);
-  const features = parseJsonField(course.features, []);
-  const learningOutcomes = parseJsonField(course.learning_outcomes, []);
-  const courseSections = parseJsonField(course.course_sections, []);
-  const requirements = parseJsonField(course.requirements, []);
-  const reviews = parseJsonField(course.reviews, []);
-  const subtitlesLanguages = parseJsonField(course.subtitles_languages, []);
-  const prerequisites = parseJsonField(course.prerequisites, []);
+  const defaultFeatures = [
+    { text: "Full course content" },
+    { text: "Lifetime access" }
+  ];
+
+  const defaultLearningOutcomes = [
+    "Learn the basics",
+    "Build real projects"
+  ];
+
+  const defaultCourseSections = [
+    {
+      title: "Getting Started",
+      lectures: 1,
+      duration: "1 hour",
+      items: ["Introduction"]
+    }
+  ];
+
+  const defaultRequirements = [
+    "Basic computer knowledge"
+  ];
+
+  const defaultReviews = [
+    {
+      student_name: "John Doe",
+      student_image: "https://example.com/default-avatar.jpg",
+      rating: 5,
+      review_text: "Great course!",
+      created_at: new Date().toISOString()
+    }
+  ];
+
+  // Parse JSON fields with defaults
+  const targetAudience = parseJsonField(course.target_audience, defaultTargetAudience);
+  const features = parseJsonField(course.features, defaultFeatures);
+  const learningOutcomes = parseJsonField(course.learning_outcomes, defaultLearningOutcomes);
+  const courseSections = parseJsonField(course.course_sections, defaultCourseSections);
+  const requirements = parseJsonField(course.requirements, defaultRequirements);
+  const reviews = parseJsonField(course.reviews, defaultReviews);
+  const subtitlesLanguages = parseJsonField(course.subtitles_languages, ["English"]);
+  const prerequisites = parseJsonField(course.prerequisites, ["None"]);
   const resources = parseJsonField(course.resources, []);
+
+  // Log parsed data
+  console.log('Parsed course data:', {
+    targetAudience,
+    features,
+    learningOutcomes,
+    courseSections,
+    requirements,
+    reviews
+  });
 
   // Calculate discount percentage if not provided
   const discountPercentage = course.discount_percentage || 
@@ -223,22 +315,10 @@ export default async function CourseDetail({ params }) {
                 What You'll Learn
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {learningOutcomes.map((item) => (
-                  <div key={item} className="flex items-start">
-                    <svg
-                      className="h-5 w-5 text-green-500 mt-1 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-600">{item}</span>
+                {learningOutcomes.map((outcome, index) => (
+                  <div key={index} className="flex items-start">
+                    <CheckBadgeIcon className="h-5 w-5 text-green-500 mt-1 mr-2 flex-shrink-0" />
+                    <span className="text-gray-600">{outcome}</span>
                   </div>
                 ))}
               </div>
@@ -251,63 +331,36 @@ export default async function CourseDetail({ params }) {
               </h2>
               <div className="space-y-4">
                 {courseSections.map((section, index) => (
-                  <div key={section.title} className="border border-gray-200 rounded-lg hover:border-blue-500 transition-colors duration-200">
-                    <button className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors duration-200 group">
+                  <div key={index} className="border border-gray-200 rounded-lg">
+                    <button className="w-full flex items-center justify-between p-5 hover:bg-gray-50">
                       <div className="flex items-center space-x-4">
                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold">
                           {index + 1}
                         </span>
                         <div>
-                          <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                          <h3 className="text-lg font-medium text-gray-900">
                             {section.title}
                           </h3>
                           <p className="mt-1 text-sm text-gray-500 flex items-center space-x-3">
                             <span className="flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                              </svg>
+                              <VideoCameraIcon className="w-4 h-4 mr-1" />
                               {section.lectures} lectures
                             </span>
                             <span className="flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
+                              <ClockIcon className="w-4 h-4 mr-1" />
                               {section.duration}
                             </span>
                           </p>
                         </div>
                       </div>
-                      <ChevronDownIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
                     </button>
                     <div className="px-5 pb-4 border-t border-gray-100">
                       {section.items.map((item, itemIndex) => (
-                        <div key={item} className="flex items-center py-3 group cursor-pointer hover:bg-gray-50 px-3 rounded-lg transition-colors duration-200">
-                          <div className="flex items-center flex-1">
-                            <svg
-                              className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mr-3"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
-                              {itemIndex + 1}. {item}
-                            </span>
-                          </div>
-                          <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors duration-200">
-                            Preview
+                        <div key={itemIndex} className="flex items-center py-3">
+                          <PlayCircleIcon className="h-5 w-5 text-gray-400 mr-3" />
+                          <span className="text-sm text-gray-600">
+                            {itemIndex + 1}. {item}
                           </span>
                         </div>
                       ))}
@@ -322,23 +375,11 @@ export default async function CourseDetail({ params }) {
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Requirements
               </h2>
-              <ul className="space-y-2">
-                {requirements.map((item) => (
-                  <li key={item} className="flex items-start">
-                    <svg
-                      className="h-5 w-5 text-gray-400 mt-1 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                    <span className="text-gray-600">{item}</span>
+              <ul className="space-y-3">
+                {requirements.map((requirement, index) => (
+                  <li key={index} className="flex items-start">
+                    <ChevronRightIcon className="h-5 w-5 text-gray-400 mt-1 mr-2 flex-shrink-0" />
+                    <span className="text-gray-600">{requirement}</span>
                   </li>
                 ))}
               </ul>
@@ -351,10 +392,7 @@ export default async function CourseDetail({ params }) {
               </h2>
               <div className="space-y-6">
                 {reviews.map((review, index) => (
-                  <div
-                    key={index}
-                    className="border-b pb-6 last:border-0 last:pb-0"
-                  >
+                  <div key={index} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                     <div className="flex items-start">
                       <Image
                         src={review.student_image}
@@ -370,7 +408,7 @@ export default async function CourseDetail({ params }) {
                           </h4>
                           <span className="mx-2 text-gray-500">•</span>
                           <span className="text-sm text-gray-500">
-                            {review.created_at}
+                            {new Date(review.created_at).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="mt-1 flex items-center">
