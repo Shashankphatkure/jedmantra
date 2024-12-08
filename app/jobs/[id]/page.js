@@ -1,10 +1,185 @@
 import Image from "next/image";
 import Link from "next/link";
+import {
+  MapPinIcon,
+  BriefcaseIcon,
+  GlobeAltIcon,
+  AcademicCapIcon,
+  ClockIcon,
+  PaperAirplaneIcon,
+  BookmarkIcon,
+  CheckCircleIcon,
+  EnvelopeIcon,
+  CalendarIcon,
+  UserGroupIcon,
+  BuildingOfficeIcon
+} from "@heroicons/react/24/outline";
 
 export default function JobDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Bar */}
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {/* Main Content */}
+            <div className="lg:col-span-2">
+              
+
+              {/* Job Title and Tags */}
+              <h1 className="text-4xl font-bold text-white mb-6">
+                Senior Software Engineer
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-4 mb-8">
+                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
+                  <BriefcaseIcon className="h-5 w-5 text-white/90 mr-2" />
+                  <span className="text-white/90">Full-time</span>
+                </div>
+                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
+                  <GlobeAltIcon className="h-5 w-5 text-white/90 mr-2" />
+                  <span className="text-white/90">Remote Available</span>
+                </div>
+                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
+                  <AcademicCapIcon className="h-5 w-5 text-white/90 mr-2" />
+                  <span className="text-white/90">Senior Level</span>
+                </div>
+                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
+                  <ClockIcon className="h-5 w-5 text-white/90 mr-2" />
+                  <span className="text-white/90">Posted 2 days ago</span>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="text-white/70 text-sm mb-1">Experience</div>
+                  <div className="text-white font-semibold">5+ years</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="text-white/70 text-sm mb-1">Salary Range</div>
+                  <div className="text-white font-semibold">£65K - £85K</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="text-white/70 text-sm mb-1">Department</div>
+                  <div className="text-white font-semibold">Engineering</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="text-white/70 text-sm mb-1">Team Size</div>
+                  <div className="text-white font-semibold">15-20 people</div>
+                </div>
+              </div>
+
+              
+
+              {/* Recruiter Details */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-4">Your Recruiter</h3>
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <img
+                      src="https://randomuser.me/api/portraits/women/45.jpg"
+                      alt="Sarah Wilson"
+                      className="h-12 w-12 rounded-full border-2 border-white/20"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <h4 className="text-white font-medium">Sarah Wilson</h4>
+                      <span className="bg-green-500/20 text-green-100 text-xs px-2 py-0.5 rounded-full">
+                        Online
+                      </span>
+                    </div>
+                    <p className="text-white/70 text-sm">Senior Tech Recruiter at Tech Company Ltd</p>
+                    
+                    <div className="mt-4 grid grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-lg p-3">
+                        <div className="text-white/60 text-xs mb-1">Response Rate</div>
+                        <div className="text-white font-medium">95%</div>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-3">
+                        <div className="text-white/60 text-xs mb-1">Avg. Response</div>
+                        <div className="text-white font-medium"> 24 hours</div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center space-x-4">
+                      <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
+                        <EnvelopeIcon className="h-4 w-4" />
+                        <span className="text-sm">Message</span>
+                      </button>
+                      <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
+                        <CalendarIcon className="h-4 w-4" />
+                        <span className="text-sm">Schedule Call</span>
+                      </button>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <div className="flex items-center space-x-2 text-white/70 text-sm">
+                        <UserGroupIcon className="h-4 w-4" />
+                        <span>Currently hiring for 12 positions</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-white/70 text-sm mt-2">
+                        <BuildingOfficeIcon className="h-4 w-4" />
+                        <span>Based in London Office</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Application Card */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-2xl shadow-2xl p-8">
+                <div className="text-center mb-8">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span className="text-4xl font-bold text-gray-900">£65,000</span>
+                    <span className="text-xl text-gray-500">- £85,000</span>
+                  </div>
+                  <p className="text-gray-600">Annual Salary</p>
+                </div>
+
+                <div className="space-y-4">
+                  <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center">
+                    <PaperAirplaneIcon className="h-5 w-5 mr-2" />
+                    Apply Now
+                  </button>
+                  <button className="w-full bg-white text-blue-600 px-6 py-4 rounded-xl font-medium border-2 border-blue-600 hover:bg-blue-50 transition-colors flex items-center justify-center">
+                    <BookmarkIcon className="h-5 w-5 mr-2" />
+                    Save Job
+                  </button>
+                </div>
+
+                <div className="mt-8 pt-8 border-t border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-gray-900">How to Apply</h3>
+                    <span className="text-sm text-gray-500">Takes 5 mins</span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center text-gray-600">
+                      <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3" />
+                      <span>Quick online application</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3" />
+                      <span>Direct to hiring manager</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3" />
+                      <span>Response within 48 hours</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
