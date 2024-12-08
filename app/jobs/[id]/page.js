@@ -12,7 +12,9 @@ import {
   EnvelopeIcon,
   CalendarIcon,
   UserGroupIcon,
-  BuildingOfficeIcon
+  BuildingOfficeIcon,
+  ClipboardIcon,
+  GiftIcon
 } from "@heroicons/react/24/outline";
 
 export default function JobDetail() {
@@ -227,80 +229,157 @@ export default function JobDetail() {
               </div>
             </div>
 
-            {/* Job Description */}
-            <div className="bg-white p-6 rounded-lg shadow mb-6">
-              <h2 className="text-xl font-semibold mb-4">About the role</h2>
+            {/* Job Description - Updated Layout */}
+            <div className="bg-white p-8 rounded-xl shadow-sm mb-8">
+              <h2 className="text-2xl font-semibold mb-6 text-gray-900">About the role</h2>
               <div className="prose max-w-none">
-                <p className="mb-4">
+                <p className="text-gray-600 leading-relaxed mb-8">
                   We are looking for a Senior Software Engineer to join our
                   growing team. You will be working on cutting-edge technology
                   solutions and helping to shape the future of our products.
                 </p>
 
-                <h3 className="text-lg font-semibold mt-6 mb-2">
-                  Responsibilities:
-                </h3>
-                <ul className="list-disc pl-5 mb-4">
-                  <li>Design and implement scalable software solutions</li>
-                  <li>Lead technical projects and mentor junior developers</li>
-                  <li>
-                    Collaborate with cross-functional teams to define and
-                    implement new features
-                  </li>
-                  <li>Write clean, maintainable, and efficient code</li>
-                  <li>
-                    Participate in code reviews and provide constructive
-                    feedback
-                  </li>
-                </ul>
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <span className="bg-blue-100 p-2 rounded-lg mr-3">
+                          <ClipboardIcon className="h-5 w-5 text-blue-600" />
+                        </span>
+                        Responsibilities
+                      </h3>
+                      <ul className="space-y-3">
+                        {[
+                          'Design and implement scalable software solutions',
+                          'Lead technical projects and mentor junior developers',
+                          'Collaborate with cross-functional teams',
+                          'Write clean, maintainable, and efficient code',
+                          'Participate in code reviews and provide feedback'
+                        ].map((item, index) => (
+                          <li key={index} className="flex items-start">
+                            <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                            <span className="text-gray-600">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
 
-                <h3 className="text-lg font-semibold mt-6 mb-2">
-                  Requirements:
-                </h3>
-                <ul className="list-disc pl-5 mb-4">
-                  <li>
-                    5+ years of professional software development experience
-                  </li>
-                  <li>Strong proficiency in JavaScript/TypeScript and React</li>
-                  <li>Experience with Node.js and REST APIs</li>
-                  <li>
-                    Knowledge of software design patterns and architecture
-                  </li>
-                  <li>Excellent problem-solving and communication skills</li>
-                </ul>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <span className="bg-purple-100 p-2 rounded-lg mr-3">
+                          <AcademicCapIcon className="h-5 w-5 text-purple-600" />
+                        </span>
+                        Requirements
+                      </h3>
+                      <ul className="space-y-3">
+                        {[
+                          '5+ years of professional software development experience',
+                          'Strong proficiency in JavaScript/TypeScript and React',
+                          'Experience with Node.js and REST APIs',
+                          'Knowledge of software design patterns',
+                          'Excellent problem-solving skills'
+                        ].map((item, index) => (
+                          <li key={index} className="flex items-start">
+                            <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                            <span className="text-gray-600">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
 
-                <h3 className="text-lg font-semibold mt-6 mb-2">Benefits:</h3>
-                <ul className="list-disc pl-5">
-                  <li>Competitive salary (£65,000 - £85,000)</li>
-                  <li>Remote work options</li>
-                  <li>25 days annual leave</li>
-                  <li>Health insurance</li>
-                  <li>Professional development budget</li>
-                </ul>
+                <div className="bg-gray-50 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <span className="bg-green-100 p-2 rounded-lg mr-3">
+                      <GiftIcon className="h-5 w-5 text-green-600" />
+                    </span>
+                    Benefits
+                  </h3>
+                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {[
+                      'Competitive salary (£65,000 - £85,000)',
+                      'Remote work options',
+                      '25 days annual leave',
+                      'Health insurance',
+                      'Professional development budget',
+                      'Flexible working hours'
+                    ].map((benefit, index) => (
+                      <div key={index} className="flex items-center bg-white p-3 rounded-lg">
+                        <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+                        <span className="text-gray-600 text-sm">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Recommended Courses */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">
-                Recommended Courses
-              </h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                {[1, 2].map((course) => (
-                  <div key={course} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-blue-600">
-                        Advanced React Development
-                      </h3>
-                      <span className="text-sm text-gray-500">£49.99</span>
+            {/* Recommended Courses - Updated Layout */}
+            <div className="bg-white p-8 rounded-xl shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Recommended Courses</h2>
+                <Link href="#" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                  View All Courses →
+                </Link>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                {[
+                  {
+                    title: 'Advanced React Development',
+                    price: '£49.99',
+                    duration: '12 hours',
+                    level: 'Advanced',
+                    students: '2.5k students',
+                    description: 'Master advanced React concepts and patterns used in modern web applications.',
+                    image: '/course-react.jpg'
+                  },
+                  {
+                    title: 'System Design for Senior Engineers',
+                    price: '£59.99',
+                    duration: '15 hours',
+                    level: 'Advanced',
+                    students: '1.8k students',
+                    description: 'Learn how to design scalable systems and handle complex architectural decisions.',
+                    image: '/course-system.jpg'
+                  }
+                ].map((course, index) => (
+                  <div key={index} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="aspect-video bg-gray-100 relative">
+                      <Image
+                        src={course.image}
+                        alt={course.title}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Master advanced React concepts and patterns used in modern
-                      web applications.
-                    </p>
-                    <button className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                      View Course
-                    </button>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-gray-900">{course.title}</h3>
+                        <span className="text-blue-600 font-medium">{course.price}</span>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-4">{course.description}</p>
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center text-sm text-gray-500">
+                          <ClockIcon className="h-4 w-4 mr-1" />
+                          {course.duration}
+                        </div>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <AcademicCapIcon className="h-4 w-4 mr-1" />
+                          {course.level}
+                        </div>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <UserGroupIcon className="h-4 w-4 mr-1" />
+                          {course.students}
+                        </div>
+                      </div>
+                      <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        View Course
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
