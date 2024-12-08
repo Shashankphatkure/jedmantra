@@ -1,6 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { 
+  AcademicCapIcon, 
+  ClockIcon, 
+  BookOpenIcon,
+  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  CheckCircleIcon,
+  ArrowRightIcon
+} from "@heroicons/react/24/outline";
 
 export default function Progress() {
   const [selectedTimeframe, setSelectedTimeframe] = useState("week");
@@ -13,6 +22,8 @@ export default function Progress() {
       hoursSpent: 24,
       lastAccessed: "2024-02-10",
       nextMilestone: "Complete Module 5: Advanced CSS",
+      image: "https://via.placeholder.com/150",
+      instructor: "Sarah Johnson",
     },
     {
       id: 2,
@@ -21,6 +32,8 @@ export default function Progress() {
       hoursSpent: 12,
       lastAccessed: "2024-02-09",
       nextMilestone: "Submit Social Media Strategy Assignment",
+      image: "https://via.placeholder.com/150",
+      instructor: "John Smith",
     },
     {
       id: 3,
@@ -29,120 +42,128 @@ export default function Progress() {
       hoursSpent: 6,
       lastAccessed: "2024-02-08",
       nextMilestone: "Complete Python Fundamentals Quiz",
+      image: "https://via.placeholder.com/150",
+      instructor: "Emily Davis",
     },
   ];
 
   const stats = [
-    { name: "Total Learning Hours", value: "42" },
-    { name: "Courses in Progress", value: "3" },
-    { name: "Completed Courses", value: "2" },
-    { name: "Average Score", value: "88%" },
+    { name: "Total Learning Hours", value: "42", icon: ClockIcon, color: "blue" },
+    { name: "Courses in Progress", value: "3", icon: BookOpenIcon, color: "pink" },
+    { name: "Completed Courses", value: "2", icon: CheckCircleIcon, color: "green" },
+    { name: "Average Score", value: "88%", icon: ChartBarIcon, color: "purple" },
   ];
 
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-900">My Progress</h1>
-          <div className="flex items-center space-x-2">
-            <select
-              value={selectedTimeframe}
-              onChange={(e) => setSelectedTimeframe(e.target.value)}
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-            >
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-            </select>
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Matching the design */}
+      <div className="bg-[#4F46E5] relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-white mb-4">
+              Learning Progress
+            </h1>
+            <p className="text-xl text-white/90 mb-8">
+              Track your learning journey and achievements
+            </p>
+            
+            {/* Timeframe Selector - Matching design */}
+            <div className="inline-block">
+              <select
+                value={selectedTimeframe}
+                onChange={(e) => setSelectedTimeframe(e.target.value)}
+                className="w-48 pl-4 pr-10 py-2 rounded-lg bg-white/20 text-white border-0 focus:ring-2 focus:ring-white/50"
+              >
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+              </select>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Stats */}
-        <div className="mt-8">
-          <dl className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat) => (
-              <div
-                key={stat.name}
-                className="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden"
-              >
-                <dt>
-                  <div className="absolute bg-indigo-500 rounded-md p-3">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                      />
-                    </svg>
-                  </div>
-                  <p className="ml-16 text-sm font-medium text-gray-500 truncate">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Grid - Matching the design */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {stats.map((stat) => (
+            <div
+              key={stat.name}
+              className="bg-white rounded-2xl shadow p-6"
+            >
+              <div className="flex items-center">
+                <div className={`p-3 rounded-xl bg-${stat.color}-50`}>
+                  <stat.icon className={`h-6 w-6 text-${stat.color}-600`} />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">
                     {stat.name}
                   </p>
-                </dt>
-                <dd className="ml-16 pb-6 flex items-baseline sm:pb-7">
-                  <p className="text-2xl font-semibold text-gray-900">
+                  <p className="mt-1 text-3xl font-semibold text-gray-900">
                     {stat.value}
                   </p>
-                </dd>
+                </div>
               </div>
-            ))}
-          </dl>
+            </div>
+          ))}
         </div>
 
-        {/* Course Progress */}
-        <div className="mt-8">
-          <h2 className="text-lg font-medium text-gray-900">Course Progress</h2>
-          <div className="mt-4 space-y-4">
+        {/* Course Progress - Matching the design */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+            Course Progress
+          </h2>
+          <div className="space-y-6">
             {courses.map((course) => (
-              <div key={course.id} className="bg-white shadow rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {course.name}
-                  </h3>
-                  <span className="text-sm font-medium text-gray-500">
-                    {course.progress}%
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <div className="relative pt-1">
-                    <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
-                      <div
-                        style={{ width: `${course.progress}%` }}
-                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500"
-                      ></div>
+              <div 
+                key={course.id} 
+                className="bg-white rounded-2xl shadow p-6"
+              >
+                <div className="flex items-start gap-6">
+                  <div className="relative h-24 w-24 flex-shrink-0">
+                    <img
+                      src={course.image}
+                      alt={course.name}
+                      className="h-full w-full object-cover rounded-xl"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {course.name}
+                      </h3>
+                      <span className="text-lg font-semibold text-[#4F46E5]">
+                        {course.progress}%
+                      </span>
                     </div>
-                  </div>
-                </div>
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      Hours Spent
+                    
+                    <p className="text-sm text-gray-500 mb-4">
+                      Instructor: {course.instructor}
                     </p>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {course.hoursSpent} hours
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      Last Accessed
-                    </p>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {course.lastAccessed}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      Next Milestone
-                    </p>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {course.nextMilestone}
-                    </p>
+
+                    <div className="mb-4">
+                      <div className="h-2 bg-gray-100 rounded-full">
+                        <div
+                          style={{ width: `${course.progress}%` }}
+                          className="h-full bg-[#4F46E5] rounded-full"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <ClockIcon className="h-5 w-5 text-gray-400 mr-2" />
+                        <span>{course.hoursSpent} hours spent</span>
+                      </div>
+                      <div className="flex items-center">
+                        <ArrowTrendingUpIcon className="h-5 w-5 text-gray-400 mr-2" />
+                        <span>Last: {course.lastAccessed}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <AcademicCapIcon className="h-5 w-5 text-gray-400 mr-2" />
+                        <span>Next: {course.nextMilestone}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

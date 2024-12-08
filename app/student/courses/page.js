@@ -1,5 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
+import { 
+  MagnifyingGlassIcon, 
+  BookOpenIcon, 
+  CheckCircleIcon,
+  ChartBarIcon,
+  ClockIcon,
+  UserCircleIcon,
+  ArrowRightIcon,
+  AcademicCapIcon
+} from "@heroicons/react/24/outline";
 
 export default function StudentCourses() {
   const courses = [
@@ -36,213 +46,148 @@ export default function StudentCourses() {
   ];
 
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">My Courses</h1>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search courses..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section - Made more compact */}
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-white mb-4">
+              My Learning Journey
+            </h1>
+            <p className="text-xl text-white/90 mb-8">
+              Track your progress and continue learning
+            </p>
+
+            {/* Search and Filter - Centered and improved spacing */}
+            <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Search your courses..."
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-white/20 bg-white/10 text-white placeholder-white/60 focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                />
+                <MagnifyingGlassIcon className="absolute left-3 top-3.5 h-5 w-5 text-white/60" />
               </div>
+              <select className="w-full sm:w-40 pl-4 pr-10 py-3 rounded-lg border border-white/20 bg-white/10 text-white focus:ring-2 focus:ring-white/50 focus:border-transparent">
+                <option value="">All Courses</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="not-started">Not Started</option>
+              </select>
             </div>
-            <select className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-              <option>All Courses</option>
-              <option>In Progress</option>
-              <option>Completed</option>
-              <option>Not Started</option>
-            </select>
           </div>
         </div>
 
-        {/* Course Stats */}
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Course Stats - Improved grid layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
           {[
-            {
-              name: "Enrolled Courses",
-              stat: "8",
-              icon: (
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-              ),
-            },
-            {
-              name: "Completed Courses",
-              stat: "3",
-              icon: (
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              ),
-            },
-            {
-              name: "Average Progress",
-              stat: "68%",
-              icon: (
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                  />
-                </svg>
-              ),
-            },
+            { name: "Enrolled Courses", stat: "8", icon: BookOpenIcon, color: "blue" },
+            { name: "Completed Courses", stat: "3", icon: CheckCircleIcon, color: "green" },
+            { name: "Average Progress", stat: "68%", icon: ChartBarIcon, color: "purple" },
           ].map((item) => (
             <div
               key={item.name}
-              className="bg-white overflow-hidden shadow rounded-lg"
+              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
             >
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="rounded-md bg-blue-500 p-3">
-                      {item.icon}
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        {item.name}
-                      </dt>
-                      <dd className="flex items-baseline">
-                        <div className="text-2xl font-semibold text-gray-900">
-                          {item.stat}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
+              <div className="flex items-center">
+                <div className={`p-3 rounded-lg bg-${item.color}-100`}>
+                  <item.icon className={`h-6 w-6 text-${item.color}-600`} />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500 truncate">
+                    {item.name}
+                  </p>
+                  <p className="mt-1 text-3xl font-semibold text-gray-900">
+                    {item.stat}
+                  </p>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Course List */}
-        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course) => (
-            <div
-              key={course.id}
-              className="bg-white overflow-hidden shadow rounded-lg"
-            >
-              <div className="relative pb-2/3">
-                <Image
-                  src={course.image}
-                  alt={course.title}
-                  width={300}
-                  height={200}
-                  className="absolute h-full w-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {course.title}
-                  </h3>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        {/* Active Courses - Improved card layout */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-8">Active Courses</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {courses.map((course) => (
+              <div
+                key={course.id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+              >
+                <div className="relative h-40">
+                  <Image
+                    src={course.image}
+                    alt={course.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       course.status === "Completed"
                         ? "bg-green-100 text-green-800"
                         : "bg-blue-100 text-blue-800"
-                    }`}
-                  >
-                    {course.status}
-                  </span>
-                </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  Instructor: {course.instructor}
-                </p>
-                <div className="mt-4">
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>Progress</span>
-                    <span>{course.progress}%</span>
+                    }`}>
+                      {course.status}
+                    </span>
                   </div>
-                  <div className="mt-2">
-                    <div className="relative pt-1">
-                      <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
-                        <div
-                          style={{ width: `${course.progress}%` }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
-                        ></div>
-                      </div>
+                </div>
+
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-1">
+                    {course.title}
+                  </h3>
+                  
+                  <div className="space-y-2 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center">
+                      <UserCircleIcon className="h-4 w-4 text-gray-400 mr-2" />
+                      <span className="line-clamp-1">{course.instructor}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <ClockIcon className="h-4 w-4 text-gray-400 mr-2" />
+                      <span>{course.lastAccessed}</span>
                     </div>
                   </div>
-                </div>
-                <div className="mt-4">
-                  <p className="text-sm text-gray-500">
-                    Last accessed {course.lastAccessed}
-                  </p>
-                  {course.nextLesson && (
-                    <p className="mt-1 text-sm text-gray-500">
-                      Next lesson: {course.nextLesson}
-                    </p>
-                  )}
-                </div>
-                <div className="mt-6">
+
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-gray-600">Progress</span>
+                      <span className="font-medium text-blue-600">{course.progress}%</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        style={{ width: `${course.progress}%` }}
+                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                      ></div>
+                    </div>
+                  </div>
+
                   <Link
                     href={`/courses/learn/${course.id}`}
-                    className="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors group"
                   >
-                    {course.status === "Completed"
-                      ? "Review Course"
-                      : "Continue Learning"}
+                    {course.status === "Completed" ? "Review Course" : "Continue Learning"}
+                    <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* Recommended Courses */}
-        <div className="mt-12">
-          <h2 className="text-lg font-medium text-gray-900">
-            Recommended Courses
+        {/* Recommended Courses - Improved card layout */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+            Recommended for You
           </h2>
-          <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 title: "TypeScript Essentials",
