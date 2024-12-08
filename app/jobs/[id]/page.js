@@ -23,39 +23,62 @@ import {
 async function getJobDetails(jobId) {
   const supabase = createServerComponentClient({ cookies });
 
-  // First, check if the job exists
-  const { data: job, error: jobError } = await supabase
-    .from('jobs')
-    .select(`
-      *,
-      job_recruiters (
-        recruiters (
-          *
+  // Fetch job details and courses in parallel
+  const [jobResult, coursesResult] = await Promise.all([
+    supabase
+      .from('jobs')
+      .select(`
+        *,
+        job_recruiters (
+          recruiters (
+            *
+          )
+        ),
+        job_skill_requirements (
+          job_skills (
+            name
+          )
         )
-      ),
-      job_skill_requirements (
-        job_skills (
-          name
-        )
-      )
-    `)
-    .eq('id', jobId)
-    .single();
+      `)
+      .eq('id', jobId)
+      .single(),
+    
+    supabase
+      .from('courses')
+      .select(`
+        id,
+        title,
+        description,
+        price,
+        video_hours,
+        skill_level,
+        total_students,
+        course_image,
+        rating,
+        instructor_name
+      `)
+      .limit(2) // Adjust as needed
+  ]);
 
-  if (jobError) {
-    console.error('Error fetching job:', jobError);
+  if (jobResult.error) {
+    console.error('Error fetching job:', jobResult.error);
     return null;
   }
 
-  return job;
+  return {
+    job: jobResult.data,
+    courses: coursesResult.data || []
+  };
 }
 
 export default async function JobDetail({ params }) {
-  const job = await getJobDetails(params.id);
+  const data = await getJobDetails(params.id);
 
-  if (!job) {
+  if (!data) {
     notFound();
   }
+
+  const { job, courses } = data;
 
   // Extract recruiter info from the nested structure (handle optional chaining)
   const recruiter = job.job_recruiters?.[0]?.recruiters || null;
@@ -160,11 +183,11 @@ export default async function JobDetail({ params }) {
                       <div className="mt-4 grid grid-cols-2 gap-4">
                         <div className="bg-white/5 rounded-lg p-3">
                           <div className="text-white/60 text-xs mb-1">Response Rate</div>
-                          <div className="text-white font-medium">95%</div>
+                          <div className="text-white font-medium">{recruiter.response_rate}%</div>
                         </div>
                         <div className="bg-white/5 rounded-lg p-3">
                           <div className="text-white/60 text-xs mb-1">Avg. Response</div>
-                          <div className="text-white font-medium"> 24 hours</div>
+                          <div className="text-white font-medium">{recruiter.avg_response_time} hours</div>
                         </div>
                       </div>
 
@@ -182,11 +205,11 @@ export default async function JobDetail({ params }) {
                       <div className="mt-4 pt-4 border-t border-white/10">
                         <div className="flex items-center space-x-2 text-white/70 text-sm">
                           <UserGroupIcon className="h-4 w-4" />
-                          <span>Currently hiring for 12 positions</span>
+                          <span>Currently hiring for {recruiter.current_hiring_count} positions</span>
                         </div>
                         <div className="flex items-center space-x-2 text-white/70 text-sm mt-2">
                           <BuildingOfficeIcon className="h-4 w-4" />
-                          <span>Based in London Office</span>
+                          <span>Based in {recruiter.office_location}</span>
                         </div>
                       </div>
                     </div>
@@ -313,13 +336,7 @@ export default async function JobDetail({ params }) {
                         Responsibilities
                       </h3>
                       <ul className="space-y-3">
-                        {[
-                          'Design and implement scalable software solutions',
-                          'Lead technical projects and mentor junior developers',
-                          'Collaborate with cross-functional teams',
-                          'Write clean, maintainable, and efficient code',
-                          'Participate in code reviews and provide feedback'
-                        ].map((item, index) => (
+                        {job.responsibilities?.map((item, index) => (
                           <li key={index} className="flex items-start">
                             <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                             <span className="text-gray-600">{item}</span>
@@ -338,13 +355,7 @@ export default async function JobDetail({ params }) {
                         Requirements
                       </h3>
                       <ul className="space-y-3">
-                        {[
-                          '5+ years of professional software development experience',
-                          'Strong proficiency in JavaScript/TypeScript and React',
-                          'Experience with Node.js and REST APIs',
-                          'Knowledge of software design patterns',
-                          'Excellent problem-solving skills'
-                        ].map((item, index) => (
+                        {job.requirements?.map((item, index) => (
                           <li key={index} className="flex items-start">
                             <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                             <span className="text-gray-600">{item}</span>
@@ -363,14 +374,7 @@ export default async function JobDetail({ params }) {
                     Benefits
                   </h3>
                   <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {[
-                      'Competitive salary (£65,000 - £85,000)',
-                      'Remote work options',
-                      '25 days annual leave',
-                      'Health insurance',
-                      'Professional development budget',
-                      'Flexible working hours'
-                    ].map((benefit, index) => (
+                    {job.benefits?.map((benefit, index) => (
                       <div key={index} className="flex items-center bg-white p-3 rounded-lg">
                         <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
                         <span className="text-gray-600 text-sm">{benefit}</span>
@@ -385,36 +389,17 @@ export default async function JobDetail({ params }) {
             <div className="bg-white p-8 rounded-xl shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-semibold text-gray-900">Recommended Courses</h2>
-                <Link href="#" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                <Link href="/courses" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
                   View All Courses →
                 </Link>
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
-                {[
-                  {
-                    title: 'Advanced React Development',
-                    price: '£49.99',
-                    duration: '12 hours',
-                    level: 'Advanced',
-                    students: '2.5k students',
-                    description: 'Master advanced React concepts and patterns used in modern web applications.',
-                    image: '/course-react.jpg'
-                  },
-                  {
-                    title: 'System Design for Senior Engineers',
-                    price: '£59.99',
-                    duration: '15 hours',
-                    level: 'Advanced',
-                    students: '1.8k students',
-                    description: 'Learn how to design scalable systems and handle complex architectural decisions.',
-                    image: '/course-system.jpg'
-                  }
-                ].map((course, index) => (
-                  <div key={index} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+                {courses.map((course) => (
+                  <div key={course.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
                     <div className="aspect-video bg-gray-100 relative">
                       <Image
-                        src={course.image}
+                        src={course.course_image || '/default-course-image.jpg'}
                         alt={course.title}
                         fill
                         className="object-cover"
@@ -423,26 +408,56 @@ export default async function JobDetail({ params }) {
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-semibold text-gray-900">{course.title}</h3>
-                        <span className="text-blue-600 font-medium">{course.price}</span>
+                        <span className="text-blue-600 font-medium">
+                          {new Intl.NumberFormat('en-GB', {
+                            style: 'currency',
+                            currency: 'GBP'
+                          }).format(course.price)}
+                        </span>
                       </div>
                       <p className="text-gray-600 text-sm mb-4">{course.description}</p>
                       <div className="flex items-center gap-4 mb-4">
                         <div className="flex items-center text-sm text-gray-500">
                           <ClockIcon className="h-4 w-4 mr-1" />
-                          {course.duration}
+                          {course.video_hours} hours
                         </div>
                         <div className="flex items-center text-sm text-gray-500">
                           <AcademicCapIcon className="h-4 w-4 mr-1" />
-                          {course.level}
+                          {course.skill_level}
                         </div>
                         <div className="flex items-center text-sm text-gray-500">
                           <UserGroupIcon className="h-4 w-4 mr-1" />
-                          {course.students}
+                          {new Intl.NumberFormat('en-GB', {
+                            notation: 'compact',
+                            maximumFractionDigits: 1
+                          }).format(course.total_students)} students
                         </div>
                       </div>
-                      <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <svg
+                              key={star}
+                              className={`h-4 w-4 ${
+                                star <= Math.round(course.rating)
+                                  ? 'text-yellow-400'
+                                  : 'text-gray-300'
+                              }`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">{course.rating.toFixed(1)}</span>
+                      </div>
+                      <Link 
+                        href={`/courses/${course.id}`}
+                        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block text-center"
+                      >
                         View Course
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 ))}
