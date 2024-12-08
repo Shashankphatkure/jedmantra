@@ -19,6 +19,7 @@ import {
   ClipboardIcon,
   GiftIcon
 } from "@heroicons/react/24/outline";
+import JobActionButtons from './JobActionButtons';
 
 async function getJobDetails(jobId) {
   const supabase = createServerComponentClient({ cookies });
@@ -79,11 +80,7 @@ export default async function JobDetail({ params }) {
   }
 
   const { job, courses } = data;
-
-  // Extract recruiter info from the nested structure (handle optional chaining)
   const recruiter = job.job_recruiters?.[0]?.recruiters || null;
-  
-  // Extract skills from the nested structure (handle optional chaining)
   const skills = job.job_skill_requirements?.map(skill => skill.job_skills.name) || [];
 
   // Format salary for display
@@ -112,6 +109,11 @@ export default async function JobDetail({ params }) {
               {/* Job Title and Tags */}
               <h1 className="text-4xl font-bold text-white mb-6">
                 {job.title}
+                {job.status !== 'Open' && (
+                  <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                    {job.status}
+                  </div>
+                )}
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 mb-8">
@@ -230,14 +232,7 @@ export default async function JobDetail({ params }) {
                 </div>
 
                 <div className="space-y-4">
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center">
-                    <PaperAirplaneIcon className="h-5 w-5 mr-2" />
-                    Apply Now
-                  </button>
-                  <button className="w-full bg-white text-blue-600 px-6 py-4 rounded-xl font-medium border-2 border-blue-600 hover:bg-blue-50 transition-colors flex items-center justify-center">
-                    <BookmarkIcon className="h-5 w-5 mr-2" />
-                    Save Job
-                  </button>
+                  <JobActionButtons jobId={job.id} />
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-gray-200">
