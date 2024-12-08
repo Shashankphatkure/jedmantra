@@ -18,11 +18,10 @@ export async function middleware(req) {
       req.nextUrl.pathname.startsWith("/communities/my") ||
       req.nextUrl.pathname.startsWith("/communities/request") ||
       req.nextUrl.pathname.startsWith("/communities/createpost") ||
-      req.nextUrl.pathname.startsWith("/synergies/my") ||
-      req.nextUrl.pathname.startsWith("/synergies/create") ||
-      req.nextUrl.pathname.startsWith("/spaces/create") ||
       req.nextUrl.pathname.startsWith("/become-mentor") ||
-      req.nextUrl.pathname.startsWith("/admin")) &&
+      req.nextUrl.pathname.startsWith("/admin") ||
+      req.nextUrl.pathname.startsWith("/student") ||
+      req.nextUrl.pathname.startsWith("/recruiter")) &&
     !session
   ) {
     return NextResponse.redirect(new URL("/login", req.url));
@@ -42,10 +41,11 @@ export const config = {
     "/communities/my/:path*",
     "/communities/request/:path*",
     "/communities/createpost/:path*",
-    "/synergies/my/:path*",
-    "/synergies/create/:path*",
-    "/spaces/create/:path*",
     "/admin/:path*",
     "/admin/",
+    "/student/:path*",
+    "/student/",
+    "/recruiter/:path*",
+    "/recruiter/",
   ],
 };
