@@ -159,7 +159,7 @@ export default function Header() {
                   </button>
                 </div>
                 <div
-                  className={`absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out ${
+                  className={`absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out ${
                     isUserMenuOpen
                       ? 'transform opacity-100 scale-100'
                       : 'transform opacity-0 scale-95 pointer-events-none'
@@ -169,6 +169,27 @@ export default function Header() {
                     <div className="font-medium">{user.name}</div>
                     <div className="text-gray-500">{user.email}</div>
                   </div>
+                  <Link
+                    href="/student"
+                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Student Dashboard
+                  </Link>
+                  <Link
+                    href="/instructor"
+                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Instructor Dashboard
+                  </Link>
+                  <Link
+                    href="/recruiter"
+                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Recruiter Dashboard
+                  </Link>
                   <Link
                     href="/profile"
                     className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
