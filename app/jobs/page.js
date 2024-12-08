@@ -1,7 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
-export default function Jobs() {
+export default async function Jobs() {
+  const supabase = createServerComponentClient({ cookies })
+  const { data: jobs } = await supabase
+    .from('jobs')
+    .select(`
+      *,
+      job_recruiters (
+        recruiters (
+          first_name,
+          last_name,
+          avatar_url,
+          response_rate
+        )
+      )
+    `)
+    .eq('status', 'Open')
+    .order('posted_at', { ascending: false })
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Search Section - Updated with gradient background */}
@@ -168,7 +187,7 @@ export default function Jobs() {
             </div>
           </div>
 
-          {/* Job Listings - Updated card styling */}
+          {/* Job Listings - Updated to use real data */}
           <div className="flex-1">
             {/* Sort and Results Count */}
             <div className="flex justify-between items-center mb-6">
@@ -185,32 +204,36 @@ export default function Jobs() {
 
             {/* Updated Job Cards */}
             <div className="space-y-6">
-              {[1, 2, 3, 4, 5].map((job) => (
+              {jobs?.map((job) => (
                 <div
-                  key={job}
+                  key={job.id}
                   className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-lg font-semibold text-blue-600 hover:text-blue-700">
-                        <Link href={`/jobs/${job}`}>
-                          Senior Software Engineer
+                        <Link href={`/jobs/${job.id}`}>
+                          {job.title}
                         </Link>
                       </h3>
                       <p className="text-gray-600 mt-1">
-                        Tech Company Ltd • London
+                        {job.company_name} • {job.location}
                       </p>
                       <div className="mt-2 space-y-2">
-                        <p className="text-gray-600">
-                          £65,000 - £85,000 a year
-                        </p>
+                        {(job.salary_min || job.salary_max) && (
+                          <p className="text-gray-600">
+                            {job.salary_currency} {job.salary_min?.toLocaleString()} - {job.salary_max?.toLocaleString()} a year
+                          </p>
+                        )}
                         <div className="flex flex-wrap gap-2">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Full-time
+                            {job.job_type}
                           </span>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Remote
-                          </span>
+                          {job.is_remote && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Remote
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -232,16 +255,12 @@ export default function Jobs() {
                   </div>
                   <div className="mt-4">
                     <p className="text-gray-600 line-clamp-2">
-                      We are looking for a Senior Software Engineer to join our
-                      growing team. You will be responsible for developing and
-                      maintaining our core products...
+                      {job.description}
                     </p>
                   </div>
                   <div className="mt-4 flex justify-between items-center">
                     <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <span>Posted 2 days ago</span>
-                      <span>•</span>
-                      <span>45 applicants</span>
+                      <span>Posted {new Date(job.posted_at).toLocaleDateString()}</span>
                     </div>
                     <button className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50">
                       Apply Now
