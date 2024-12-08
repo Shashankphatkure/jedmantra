@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { StarIcon, PlayIcon, HeartIcon, VideoCameraIcon, CodeBracketIcon, ArrowDownTrayIcon, LockClosedIcon, CheckBadgeIcon, ChevronDownIcon, ChevronRightIcon, PlayCircleIcon, SpeakerWaveIcon, PuzzlePieceIcon, AcademicCapIcon, BriefcaseIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { StarIcon, PlayIcon, HeartIcon, VideoCameraIcon, CodeBracketIcon, ArrowDownTrayIcon, LockClosedIcon, CheckBadgeIcon, ChevronDownIcon, ChevronRightIcon, PlayCircleIcon, SpeakerWaveIcon, PuzzlePieceIcon, AcademicCapIcon, BriefcaseIcon, BoltIcon, UserGroupIcon, DocumentTextIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
@@ -22,6 +22,32 @@ export default async function CourseDetail({ params }) {
   if (!course) {
     return <div>Course not found</div>;
   }
+
+  // Helper function to parse JSON fields safely
+  const parseJsonField = (field, defaultValue = []) => {
+    try {
+      return field ? JSON.parse(field) : defaultValue;
+    } catch (e) {
+      return defaultValue;
+    }
+  };
+
+  // Parse JSON fields from database
+  const targetAudience = parseJsonField(course.target_audience, []);
+  const features = parseJsonField(course.features, []);
+  const learningOutcomes = parseJsonField(course.learning_outcomes, []);
+  const courseSections = parseJsonField(course.course_sections, []);
+  const requirements = parseJsonField(course.requirements, []);
+  const reviews = parseJsonField(course.reviews, []);
+  const subtitlesLanguages = parseJsonField(course.subtitles_languages, []);
+  const prerequisites = parseJsonField(course.prerequisites, []);
+  const resources = parseJsonField(course.resources, []);
+
+  // Calculate discount percentage if not provided
+  const discountPercentage = course.discount_percentage || 
+    (course.original_price ? 
+      Math.round(((course.original_price - course.price) / course.original_price) * 100) 
+      : 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -69,41 +95,21 @@ export default async function CourseDetail({ params }) {
               <div className="mt-8 bg-white/10 rounded-xl p-6 backdrop-blur-sm">
                 <h3 className="text-xl font-semibold text-white mb-4">About This Course</h3>
                 <div className="space-y-4 text-white/90">
-                  <p>
-                    This comprehensive web development bootcamp is your complete guide to becoming a professional developer. Starting from the absolute basics, we'll take you through a carefully structured curriculum that covers everything you need to know. With over 60 hours of content, 25+ real-world projects, and continuous hands-on practice, you'll gain the skills and confidence to build any web application. Whether you're starting from zero or looking to level up your development skills, this course provides the perfect roadmap to success. You'll learn:
-                  </p>
+                  <p>{course.long_description}</p>
                   
-                  <p>
-                    Through hands-on projects and real-world examples, you'll build a strong foundation in modern web development. Perfect for:
-                  </p>
+                  <p>Through hands-on projects and real-world examples, you'll build a strong foundation in modern web development. Perfect for:</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <svg className="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span className="font-medium">Beginners</span>
+                    {targetAudience.map((audience) => (
+                      <div key={audience.title} className="bg-white/5 rounded-lg p-4">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <svg className="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          <span className="font-medium">{audience.title}</span>
+                        </div>
+                        <p className="text-sm">{audience.description}</p>
                       </div>
-                      <p className="text-sm">Starting their coding journey</p>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <svg className="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                        <span className="font-medium">Career Switchers</span>
-                      </div>
-                      <p className="text-sm">Transitioning to tech</p>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <svg className="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        <span className="font-medium">Developers</span>
-                      </div>
-                      <p className="text-sm">Updating their skills</p>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -114,13 +120,22 @@ export default async function CourseDetail({ params }) {
               <div className="bg-white p-8 rounded-2xl shadow-2xl">
                 {/* Video Preview */}
                 <div className="relative aspect-video mb-6 rounded-xl overflow-hidden">
-                  <Image
-                    src="https://picsum.photos/seed/course-preview/800/450"
-                    alt="Course preview"
-                    fill
-                    className="object-cover transition-transform hover:scale-105"
-                    priority
-                  />
+                  {course.preview_video_url ? (
+                    <video
+                      src={course.preview_video_url}
+                      poster={course.course_image}
+                      className="object-cover w-full h-full"
+                      controls
+                    />
+                  ) : (
+                    <Image
+                      src={course.course_image || "https://picsum.photos/seed/course-preview/800/450"}
+                      alt="Course preview"
+                      fill
+                      className="object-cover transition-transform hover:scale-105"
+                      priority
+                    />
+                  )}
                   <button 
                     className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/50 transition-colors group"
                     aria-label="Play preview video"
@@ -132,15 +147,19 @@ export default async function CourseDetail({ params }) {
                 {/* Pricing */}
                 <div className="text-center mb-8">
                   <div className="flex items-center justify-center gap-3">
-                    <p className="text-4xl font-bold text-gray-900">£89.99</p>
-                    <div className="flex flex-col items-start">
-                      <span className="line-through text-gray-400 text-lg">£199.99</span>
-                      <span className="text-emerald-600 font-medium">55% off</span>
-                    </div>
+                    <p className="text-4xl font-bold text-gray-900">£{course.price}</p>
+                    {course.original_price && (
+                      <div className="flex flex-col items-start">
+                        <span className="line-through text-gray-400 text-lg">£{course.original_price}</span>
+                        <span className="text-emerald-600 font-medium">{discountPercentage}% off</span>
+                      </div>
+                    )}
                   </div>
-                  <p className="mt-2 text-gray-600 text-sm">
-                    30-day money-back guarantee
-                  </p>
+                  {course.money_back_guarantee && (
+                    <p className="mt-2 text-gray-600 text-sm">
+                      {course.money_back_guarantee}-day money-back guarantee
+                    </p>
+                  )}
                 </div>
 
                 {/* Action Buttons */}
@@ -164,30 +183,24 @@ export default async function CourseDetail({ params }) {
                     This course includes:
                   </h3>
                   <ul className="space-y-4">
-                    {[
-                      { 
-                        text: "40 hours of video content",
-                        icon: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                      },
-                      
-                      
-                      {
-                        text: "Full lifetime access",
-                        icon: "M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-                      },
-                      {
-                        text: "Certificate of completion",
-                        icon: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                      },
-                    ].map((item) => (
-                      <li
-                        key={item.text}
-                        className="flex items-center gap-3 text-gray-600 hover:text-gray-900 transition-colors"
-                      >
+                    {features.map((feature) => (
+                      <li key={feature.text} className="flex items-center gap-3 text-gray-600">
                         <VideoCameraIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
-                        <span>{item.text}</span>
+                        <span>{feature.text}</span>
                       </li>
                     ))}
+                    {course.certificate_included && (
+                      <li className="flex items-center gap-3 text-gray-600">
+                        <AcademicCapIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
+                        <span>Certificate of completion</span>
+                      </li>
+                    )}
+                    {course.access_type && (
+                      <li className="flex items-center gap-3 text-gray-600">
+                        <LockClosedIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
+                        <span>{course.access_type === 'lifetime' ? 'Full lifetime access' : `${course.access_type} access`}</span>
+                      </li>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -210,16 +223,7 @@ export default async function CourseDetail({ params }) {
                 What You'll Learn
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  "Build 25+ web development projects",
-                  "Master HTML5, CSS3, and modern JavaScript",
-                  "Learn React.js and Node.js from scratch",
-                  "Implement authentication and databases",
-                  "Deploy your applications to the cloud",
-                  "Write clean, maintainable code",
-                  "Work with REST APIs and GraphQL",
-                  "Understand web development best practices",
-                ].map((item) => (
+                {learningOutcomes.map((item) => (
                   <div key={item} className="flex items-start">
                     <svg
                       className="h-5 w-5 text-green-500 mt-1 mr-2"
@@ -246,28 +250,7 @@ export default async function CourseDetail({ params }) {
                 Course Content
               </h2>
               <div className="space-y-4">
-                {[
-                  {
-                    title: "Introduction to Web Development",
-                    lectures: 5,
-                    duration: "2h 30m",
-                    items: [
-                      "Welcome to the Course",
-                      "Web Development Overview", 
-                      "Setting Up Your Development Environment",
-                    ],
-                  },
-                  {
-                    title: "HTML Fundamentals",
-                    lectures: 8, 
-                    duration: "4h 15m",
-                    items: [
-                      "HTML Document Structure",
-                      "Working with Text Elements",
-                      "Links and Images",
-                    ],
-                  },
-                ].map((section, index) => (
+                {courseSections.map((section, index) => (
                   <div key={section.title} className="border border-gray-200 rounded-lg hover:border-blue-500 transition-colors duration-200">
                     <button className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors duration-200 group">
                       <div className="flex items-center space-x-4">
@@ -340,12 +323,7 @@ export default async function CourseDetail({ params }) {
                 Requirements
               </h2>
               <ul className="space-y-2">
-                {[
-                  "Basic computer knowledge",
-                  "No prior programming experience needed",
-                  "A computer with internet access",
-                  "Willingness to learn and practice",
-                ].map((item) => (
+                {requirements.map((item) => (
                   <li key={item} className="flex items-start">
                     <svg
                       className="h-5 w-5 text-gray-400 mt-1 mr-2"
@@ -372,15 +350,15 @@ export default async function CourseDetail({ params }) {
                 Student Reviews
               </h2>
               <div className="space-y-6">
-                {[1, 2, 3].map((review) => (
+                {reviews.map((review, index) => (
                   <div
-                    key={review}
+                    key={index}
                     className="border-b pb-6 last:border-0 last:pb-0"
                   >
                     <div className="flex items-start">
                       <Image
-                        src={`https://picsum.photos/seed/student-${review}/40/40`}
-                        alt="Student"
+                        src={review.student_image}
+                        alt={review.student_name}
                         width={40}
                         height={40}
                         className="rounded-full"
@@ -388,31 +366,24 @@ export default async function CourseDetail({ params }) {
                       <div className="ml-4">
                         <div className="flex items-center">
                           <h4 className="text-sm font-medium text-gray-900">
-                            Sarah Johnson
+                            {review.student_name}
                           </h4>
                           <span className="mx-2 text-gray-500">•</span>
                           <span className="text-sm text-gray-500">
-                            2 weeks ago
+                            {review.created_at}
                           </span>
                         </div>
                         <div className="mt-1 flex items-center">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <svg
-                              key={star}
-                              className="h-4 w-4 text-yellow-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
+                          {[...Array(5)].map((_, i) => (
+                            <StarIconSolid
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating ? 'text-yellow-400' : 'text-gray-200'
+                              }`}
+                            />
                           ))}
                         </div>
-                        <p className="mt-2 text-gray-600">
-                          This course is amazing! I went from knowing nothing
-                          about web development to building full-stack
-                          applications. The instructor explains everything
-                          clearly and the projects are very practical.
-                        </p>
+                        <p className="mt-2 text-gray-600">{review.review_text}</p>
                       </div>
                     </div>
                   </div>
@@ -429,86 +400,54 @@ export default async function CourseDetail({ params }) {
               </h2>
               <div className="flex items-center mb-4">
                 <Image
-                  src="https://picsum.photos/seed/instructor-large/64/64"
-                  alt="Instructor"
+                  src={course.instructor_image || "https://picsum.photos/seed/instructor-large/64/64"}
+                  alt={course.instructor_name}
                   width={64}
                   height={64}
                   className="rounded-full"
                 />
                 <div className="ml-4">
                   <h3 className="text-lg font-medium text-gray-900">
-                    John Smith
+                    {course.instructor_name}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    Senior Web Developer & Instructor
+                    {course.instructor_title}
                   </p>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-gray-400 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
-                    />
-                  </svg>
+                  <UserGroupIcon className="h-5 w-5 text-gray-400 mr-2" />
                   <span className="text-sm text-gray-600">
-                    50,000+ students
+                    {course.instructor_total_students?.toLocaleString()} students
                   </span>
                 </div>
                 <div className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-gray-400 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
-                    />
-                  </svg>
-                  <span className="text-sm text-gray-600">15 courses</span>
+                  <AcademicCapIcon className="h-5 w-5 text-gray-400 mr-2" />
+                  <span className="text-sm text-gray-600">{course.instructor_course_count} courses</span>
                 </div>
                 <div className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-gray-400 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                    />
-                  </svg>
+                  <StarIcon className="h-5 w-5 text-gray-400 mr-2" />
                   <span className="text-sm text-gray-600">
-                    4.8 instructor rating
+                    {course.instructor_rating} instructor rating
                   </span>
                 </div>
               </div>
-              <p className="mt-4 text-gray-600">
-                John is a full-stack developer with over 10 years of experience
-                in web development. He has worked with companies like Google and
-                Amazon, and now focuses on teaching others how to code. His
-                courses have helped thousands of students start their career in
-                web development.
-              </p>
+              <p className="mt-4 text-gray-600">{course.instructor_bio}</p>
             </div>
           </div>
         </div>
       </div>
+
+      
+
+      {/* Add Last Updated Info */}
+      {course.last_updated && (
+        <div className="mt-4 text-sm text-gray-600">
+          <ClockIcon className="h-5 w-5 text-gray-400 mr-2 inline" />
+          Last updated: {new Date(course.last_updated).toLocaleDateString()}
+        </div>
+      )}
     </div>
   );
 }
