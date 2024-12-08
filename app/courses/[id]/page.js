@@ -3,6 +3,11 @@ import Link from "next/link";
 import { StarIcon, PlayIcon, HeartIcon, VideoCameraIcon, CodeBracketIcon, ArrowDownTrayIcon, LockClosedIcon, CheckBadgeIcon, ChevronDownIcon, ChevronRightIcon, PlayCircleIcon, SpeakerWaveIcon, PuzzlePieceIcon, AcademicCapIcon, BriefcaseIcon, BoltIcon, UserGroupIcon, DocumentTextIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import EnrollButton from '@/components/EnrollButton';
+import WishlistButton from '@/components/WishlistButton';
+import VideoPlayer from '@/components/VideoPlayer';
+import CourseContent from '@/components/CourseContent';
+import ReviewSystem from '@/components/ReviewSystem';
 
 export default async function CourseDetail({ params }) {
   // Helper function to parse JSON fields safely
@@ -212,28 +217,13 @@ export default async function CourseDetail({ params }) {
               <div className="bg-white p-8 rounded-2xl shadow-2xl">
                 {/* Video Preview */}
                 <div className="relative aspect-video mb-6 rounded-xl overflow-hidden">
-                  {course.preview_video_url ? (
-                    <video
-                      src={course.preview_video_url}
-                      poster={course.course_image}
-                      className="object-cover w-full h-full"
-                      controls
-                    />
-                  ) : (
-                    <Image
-                      src={course.course_image || "https://picsum.photos/seed/course-preview/800/450"}
-                      alt="Course preview"
-                      fill
-                      className="object-cover transition-transform hover:scale-105"
-                      priority
+                  {course.preview_video_url && (
+                    <VideoPlayer
+                      videoUrl={course.preview_video_url}
+                      posterImage={course.course_image}
+                      isPreview={true}
                     />
                   )}
-                  <button 
-                    className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/50 transition-colors group"
-                    aria-label="Play preview video"
-                  >
-                    <PlayIcon className="h-20 w-20 text-white opacity-90 group-hover:opacity-100 transition-opacity transform group-hover:scale-110" />
-                  </button>
                 </div>
 
                 {/* Pricing */}
@@ -256,17 +246,8 @@ export default async function CourseDetail({ params }) {
 
                 {/* Action Buttons */}
                 <div className="space-y-4 mb-8">
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg">
-                    Enroll Now
-                  </button>
-                  <button className="w-full bg-gray-100 text-gray-900 px-6 py-3 rounded-xl font-medium border border-gray-200 hover:bg-gray-200 transition-all">
-                    <div className="flex items-center justify-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      <span className="text-sm text-gray-600">Add to Wishlist</span>
-                    </div>
-                  </button>
+                  <EnrollButton courseId={params.id} price={course.price} />
+                  <WishlistButton courseId={params.id} />
                 </div>
 
                 {/* Course Features */}
@@ -329,45 +310,11 @@ export default async function CourseDetail({ params }) {
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Course Content
               </h2>
-              <div className="space-y-4">
-                {courseSections.map((section, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg">
-                    <button className="w-full flex items-center justify-between p-5 hover:bg-gray-50">
-                      <div className="flex items-center space-x-4">
-                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold">
-                          {index + 1}
-                        </span>
-                        <div>
-                          <h3 className="text-lg font-medium text-gray-900">
-                            {section.title}
-                          </h3>
-                          <p className="mt-1 text-sm text-gray-500 flex items-center space-x-3">
-                            <span className="flex items-center">
-                              <VideoCameraIcon className="w-4 h-4 mr-1" />
-                              {section.lectures} lectures
-                            </span>
-                            <span className="flex items-center">
-                              <ClockIcon className="w-4 h-4 mr-1" />
-                              {section.duration}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
-                    </button>
-                    <div className="px-5 pb-4 border-t border-gray-100">
-                      {section.items.map((item, itemIndex) => (
-                        <div key={itemIndex} className="flex items-center py-3">
-                          <PlayCircleIcon className="h-5 w-5 text-gray-400 mr-3" />
-                          <span className="text-sm text-gray-600">
-                            {itemIndex + 1}. {item}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <CourseContent
+                courseSections={courseSections}
+                courseId={params.id}
+                isEnrolled={false}
+              />
             </div>
 
             {/* Requirements */}
@@ -390,43 +337,10 @@ export default async function CourseDetail({ params }) {
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Student Reviews
               </h2>
-              <div className="space-y-6">
-                {reviews.map((review, index) => (
-                  <div key={index} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
-                    <div className="flex items-start">
-                      <Image
-                        src={review.student_image}
-                        alt={review.student_name}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
-                      <div className="ml-4">
-                        <div className="flex items-center">
-                          <h4 className="text-sm font-medium text-gray-900">
-                            {review.student_name}
-                          </h4>
-                          <span className="mx-2 text-gray-500">•</span>
-                          <span className="text-sm text-gray-500">
-                            {new Date(review.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="mt-1 flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <StarIconSolid
-                              key={i}
-                              className={`h-4 w-4 ${
-                                i < review.rating ? 'text-yellow-400' : 'text-gray-200'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <p className="mt-2 text-gray-600">{review.review_text}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ReviewSystem
+                courseId={params.id}
+                existingReviews={reviews}
+              />
             </div>
           </div>
 
