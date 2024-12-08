@@ -1,12 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const supabase = createClientComponentClient();
+
+  // Fetch user on mount
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (authUser) {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', authUser.id)
+            .single();
+          setUser(profile);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUser();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        setUser(profile);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription?.unsubscribe();
+  }, [supabase]);
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -71,54 +126,75 @@ export default function Header() {
               </svg>
             </button>
 
-            {/* User Menu */}
-            <div className="ml-4 relative flex-shrink-0">
-              <div>
-                <button
-                  type="button"
-                  className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                >
-                  <span className="sr-only">Open user menu</span>
-                  <Image
-                    className="h-8 w-8 rounded-full object-cover"
-                    src="https://picsum.photos/seed/user-avatar/32/32"
-                    alt="User profile"
-                    width={32}
-                    height={32}
-                    priority
-                  />
-                </button>
-              </div>
-              {isUserMenuOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
-                  <Link
-                    href="/student/dashboard"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            {user ? (
+              /* User Menu - Only show when logged in */
+              <div className="ml-4 relative flex-shrink-0">
+                <div>
+                  <button
+                    type="button"
+                    className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   >
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/student/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Settings
-                  </Link>
-                  <Link
-                    href="/auth/login"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/auth/register"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Register
-                  </Link>
+                    <span className="sr-only">Open user menu</span>
+                    <Image
+                      className="h-8 w-8 rounded-full object-cover"
+                      src={user?.avatar_url || "https://picsum.photos/seed/user-avatar/32/32"}
+                      alt={user?.name || "User profile"}
+                      width={32}
+                      height={32}
+                      priority
+                    />
+                  </button>
                 </div>
-              )}
-            </div>
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div className="px-4 py-2 text-sm text-gray-900 border-b">
+                      <div className="font-medium">{user.name}</div>
+                      <div className="text-gray-500">{user.email}</div>
+                    </div>
+                    <Link
+                      href="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      href="/settings"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Login/Signup buttons - Show when not logged in */
+              <div className="ml-4 flex items-center space-x-4">
+                <Link
+                  href="/login"
+                  className="text-gray-700 hover:text-gray-900 font-medium"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                  Sign up
+                </Link>
+              </div>
+            )}
 
             {/* Mobile menu button */}
             <div className="ml-4 md:hidden">
@@ -159,6 +235,22 @@ export default function Header() {
                   {item.name}
                 </Link>
               ))}
+              {!user && (
+                <>
+                  <Link
+                    href="/login"
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
