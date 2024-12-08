@@ -1,3 +1,5 @@
+'use client';
+
 import {
   BriefcaseIcon,
   AcademicCapIcon,
@@ -18,7 +20,7 @@ export default function InstructorDashboard() {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-          <div className="max-w-4xl">
+          <div className="">
             <h1 className="text-4xl font-bold text-white mb-4">
               Welcome back, John Smith
             </h1>
@@ -37,7 +39,7 @@ export default function InstructorDashboard() {
                 },
                 {
                   label: "Total Revenue",
-                  value: "$12,345",
+                  value: "₹12,345",
                   change: "+8.2%",
                   icon: CurrencyDollarIcon,
                 },
@@ -70,6 +72,23 @@ export default function InstructorDashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* New Withdrawal Section - Centered */}
+            <div className="mt-8 bg-white/10 backdrop-blur-lg rounded-xl p-6 ">
+              <div className="flex flex-col items-center text-center">
+                <h3 className="text-xl font-semibold text-white mb-2">Available for Withdrawal</h3>
+                <p className="text-3xl font-bold text-white mb-4">₹2,450</p>
+                <button
+                  className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors mb-4"
+                  onClick={() => {/* Add withdrawal logic */}}
+                >
+                  Request Withdraw Amount
+                </button>
+                <p className="text-white/80 text-sm">
+                  Note: You can withdraw the amount only if more than ₹1000 is available.
+                </p>
+              </div>
             </div>
           </div>
         </div>
