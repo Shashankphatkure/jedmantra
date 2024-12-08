@@ -141,117 +141,129 @@ export default function CreateJob() {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 py-12">
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-12">
           {/* Basic Information */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="bg-white shadow rounded-lg p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-8">Basic Information</h2>
+            <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                  Job Title *
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Job Title <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="company_name" className="block text-sm font-medium text-gray-700">
-                  Company Name *
+                <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Company Name <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  id="company_name"
-                  value={formData.company_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    id="company_name"
+                    value={formData.company_name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                  Location *
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Location <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="department" className="block text-sm font-medium text-gray-700">
-                  Department *
+                <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Department <span className="text-red-500">*</span>
                 </label>
-                <select
-                  id="department"
-                  value={formData.department}
-                  onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                >
-                  <option value="">Select Department</option>
-                  <option value="Engineering">Engineering</option>
-                  <option value="Design">Design</option>
-                  <option value="Product">Product</option>
-                  <option value="Marketing">Marketing</option>
-                  <option value="Sales">Sales</option>
-                  <option value="HR">HR</option>
-                  <option value="Finance">Finance</option>
-                  <option value="Operations">Operations</option>
-                </select>
+                <div className="mt-1">
+                  <select
+                    id="department"
+                    value={formData.department}
+                    onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                    required
+                  >
+                    <option value="">Select Department</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Design">Design</option>
+                    <option value="Product">Product</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Sales">Sales</option>
+                    <option value="HR">HR</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Operations">Operations</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label htmlFor="job_type" className="block text-sm font-medium text-gray-700">
-                  Job Type *
+                <label htmlFor="job_type" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Job Type <span className="text-red-500">*</span>
                 </label>
-                <select
-                  id="job_type"
-                  value={formData.job_type}
-                  onChange={(e) => setFormData(prev => ({ ...prev, job_type: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                >
-                  <option value="FULL_TIME">Full Time</option>
-                  <option value="PART_TIME">Part Time</option>
-                  <option value="CONTRACT">Contract</option>
-                  <option value="INTERNSHIP">Internship</option>
-                  <option value="TEMPORARY">Temporary</option>
-                </select>
+                <div className="mt-1">
+                  <select
+                    id="job_type"
+                    value={formData.job_type}
+                    onChange={(e) => setFormData(prev => ({ ...prev, job_type: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                    required
+                  >
+                    <option value="FULL_TIME">Full Time</option>
+                    <option value="PART_TIME">Part Time</option>
+                    <option value="CONTRACT">Contract</option>
+                    <option value="INTERNSHIP">Internship</option>
+                    <option value="TEMPORARY">Temporary</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label htmlFor="experience_level" className="block text-sm font-medium text-gray-700">
-                  Experience Level *
+                <label htmlFor="experience_level" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Experience Level <span className="text-red-500">*</span>
                 </label>
-                <select
-                  id="experience_level"
-                  value={formData.experience_level}
-                  onChange={(e) => setFormData(prev => ({ ...prev, experience_level: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                >
-                  <option value="ENTRY_LEVEL">Entry Level</option>
-                  <option value="MID_LEVEL">Mid Level</option>
-                  <option value="SENIOR">Senior</option>
-                  <option value="LEAD">Lead</option>
-                  <option value="MANAGER">Manager</option>
-                  <option value="EXECUTIVE">Executive</option>
-                </select>
+                <div className="mt-1">
+                  <select
+                    id="experience_level"
+                    value={formData.experience_level}
+                    onChange={(e) => setFormData(prev => ({ ...prev, experience_level: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                    required
+                  >
+                    <option value="ENTRY_LEVEL">Entry Level</option>
+                    <option value="MID_LEVEL">Mid Level</option>
+                    <option value="SENIOR">Senior</option>
+                    <option value="LEAD">Lead</option>
+                    <option value="MANAGER">Manager</option>
+                    <option value="EXECUTIVE">Executive</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="flex items-center">
-                <label htmlFor="is_remote" className="block text-sm font-medium text-gray-700 mr-2">
+              <div className="flex items-center space-x-3 h-full pt-6">
+                <label htmlFor="is_remote" className="text-sm font-medium text-gray-700">
                   Remote Position
                 </label>
                 <input
@@ -259,110 +271,120 @@ export default function CreateJob() {
                   id="is_remote"
                   checked={formData.is_remote}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_remote: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
               </div>
 
               <div>
-                <label htmlFor="salary_min" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="salary_min" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Minimum Salary
                 </label>
-                <input
-                  type="number"
-                  id="salary_min"
-                  value={formData.salary_min}
-                  onChange={(e) => setFormData(prev => ({ ...prev, salary_min: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
+                <div className="mt-1">
+                  <input
+                    type="number"
+                    id="salary_min"
+                    value={formData.salary_min}
+                    onChange={(e) => setFormData(prev => ({ ...prev, salary_min: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="salary_max" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="salary_max" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Maximum Salary
                 </label>
-                <input
-                  type="number"
-                  id="salary_max"
-                  value={formData.salary_max}
-                  onChange={(e) => setFormData(prev => ({ ...prev, salary_max: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
+                <div className="mt-1">
+                  <input
+                    type="number"
+                    id="salary_max"
+                    value={formData.salary_max}
+                    onChange={(e) => setFormData(prev => ({ ...prev, salary_max: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="salary_currency" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="salary_currency" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Salary Currency
                 </label>
-                <select
-                  id="salary_currency"
-                  value={formData.salary_currency}
-                  onChange={(e) => setFormData(prev => ({ ...prev, salary_currency: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-                  <option value="GBP">GBP (£)</option>
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                </select>
+                <div className="mt-1">
+                  <select
+                    id="salary_currency"
+                    value={formData.salary_currency}
+                    onChange={(e) => setFormData(prev => ({ ...prev, salary_currency: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                  >
+                    <option value="GBP">GBP (£)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label htmlFor="team_size" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="team_size" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Team Size
                 </label>
-                <input
-                  type="text"
-                  id="team_size"
-                  value={formData.team_size}
-                  onChange={(e) => setFormData(prev => ({ ...prev, team_size: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="e.g., 5-10 people"
-                />
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    id="team_size"
+                    value={formData.team_size}
+                    onChange={(e) => setFormData(prev => ({ ...prev, team_size: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                    placeholder="e.g., 5-10 people"
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="required_experience_years" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="required_experience_years" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Required Years of Experience
                 </label>
-                <input
-                  type="number"
-                  id="required_experience_years"
-                  value={formData.required_experience_years}
-                  onChange={(e) => setFormData(prev => ({ ...prev, required_experience_years: e.target.value }))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
+                <div className="mt-1">
+                  <input
+                    type="number"
+                    id="required_experience_years"
+                    value={formData.required_experience_years}
+                    onChange={(e) => setFormData(prev => ({ ...prev, required_experience_years: e.target.value }))}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+                  />
+                </div>
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                   Job Description
                 </label>
                 <textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  rows={4}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  rows={6}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-4"
                 />
               </div>
             </div>
           </div>
 
           {/* Dynamic Arrays Section */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Additional Details</h2>
+          <div className="bg-white shadow rounded-lg p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-8">Additional Details</h2>
             
             {/* Responsibilities */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-4">
                 Responsibilities
               </label>
               {formData.responsibilities.map((item, index) => (
-                <div key={index} className="flex gap-2 mb-2">
+                <div key={index} className="flex gap-3 mb-3">
                   <input
                     type="text"
                     value={item}
                     onChange={(e) => handleArrayFieldChange('responsibilities', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
                     placeholder="Add a responsibility"
                   />
                   <button
@@ -386,16 +408,16 @@ export default function CreateJob() {
 
             {/* Requirements */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-4">
                 Requirements
               </label>
               {formData.requirements.map((item, index) => (
-                <div key={index} className="flex gap-2 mb-2">
+                <div key={index} className="flex gap-3 mb-3">
                   <input
                     type="text"
                     value={item}
                     onChange={(e) => handleArrayFieldChange('requirements', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
                     placeholder="Add a requirement"
                   />
                   <button
@@ -419,16 +441,16 @@ export default function CreateJob() {
 
             {/* Benefits */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-4">
                 Benefits
               </label>
               {formData.benefits.map((item, index) => (
-                <div key={index} className="flex gap-2 mb-2">
+                <div key={index} className="flex gap-3 mb-3">
                   <input
                     type="text"
                     value={item}
                     onChange={(e) => handleArrayFieldChange('benefits', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
                     placeholder="Add a benefit"
                   />
                   <button
@@ -451,17 +473,17 @@ export default function CreateJob() {
             </div>
 
             {/* Skills */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-10">
+              <label className="block text-sm font-medium text-gray-700 mb-4">
                 Required Skills
               </label>
               {formData.skills.map((item, index) => (
-                <div key={index} className="flex gap-2 mb-2">
+                <div key={index} className="flex gap-3 mb-3">
                   <input
                     type="text"
                     value={item}
                     onChange={(e) => handleArrayFieldChange('skills', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
                     placeholder="Add a skill"
                   />
                   <button
@@ -485,7 +507,7 @@ export default function CreateJob() {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"
               className="px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
