@@ -2,8 +2,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { StarIcon, PlayIcon, HeartIcon, VideoCameraIcon, CodeBracketIcon, ArrowDownTrayIcon, LockClosedIcon, CheckBadgeIcon, ChevronDownIcon, ChevronRightIcon, PlayCircleIcon, SpeakerWaveIcon, PuzzlePieceIcon, AcademicCapIcon, BriefcaseIcon, BoltIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export default function CourseDetail() {
+export default async function CourseDetail({ params }) {
+  const supabase = createClientComponentClient();
+  
+  // Fetch course data
+  const { data: course, error } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('id', params.id)
+    .single();
+
+  if (error) {
+    console.error('Error fetching course:', error);
+    return <div>Error loading course</div>;
+  }
+
+  if (!course) {
+    return <div>Course not found</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -13,15 +32,23 @@ export default function CourseDetail() {
             {/* Course Info */}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-6">
-                <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">Bestseller</span>
-                <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">New & Updated</span>
+                {course.bestseller && (
+                  <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                    Bestseller
+                  </span>
+                )}
+                {course.new_course && (
+                  <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+                    New & Updated
+                  </span>
+                )}
               </div>
               
               <h1 className="text-4xl font-bold text-white mb-4">
-                Complete Web Development Bootcamp 2024
+                {course.title}
               </h1>
               <p className="text-xl text-white/90 mb-8">
-                Master web development from scratch with HTML, CSS, JavaScript, React, Node.js, and more. Perfect for beginners and intermediate developers looking to upgrade their skills.
+                {course.description}
               </p>
 
               
@@ -29,10 +56,10 @@ export default function CourseDetail() {
               <div className="flex items-center space-x-4 text-white/90 mb-6">
                 <div className="flex items-center">
                   <StarIconSolid className="h-5 w-5 text-yellow-400" />
-                  <span className="ml-1">4.8 (2.5k reviews)</span>
+                  <span className="ml-1">{course.rating} ({course.review_count} reviews)</span>
                 </div>
                 <span>•</span>
-                <span>15,000+ students enrolled</span>
+                <span>{course.total_students?.toLocaleString()} students enrolled</span>
                 
               </div>
 

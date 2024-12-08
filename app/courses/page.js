@@ -1,7 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
-export default function Courses() {
+export default async function Courses() {
+  // Initialize Supabase client
+  const supabase = createServerComponentClient({ cookies });
+  
+  // Fetch courses
+  const { data: courses, error } = await supabase
+    .from('courses')
+    .select('*');
+
+  if (error) {
+    console.error('Error fetching courses:', error);
+    return <div>Error loading courses</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Search Section */}
@@ -246,7 +261,7 @@ export default function Courses() {
             {/* Sort and Results Count */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-gray-600">
-                Showing <span className="font-semibold">856</span> courses
+                Showing <span className="font-semibold">{courses.length}</span> courses
               </p>
               <select className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option>Most Popular</option>
@@ -257,30 +272,37 @@ export default function Courses() {
               </select>
             </div>
 
-            {/* Course Cards - Now 3 columns */}
+            {/* Course Cards */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((course) => (
+              {courses.map((course) => (
                 <div
-                  key={course}
+                  key={course.id}
                   className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="relative h-48">
                     <Image
-                      src={`https://picsum.photos/seed/course-${course}/800/400`}
-                      alt={`Course ${course} thumbnail`}
+                      src={course.course_image || `https://picsum.photos/seed/course-${course.id}/800/400`}
+                      alt={`${course.title} thumbnail`}
                       fill
                       className="object-cover rounded-t-xl"
                     />
                     <div className="absolute top-4 right-4 flex space-x-2">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Bestseller
-                      </span>
+                      {course.bestseller && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          Bestseller
+                        </span>
+                      )}
+                      {course.new_course && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          New
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-blue-600">
-                        Programming
+                        {course.skill_level}
                       </span>
                       <div className="flex items-center">
                         <svg
@@ -291,38 +313,44 @@ export default function Courses() {
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                         <span className="ml-1 text-sm text-gray-600">
-                          4.8 (2.5k)
+                          {course.rating} ({course.review_count})
                         </span>
                       </div>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       <Link
-                        href={`/courses/${course}`}
+                        href={`/courses/${course.id}`}
                         className="hover:text-blue-600 transition-colors"
                       >
-                        Complete Web Development Bootcamp 2024
+                        {course.title}
                       </Link>
                     </h3>
                     <p className="text-sm text-gray-600 line-clamp-2 mb-4">
-                      Learn web development from scratch. Master HTML, CSS,
-                      JavaScript, React, and Node.js through hands-on projects.
+                      {course.description}
                     </p>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center">
                         <Image
-                          src={`https://picsum.photos/seed/instructor-${course}/32/32`}
-                          alt="Instructor"
+                          src={course.instructor_image || `https://picsum.photos/seed/instructor-${course.id}/32/32`}
+                          alt={course.instructor_name}
                           width={32}
                           height={32}
                           className="rounded-full"
                         />
                         <span className="ml-2 text-sm text-gray-600">
-                          John Smith
+                          {course.instructor_name}
                         </span>
                       </div>
-                      <span className="text-lg font-bold text-gray-900">
-                        ₹4,999
-                      </span>
+                      <div className="text-right">
+                        {course.original_price && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ₹{course.original_price}
+                          </span>
+                        )}
+                        <span className="ml-2 text-lg font-bold text-gray-900">
+                          ₹{course.price}
+                        </span>
+                      </div>
                     </div>
                     <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group">
                       Enroll Now
