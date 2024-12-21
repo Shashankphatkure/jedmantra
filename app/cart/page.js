@@ -1,5 +1,5 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -12,39 +12,154 @@ import {
   AcademicCapIcon,
   DocumentArrowDownIcon
 } from '@heroicons/react/24/outline';
+import { toast } from 'react-hot-toast';
+
+// Create a helper function for logging errors
+const logError = async (supabase, errorDetails) => {
+  try {
+    const { error: logError } = await supabase
+      .from('error_logs')
+      .insert([{
+        error_message: errorDetails.message,
+        error_code: errorDetails.code,
+        error_details: errorDetails,
+        timestamp: new Date().toISOString(),
+        source: 'cart_enrollment'
+      }]);
+
+    if (logError) {
+      console.error('Failed to log error:', logError);
+    }
+  } catch (e) {
+    console.error('Error while logging error:', e);
+  }
+};
 
 export default function Cart() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [courseInfo, setCourseInfo] = useState(null);
   const [relatedCourses, setRelatedCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    const info = {
-      courseId: searchParams.get('courseId'),
-      title: searchParams.get('title'),
-      price: searchParams.get('price'),
-      original_price: searchParams.get('original_price'),
-      image: searchParams.get('image'),
-      instructor: searchParams.get('instructor'),
-    };
-    setCourseInfo(info);
+    const fetchData = async () => {
+      try {
+        const info = {
+          courseId: searchParams.get('courseId'),
+          title: searchParams.get('title'),
+          price: searchParams.get('price'),
+          original_price: searchParams.get('original_price'),
+          image: searchParams.get('image'),
+          instructor: searchParams.get('instructor'),
+        };
+        setCourseInfo(info);
 
-    // Fetch related courses
-    const fetchRelatedCourses = async () => {
-      const { data, error } = await supabase
-        .from('courses')
-        .select('id, title, instructor_name, price, original_price, course_image, rating, review_count, bestseller')
-        .neq('id', info.courseId) // Exclude current course
-        .limit(4); // Get 4 related courses
+        // Fetch related courses
+        const { data, error } = await supabase
+          .from('courses')
+          .select('id, title, instructor_name, price, original_price, course_image, rating, review_count, bestseller')
+          .neq('id', info.courseId)
+          .order('rating', { ascending: false })
+          .limit(4);
 
-      if (!error && data) {
+        if (error) {
+          throw error;
+        }
+
         setRelatedCourses(data);
+      } catch (error) {
+        await logError(supabase, {
+          message: 'Failed to fetch related courses',
+          code: error.code,
+          details: error
+        });
+        toast.error('Failed to load related courses');
       }
     };
 
-    fetchRelatedCourses();
-  }, [searchParams]);
+    fetchData();
+  }, [searchParams, supabase]);
+
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Check if user is authenticated
+      const { data: { session }, error: authError } = await supabase.auth.getSession();
+      
+      if (authError) {
+        await logError(supabase, {
+          message: 'Authentication error during checkout',
+          code: authError.code,
+          details: authError
+        });
+        throw authError;
+      }
+
+      if (!session) {
+        toast.error('Please login to enroll in this course');
+        router.push('/login');
+        return;
+      }
+
+      // First, check if user is already enrolled
+      const { data: existingEnrollment, error: checkError } = await supabase
+        .from('enrollments')
+        .select('id')
+        .match({ 
+          user_id: session.user.id, 
+          course_id: courseInfo.courseId 
+        })
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means no rows returned
+        await logError(supabase, {
+          message: 'Error checking existing enrollment',
+          code: checkError.code,
+          details: checkError
+        });
+        throw checkError;
+      }
+
+      // Create enrollment
+      const { data: enrollment, error: enrollmentError } = await supabase
+        .from('enrollments')
+        .insert([
+          {
+            user_id: session.user.id,
+            course_id: courseInfo.courseId,
+            status: 'active',
+            progress: {},
+          }
+        ])
+        .select()
+        .single();
+
+      if (enrollmentError) {
+        // Check if error is due to unique constraint
+        if (enrollmentError.code === '23505') {
+          toast.error('You are already enrolled in this course');
+        } else {
+          throw enrollmentError;
+        }
+        return;
+      }
+
+      // If successful, show success message and redirect to course
+      toast.success('Successfully enrolled in the course!');
+      router.push(`courses/learn/${courseInfo.courseId}`);
+
+    } catch (error) {
+      console.error('Enrollment error:', error);
+      toast.error('Failed to enroll in the course. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!courseInfo) return <div>Loading...</div>;
 
@@ -163,14 +278,16 @@ export default function Cart() {
                 </div>
 
                 <button 
-                  onClick={() => {
-                    // Add checkout logic here
-                    alert('Proceeding to checkout...');
-                  }}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 mt-4 flex items-center justify-center space-x-2"
+                  onClick={handleCheckout}
+                  disabled={loading}
+                  className={`w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
+                    transition duration-200 mt-4 flex items-center justify-center space-x-2
+                    ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <LockClosedIcon className="h-5 w-5" />
-                  <span>Checkout Securely</span>
+                  <span>
+                    {loading ? 'Processing...' : 'Checkout Securely'}
+                  </span>
                 </button>
 
                 {/* Money-back guarantee */}
