@@ -1,3 +1,7 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
 import { StarIcon, PlayIcon, HeartIcon, VideoCameraIcon, CodeBracketIcon, ArrowDownTrayIcon, LockClosedIcon, CheckBadgeIcon, ChevronDownIcon, ChevronRightIcon, PlayCircleIcon, SpeakerWaveIcon, PuzzlePieceIcon, AcademicCapIcon, BriefcaseIcon, BoltIcon, UserGroupIcon, DocumentTextIcon, ClockIcon } from '@heroicons/react/24/outline';
@@ -9,7 +13,37 @@ import VideoPlayer from '@/components/VideoPlayer';
 import CourseContent from '@/components/CourseContent';
 import ReviewSystem from '@/components/ReviewSystem';
 
-export default async function CourseDetail({ params }) {
+export default function CourseDetail({ params }) {
+  const router = useRouter();
+  const [course, setCourse] = useState(null);
+  const [error, setError] = useState(null);
+  const supabase = createClientComponentClient();
+
+  // Move the data fetching logic into useEffect
+  useEffect(() => {
+    async function fetchCourse() {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('id', params.id)
+        .single();
+
+      if (error) {
+        console.error('Supabase Error Details:', error);
+        setError(error.message);
+        return;
+      }
+
+      setCourse(data);
+    }
+
+    fetchCourse();
+  }, [params.id]);
+
+  // Show loading state
+  if (!course) return <div>Loading...</div>;
+  if (error) return <div>Error loading course: {error}</div>;
+
   // Helper function to parse JSON fields safely
   const parseJsonField = (field, defaultValue = []) => {
     try {
@@ -45,38 +79,6 @@ export default async function CourseDetail({ params }) {
       return defaultValue;
     }
   };
-
-  const supabase = createClientComponentClient();
-  
-  // Log the params for debugging
-  console.log('Fetching course with ID:', params.id);
-
-  // Fetch course data with error logging
-  const { data: course, error } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('id', params.id)
-    .single();
-
-  // Detailed error logging
-  if (error) {
-    console.error('Supabase Error Details:', {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-      status: error.status
-    });
-    return <div>Error loading course: {error.message}</div>;
-  }
-
-  // Log the raw course data
-  console.log('Raw course data:', course);
-
-  if (!course) {
-    console.log('No course found for ID:', params.id);
-    return <div>Course not found</div>;
-  }
 
   // Provide default values for JSON fields
   const defaultTargetAudience = [
@@ -246,7 +248,14 @@ export default async function CourseDetail({ params }) {
 
                 {/* Action Buttons */}
                 <div className="space-y-4 mb-8">
-                  <EnrollButton courseId={params.id} price={course.price} />
+                  <button 
+                    onClick={() => {
+                      router.push(`/cart?courseId=${params.id}&title=${encodeURIComponent(course.title)}&price=${course.price}&original_price=${course.original_price}&image=${encodeURIComponent(course.course_image)}&instructor=${encodeURIComponent(course.instructor_name)}`);
+                    }}
+                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200"
+                  >
+                    Enroll Now - £{course.price}
+                  </button>
                   <WishlistButton courseId={params.id} />
                 </div>
 
