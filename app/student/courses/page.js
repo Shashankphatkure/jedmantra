@@ -10,40 +10,43 @@ import {
   ArrowRightIcon,
   AcademicCapIcon
 } from "@heroicons/react/24/outline";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-export default function StudentCourses() {
-  const courses = [
-    {
-      id: 1,
-      title: "React Fundamentals",
-      instructor: "Mike Chen",
-      progress: 75,
-      lastAccessed: "2 hours ago",
-      image: "https://via.placeholder.com/150",
-      status: "In Progress",
-      nextLesson: "React Hooks Introduction",
-    },
-    {
-      id: 2,
-      title: "Advanced JavaScript",
-      instructor: "Sarah Johnson",
-      progress: 45,
-      lastAccessed: "1 day ago",
-      image: "https://via.placeholder.com/150",
-      status: "In Progress",
-      nextLesson: "Promises and Async/Await",
-    },
-    {
-      id: 3,
-      title: "Web Development Bootcamp",
-      instructor: "Emma Wilson",
-      progress: 100,
-      lastAccessed: "1 week ago",
-      image: "https://via.placeholder.com/150",
-      status: "Completed",
-      nextLesson: null,
-    },
-  ];
+export default async function StudentCourses() {
+  const supabase = createClientComponentClient()
+  
+  // Fetch enrolled courses with their details
+  const { data: enrollments, error: enrollmentsError } = await supabase
+    .from('enrollments')
+    .select(`
+      *,
+      course:courses(
+        id,
+        title,
+        instructor_name,
+        course_image,
+        instructor_image,
+        video_hours,
+        lecture_count
+      )
+    `)
+    .eq('status', 'active')
+    .order('enrolled_at', { ascending: false })
+
+  // Calculate stats
+  const totalEnrolled = enrollments?.length || 0
+  const completedCourses = enrollments?.filter(e => e.status === 'completed').length || 0
+  const averageProgress = enrollments?.reduce((acc, curr) => {
+    const progress = curr.progress?.overall || 0
+    return acc + progress
+  }, 0) / totalEnrolled || 0
+
+  // Fetch recommended courses
+  const { data: recommendedCourses } = await supabase
+    .from('courses')
+    .select('*')
+    .limit(3)
+    // You might want to add more sophisticated recommendation logic here
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,9 +90,9 @@ export default function StudentCourses() {
         {/* Course Stats - Improved grid layout */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
           {[
-            { name: "Enrolled Courses", stat: "8", icon: BookOpenIcon, color: "blue" },
-            { name: "Completed Courses", stat: "3", icon: CheckCircleIcon, color: "green" },
-            { name: "Average Progress", stat: "68%", icon: ChartBarIcon, color: "purple" },
+            { name: "Enrolled Courses", stat: totalEnrolled, icon: BookOpenIcon, color: "blue" },
+            { name: "Completed Courses", stat: completedCourses, icon: CheckCircleIcon, color: "green" },
+            { name: "Average Progress", stat: `${Math.round(averageProgress)}%`, icon: ChartBarIcon, color: "purple" },
           ].map((item) => (
             <div
               key={item.name}
@@ -116,64 +119,64 @@ export default function StudentCourses() {
         <div className="mb-16">
           <h2 className="text-2xl font-semibold text-gray-900 mb-8">Active Courses</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => (
+            {enrollments?.map((enrollment) => (
               <div
-                key={course.id}
+                key={enrollment.id}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
               >
                 <div className="relative h-40">
                   <Image
-                    src={course.image}
-                    alt={course.title}
+                    src={enrollment.course.course_image}
+                    alt={enrollment.course.title}
                     fill
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-4 left-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      course.status === "Completed"
+                      enrollment.status === "completed"
                         ? "bg-green-100 text-green-800"
                         : "bg-blue-100 text-blue-800"
                     }`}>
-                      {course.status}
+                      {enrollment.status}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-5">
                   <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-1">
-                    {course.title}
+                    {enrollment.course.title}
                   </h3>
                   
                   <div className="space-y-2 text-sm text-gray-600 mb-4">
                     <div className="flex items-center">
                       <UserCircleIcon className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="line-clamp-1">{course.instructor}</span>
+                      <span className="line-clamp-1">{enrollment.course.instructor_name}</span>
                     </div>
                     <div className="flex items-center">
                       <ClockIcon className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>{course.lastAccessed}</span>
+                      <span>{enrollment.last_accessed}</span>
                     </div>
                   </div>
 
                   <div className="mb-4">
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span className="text-gray-600">Progress</span>
-                      <span className="font-medium text-blue-600">{course.progress}%</span>
+                      <span className="font-medium text-blue-600">{enrollment.progress?.overall}%</span>
                     </div>
                     <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        style={{ width: `${course.progress}%` }}
+                        style={{ width: `${enrollment.progress?.overall}%` }}
                         className="h-full bg-blue-600 rounded-full transition-all duration-500"
                       ></div>
                     </div>
                   </div>
 
                   <Link
-                    href={`/courses/learn/${course.id}`}
+                    href={`/courses/learn/${enrollment.course.id}`}
                     className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors group"
                   >
-                    {course.status === "Completed" ? "Review Course" : "Continue Learning"}
+                    {enrollment.status === "completed" ? "Review Course" : "Continue Learning"}
                     <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
@@ -188,39 +191,14 @@ export default function StudentCourses() {
             Recommended for You
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: "TypeScript Essentials",
-                instructor: "David Lee",
-                duration: "6 hours",
-                level: "Intermediate",
-                image: "https://via.placeholder.com/150",
-                price: "$49.99",
-              },
-              {
-                title: "Node.js Advanced",
-                instructor: "Lisa Wang",
-                duration: "8 hours",
-                level: "Advanced",
-                image: "https://via.placeholder.com/150",
-                price: "$59.99",
-              },
-              {
-                title: "Vue.js for Beginners",
-                instructor: "Tom Wilson",
-                duration: "5 hours",
-                level: "Beginner",
-                image: "https://via.placeholder.com/150",
-                price: "$39.99",
-              },
-            ].map((course, index) => (
+            {recommendedCourses?.map((course, index) => (
               <div
                 key={index}
                 className="bg-white overflow-hidden shadow rounded-lg"
               >
                 <div className="relative pb-2/3">
                   <Image
-                    src={course.image}
+                    src={course.course_image}
                     alt={course.title}
                     width={300}
                     height={200}
@@ -232,11 +210,11 @@ export default function StudentCourses() {
                     {course.title}
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Instructor: {course.instructor}
+                    Instructor: {course.instructor_name}
                   </p>
                   <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-                    <span>{course.duration}</span>
-                    <span>{course.level}</span>
+                    <span>{course.video_hours} hours</span>
+                    <span>{course.lecture_count} lectures</span>
                   </div>
                   <div className="mt-4">
                     <span className="text-lg font-medium text-gray-900">
