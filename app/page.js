@@ -16,7 +16,7 @@ export default function Home() {
       <div className="bg-gradient-to-r from-pink-500 to-pink-600 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Find Your Dream Job Today
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-12">
