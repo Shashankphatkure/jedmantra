@@ -7,8 +7,102 @@ import {
   DocumentTextIcon,
   ClipboardDocumentCheckIcon,
   CheckCircleIcon,
-  EyeIcon
+  EyeIcon,
+  MapPinIcon,
+  BuildingOfficeIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline';
+
+const JobPreview = ({ formData, formatSalaryDisplay }) => {
+  return (
+    <div className="bg-white shadow-sm rounded-lg p-8">
+      {/* Header */}
+      <div className="border-b pb-8">
+        <h1 className="text-3xl font-bold text-gray-900">{formData.title}</h1>
+        <div className="mt-4 flex flex-wrap gap-4 text-gray-600">
+          <div className="flex items-center">
+            <BuildingOfficeIcon className="h-5 w-5 mr-2" />
+            {formData.company_name}
+          </div>
+          <div className="flex items-center">
+            <MapPinIcon className="h-5 w-5 mr-2" />
+            {formData.location} {formData.is_remote && '(Remote)'}
+          </div>
+          <div className="flex items-center">
+            <UsersIcon className="h-5 w-5 mr-2" />
+            {formData.department}
+          </div>
+        </div>
+      </div>
+
+      {/* Job Details */}
+      <div className="py-8 border-b">
+        <h2 className="text-xl font-semibold mb-4">Job Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-sm font-medium text-gray-500">Job Type</h3>
+            <p className="mt-1">{formData.job_type.replace('_', ' ').toLowerCase()}</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-gray-500">Experience Level</h3>
+            <p className="mt-1">{formData.experience_level.replace('_', ' ').toLowerCase()}</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-gray-500">Salary Range</h3>
+            <p className="mt-1">{formatSalaryDisplay()}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Description */}
+      <div className="py-8 border-b">
+        <h2 className="text-xl font-semibold mb-4">Description</h2>
+        <p className="whitespace-pre-wrap">{formData.description}</p>
+      </div>
+
+      {/* Requirements */}
+      {formData.requirements.some(Boolean) && (
+        <div className="py-8 border-b">
+          <h2 className="text-xl font-semibold mb-4">Requirements</h2>
+          <ul className="list-disc pl-5 space-y-2">
+            {formData.requirements.filter(Boolean).map((req, index) => (
+              <li key={index}>{req}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Benefits */}
+      {formData.benefits.some(Boolean) && (
+        <div className="py-8 border-b">
+          <h2 className="text-xl font-semibold mb-4">Benefits</h2>
+          <ul className="list-disc pl-5 space-y-2">
+            {formData.benefits.filter(Boolean).map((benefit, index) => (
+              <li key={index}>{benefit}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Skills */}
+      {formData.skills.some(Boolean) && (
+        <div className="py-8">
+          <h2 className="text-xl font-semibold mb-4">Required Skills</h2>
+          <div className="flex flex-wrap gap-2">
+            {formData.skills.filter(Boolean).map((skill, index) => (
+              <span
+                key={index}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function CreateJob() {
   const supabase = createClientComponentClient();
