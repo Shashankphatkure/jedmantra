@@ -27,6 +27,11 @@ export default function Profile() {
     website: '',
     linkedin_url: '',
     github_url: '',
+    projects: [],
+    courses: [],
+    major: '',
+    minor: '',
+    graduation_year: '',
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const supabase = createClientComponentClient();
@@ -120,6 +125,11 @@ export default function Profile() {
       website: '',
       linkedin_url: '',
       github_url: '',
+      projects: [],
+      courses: [],
+      major: '',
+      minor: '',
+      graduation_year: '',
       ...initialData
     });
   };
@@ -137,6 +147,11 @@ export default function Profile() {
       website: '',
       linkedin_url: '',
       github_url: '',
+      projects: [],
+      courses: [],
+      major: '',
+      minor: '',
+      graduation_year: '',
     });
   };
 
@@ -325,10 +340,10 @@ export default function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Academic Info</h2>
                 <button 
-                  onClick={() => handleOpenEdit('basic', {
-                    name: user.name,
-                    headline: user.headline,
-                    location: user.location
+                  onClick={() => handleOpenEdit('academic', {
+                    major: user.major,
+                    minor: user.minor,
+                    graduation_year: user.graduation_year
                   })}
                   className="text-gray-400 hover:text-gray-500"
                 >
@@ -764,30 +779,30 @@ export default function Profile() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Academic Role</label>
+            <label className="block text-sm font-medium text-gray-700">Major</label>
             <input
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.academic_role || ''}
-              onChange={(e) => setFormData({ ...formData, academic_role: e.target.value })}
+              value={formData?.major || ''}
+              onChange={(e) => setFormData({ ...formData, major: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Institution</label>
+            <label className="block text-sm font-medium text-gray-700">Minor</label>
             <input
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.institution || ''}
-              onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+              value={formData?.minor || ''}
+              onChange={(e) => setFormData({ ...formData, minor: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Department</label>
+            <label className="block text-sm font-medium text-gray-700">Expected Graduation Year</label>
             <input
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.department || ''}
-              onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+              value={formData?.graduation_year || ''}
+              onChange={(e) => setFormData({ ...formData, graduation_year: e.target.value })}
             />
           </div>
           <div className="flex justify-end gap-2 mt-6">
