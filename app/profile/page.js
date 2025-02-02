@@ -159,16 +159,60 @@ export default function Profile() {
   const EditModal = ({ isOpen, onClose, title, children }) => {
     return (
       <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        {/* Improved backdrop with blur effect */}
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+        
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <Dialog.Title className="text-lg font-semibold mb-4">{title}</Dialog.Title>
-            {children}
+          <Dialog.Panel className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <Dialog.Title className="text-xl font-semibold text-gray-900">
+                {title}
+              </Dialog.Title>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content with scroll */}
+            <div className="px-6 py-4 overflow-y-auto max-h-[calc(90vh-8rem)]">
+              {children}
+            </div>
+
+            {/* Footer - for modals that need it */}
+            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleUpdate();
+                    onClose();
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
           </Dialog.Panel>
         </div>
       </Dialog>
     );
   };
+
+  // Update the input and textarea styles
+  const inputStyles = "mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 transition-colors text-base";
+  const textareaStyles = "mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 transition-colors text-base min-h-[100px]";
 
   // Add this function to handle avatar updates
   const handleAvatarUpdate = async (event) => {
@@ -487,21 +531,75 @@ export default function Profile() {
               </div>
               <div className="space-y-6">
                 {user?.projects?.map((project, index) => (
-                  <div key={index} className="border-b last:border-0 pb-6 last:pb-0">
-                    <h3 className="font-medium text-gray-900">{project.name}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{project.description}</p>
-                    {project.url && (
-                      <a 
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-indigo-600 hover:text-indigo-500 mt-2 inline-block"
+                  <div 
+                    key={index} 
+                    className="p-6 border border-gray-200 rounded-xl space-y-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-lg font-medium text-gray-900">Project #{index + 1}</h4>
+                      <button
+                        onClick={() => {
+                          const newProjects = user.projects.filter((_, i) => i !== index);
+                          setFormData({ ...formData, projects: newProjects });
+                        }}
+                        className="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded-full transition-colors"
                       >
-                        View Project →
-                      </a>
-                    )}
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    {/* Project fields */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Project Name
+                        </label>
+                        <input
+                          type="text"
+                          className={inputStyles}
+                          value={project.name || ''}
+                          onChange={(e) => {
+                            const newProjects = [...user.projects];
+                            newProjects[index] = { ...project, name: e.target.value };
+                            setFormData({ ...formData, projects: newProjects });
+                          }}
+                          placeholder="Enter project name"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Description
+                        </label>
+                        <textarea
+                          className={textareaStyles}
+                          value={project.description || ''}
+                          onChange={(e) => {
+                            const newProjects = [...user.projects];
+                            newProjects[index] = { ...project, description: e.target.value };
+                            setFormData({ ...formData, projects: newProjects });
+                          }}
+                          placeholder="Describe your project..."
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
+                
+                <button
+                  onClick={() => {
+                    const newProjects = [...(user.projects || []), { name: '', description: '', url: '' }];
+                    setFormData({ ...formData, projects: newProjects });
+                  }}
+                  className="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:text-gray-900 hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                  Add New Project
+                </button>
               </div>
             </div>
 
@@ -634,48 +732,44 @@ export default function Profile() {
         onClose={handleCloseEdit}
         title="Edit Basic Information"
       >
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name
+            </label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData?.name || ''}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter your full name"
             />
           </div>
+          
           <div>
-            <label className="block text-sm font-medium text-gray-700">Headline</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Professional Headline
+            </label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData?.headline || ''}
               onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
+              placeholder="e.g., Software Engineer | Student at University"
             />
           </div>
+          
           <div>
-            <label className="block text-sm font-medium text-gray-700">Location</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Location
+            </label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData?.location || ''}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              placeholder="e.g., San Francisco, CA"
             />
-          </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700 disabled:opacity-50"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
           </div>
         </div>
       </EditModal>
@@ -689,25 +783,12 @@ export default function Profile() {
           <div>
             <label className="block text-sm font-medium text-gray-700">Bio</label>
             <textarea
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={textareaStyles}
               rows={4}
               value={formData.bio || user?.bio || ''}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              placeholder="Write a brief description about yourself..."
             />
-          </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-            >
-              Save
-            </button>
           </div>
         </div>
       </EditModal>
@@ -722,7 +803,7 @@ export default function Profile() {
             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData.phone_number || ''}
               onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
             />
@@ -731,7 +812,7 @@ export default function Profile() {
             <label className="block text-sm font-medium text-gray-700">Website</label>
             <input
               type="url"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData.website || ''}
               onChange={(e) => setFormData({ ...formData, website: e.target.value })}
             />
@@ -740,7 +821,7 @@ export default function Profile() {
             <label className="block text-sm font-medium text-gray-700">LinkedIn</label>
             <input
               type="url"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData.linkedin_url || ''}
               onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
             />
@@ -749,25 +830,10 @@ export default function Profile() {
             <label className="block text-sm font-medium text-gray-700">GitHub</label>
             <input
               type="url"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData.github_url || ''}
               onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
             />
-          </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
           </div>
         </div>
       </EditModal>
@@ -782,43 +848,31 @@ export default function Profile() {
             <label className="block text-sm font-medium text-gray-700">Major</label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData?.major || ''}
               onChange={(e) => setFormData({ ...formData, major: e.target.value })}
+              placeholder="Enter your major"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Minor</label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData?.minor || ''}
               onChange={(e) => setFormData({ ...formData, minor: e.target.value })}
+              placeholder="Enter your minor (if applicable)"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Expected Graduation Year</label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              className={inputStyles}
               value={formData?.graduation_year || ''}
               onChange={(e) => setFormData({ ...formData, graduation_year: e.target.value })}
+              placeholder="Enter graduation year"
             />
-          </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
           </div>
         </div>
       </EditModal>
@@ -833,26 +887,14 @@ export default function Profile() {
             <label className="block text-sm font-medium text-gray-700">Skills</label>
             <input
               type="text"
-              placeholder="Comma-separated skills"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+              placeholder="Enter skills separated by commas"
+              className={inputStyles}
               value={formData.skills?.join(', ') || ''}
               onChange={(e) => setFormData({ ...formData, skills: e.target.value.split(',').map(s => s.trim()) })}
             />
-          </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
+            <p className="mt-2 text-sm text-gray-500">
+              Enter your skills separated by commas (e.g., JavaScript, React, Node.js)
+            </p>
           </div>
         </div>
       </EditModal>
@@ -869,7 +911,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Title</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={exp.title || ''}
                   onChange={(e) => {
                     const newExp = [...formData.experience];
@@ -882,7 +924,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Company</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={exp.company || ''}
                   onChange={(e) => {
                     const newExp = [...formData.experience];
@@ -896,7 +938,7 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700">Start Date</label>
                   <input
                     type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                    className={inputStyles}
                     value={exp.start_date || ''}
                     onChange={(e) => {
                       const newExp = [...formData.experience];
@@ -909,7 +951,7 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700">End Date</label>
                   <input
                     type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                    className={inputStyles}
                     value={exp.end_date || ''}
                     onChange={(e) => {
                       const newExp = [...formData.experience];
@@ -922,7 +964,7 @@ export default function Profile() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description</label>
                 <textarea
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={textareaStyles}
                   rows={3}
                   value={exp.description || ''}
                   onChange={(e) => {
@@ -932,15 +974,6 @@ export default function Profile() {
                   }}
                 />
               </div>
-              <button
-                onClick={() => {
-                  const newExp = formData.experience.filter((_, i) => i !== index);
-                  setFormData({ ...formData, experience: newExp });
-                }}
-                className="text-red-600 hover:text-red-700 text-sm"
-              >
-                Remove
-              </button>
             </div>
           ))}
           <button
@@ -958,25 +991,9 @@ export default function Profile() {
           >
             Add Experience
           </button>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
-          </div>
         </div>
       </EditModal>
 
-      {/* Education Modal */}
       <EditModal
         isOpen={isEditing && editSection === 'education'}
         onClose={handleCloseEdit}
@@ -989,7 +1006,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Degree</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={edu.degree || ''}
                   onChange={(e) => {
                     const newEdu = [...formData.education];
@@ -1002,7 +1019,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Institution</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={edu.institution || ''}
                   onChange={(e) => {
                     const newEdu = [...formData.education];
@@ -1016,7 +1033,7 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700">Start Year</label>
                   <input
                     type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                    className={inputStyles}
                     value={edu.start_date || ''}
                     onChange={(e) => {
                       const newEdu = [...formData.education];
@@ -1029,7 +1046,7 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700">End Year</label>
                   <input
                     type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                    className={inputStyles}
                     value={edu.end_date || ''}
                     onChange={(e) => {
                       const newEdu = [...formData.education];
@@ -1043,7 +1060,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Grade/Honors</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={edu.grade || ''}
                   onChange={(e) => {
                     const newEdu = [...formData.education];
@@ -1052,15 +1069,6 @@ export default function Profile() {
                   }}
                 />
               </div>
-              <button
-                onClick={() => {
-                  const newEdu = formData.education.filter((_, i) => i !== index);
-                  setFormData({ ...formData, education: newEdu });
-                }}
-                className="text-red-600 hover:text-red-700 text-sm"
-              >
-                Remove
-              </button>
             </div>
           ))}
           <button
@@ -1078,25 +1086,9 @@ export default function Profile() {
           >
             Add Education
           </button>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
-          </div>
         </div>
       </EditModal>
 
-      {/* Certifications Modal */}
       <EditModal
         isOpen={isEditing && editSection === 'certifications'}
         onClose={handleCloseEdit}
@@ -1109,7 +1101,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Certification Name</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={cert.name || ''}
                   onChange={(e) => {
                     const newCert = [...formData.certifications];
@@ -1122,7 +1114,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Issuing Organization</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={cert.issuer || ''}
                   onChange={(e) => {
                     const newCert = [...formData.certifications];
@@ -1135,7 +1127,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Date</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={cert.date || ''}
                   onChange={(e) => {
                     const newCert = [...formData.certifications];
@@ -1144,15 +1136,6 @@ export default function Profile() {
                   }}
                 />
               </div>
-              <button
-                onClick={() => {
-                  const newCert = formData.certifications.filter((_, i) => i !== index);
-                  setFormData({ ...formData, certifications: newCert });
-                }}
-                className="text-red-600 hover:text-red-700 text-sm"
-              >
-                Remove
-              </button>
             </div>
           ))}
           <button
@@ -1168,25 +1151,9 @@ export default function Profile() {
           >
             Add Certification
           </button>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
-          </div>
         </div>
       </EditModal>
 
-      {/* Projects Modal */}
       <EditModal
         isOpen={isEditing && editSection === 'projects'}
         onClose={handleCloseEdit}
@@ -1194,89 +1161,78 @@ export default function Profile() {
       >
         <div className="space-y-4">
           {formData.projects?.map((project, index) => (
-            <div key={index} className="p-4 border rounded-lg space-y-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Project Name</label>
-                <input
-                  type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-                  value={project.name || ''}
-                  onChange={(e) => {
-                    const newProjects = [...(formData.projects || [])];
-                    newProjects[index] = { ...project, name: e.target.value };
+            <div 
+              key={index} 
+              className="p-6 border border-gray-200 rounded-xl space-y-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex justify-between items-center">
+                <h4 className="text-lg font-medium text-gray-900">Project #{index + 1}</h4>
+                <button
+                  onClick={() => {
+                    const newProjects = formData.projects.filter((_, i) => i !== index);
                     setFormData({ ...formData, projects: newProjects });
                   }}
-                />
+                  className="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded-full transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
-                <textarea
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-                  rows={3}
-                  value={project.description || ''}
-                  onChange={(e) => {
-                    const newProjects = [...(formData.projects || [])];
-                    newProjects[index] = { ...project, description: e.target.value };
-                    setFormData({ ...formData, projects: newProjects });
-                  }}
-                />
+              
+              {/* Project fields */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Project Name
+                  </label>
+                  <input
+                    type="text"
+                    className={inputStyles}
+                    value={project.name || ''}
+                    onChange={(e) => {
+                      const newProjects = [...formData.projects];
+                      newProjects[index] = { ...project, name: e.target.value };
+                      setFormData({ ...formData, projects: newProjects });
+                    }}
+                    placeholder="Enter project name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    className={textareaStyles}
+                    value={project.description || ''}
+                    onChange={(e) => {
+                      const newProjects = [...formData.projects];
+                      newProjects[index] = { ...project, description: e.target.value };
+                      setFormData({ ...formData, projects: newProjects });
+                    }}
+                    placeholder="Describe your project..."
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Project URL</label>
-                <input
-                  type="url"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-                  value={project.url || ''}
-                  onChange={(e) => {
-                    const newProjects = [...(formData.projects || [])];
-                    newProjects[index] = { ...project, url: e.target.value };
-                    setFormData({ ...formData, projects: newProjects });
-                  }}
-                />
-              </div>
-              <button
-                onClick={() => {
-                  const newProjects = formData.projects.filter((_, i) => i !== index);
-                  setFormData({ ...formData, projects: newProjects });
-                }}
-                className="text-red-600 hover:text-red-700 text-sm"
-              >
-                Remove
-              </button>
             </div>
           ))}
+          
           <button
             onClick={() => {
-              const newProjects = [...(formData.projects || []), {
-                name: '',
-                description: '',
-                url: ''
-              }];
+              const newProjects = [...(formData.projects || []), { name: '', description: '', url: '' }];
               setFormData({ ...formData, projects: newProjects });
             }}
-            className="w-full px-4 py-2 text-sm font-medium text-pink-600 border border-pink-600 rounded-md hover:bg-pink-50"
+            className="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:text-gray-900 hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
           >
-            Add Project
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            Add New Project
           </button>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
-          </div>
         </div>
       </EditModal>
 
-      {/* Coursework Modal */}
       <EditModal
         isOpen={isEditing && editSection === 'courses'}
         onClose={handleCloseEdit}
@@ -1289,7 +1245,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Course Name</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={course.name || ''}
                   onChange={(e) => {
                     const newCourses = [...(formData.courses || [])];
@@ -1302,7 +1258,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Course Code</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={course.code || ''}
                   onChange={(e) => {
                     const newCourses = [...(formData.courses || [])];
@@ -1315,7 +1271,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">Grade</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  className={inputStyles}
                   value={course.grade || ''}
                   onChange={(e) => {
                     const newCourses = [...(formData.courses || [])];
@@ -1348,21 +1304,6 @@ export default function Profile() {
           >
             Add Course
           </button>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleCloseEdit}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
-          </div>
         </div>
       </EditModal>
     </div>
