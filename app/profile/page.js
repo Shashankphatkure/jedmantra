@@ -206,7 +206,7 @@ export default function Profile() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/30"></div>
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative w-40 h-40 md:w-48 md:h-48">
               <Image
