@@ -76,10 +76,42 @@ export default function Header() {
   };
 
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Courses", href: "/courses" },
-    { name: "Jobs", href: "/jobs" },
-    { name: "Career Advice", href: "/career-advice" },
+    { 
+      name: "Home", 
+      href: "/",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      )
+    },
+    { 
+      name: "Courses", 
+      href: "/courses",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      )
+    },
+    { 
+      name: "Jobs", 
+      href: "/jobs",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      )
+    },
+    { 
+      name: "Career Advice", 
+      href: "/career-advice",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      )
+    },
   ];
 
   return (
@@ -108,9 +140,10 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-base font-medium text-gray-700 hover:text-indigo-600"
+                className="flex items-center space-x-2 text-base font-medium text-gray-700 hover:text-indigo-600"
               >
-                {item.name}
+                {item.icon}
+                <span>{item.name}</span>
               </Link>
             ))}
           </div>
@@ -171,46 +204,75 @@ export default function Header() {
                   </div>
                   <Link
                     href="/student"
-                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                     onClick={() => setIsUserMenuOpen(false)}
                   >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5m0 0l9-5-9-5-9 5 9 5m0 0v6" />
+                    </svg>
                     Student Dashboard
                   </Link>
                   <Link
                     href="/instructor"
-                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                     onClick={() => setIsUserMenuOpen(false)}
                   >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                    </svg>
                     Instructor Dashboard
                   </Link>
                   <Link
                     href="/recruiter"
-                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                     onClick={() => setIsUserMenuOpen(false)}
                   >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
                     Recruiter Dashboard
                   </Link>
                   <Link
                     href="/profile"
-                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                     onClick={() => setIsUserMenuOpen(false)}
                   >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                     Profile
                   </Link>
                   <Link
                     href="/settings"
-                    className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                     onClick={() => setIsUserMenuOpen(false)}
                   >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
                     Settings
+                  </Link>
+                  <Link
+                    href="/messages"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                    Messages
                   </Link>
                   <button
                     onClick={() => {
                       handleSignOut();
                       setIsUserMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                   >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                     Sign out
                   </button>
                 </div>
@@ -267,9 +329,10 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                  className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
                 >
-                  {item.name}
+                  {item.icon}
+                  <span>{item.name}</span>
                 </Link>
               ))}
               {!user && (
