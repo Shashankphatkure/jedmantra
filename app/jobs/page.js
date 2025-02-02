@@ -1,25 +1,266 @@
+'use client'
+
 import Image from "next/image";
 import Link from "next/link";
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useEffect, useState } from 'react'
 
-export default async function Jobs() {
-  const supabase = createServerComponentClient({ cookies })
-  const { data: jobs } = await supabase
-    .from('jobs')
-    .select(`
-      *,
-      job_recruiters (
-        recruiters (
-          first_name,
-          last_name,
-          avatar_url,
-          response_rate
-        )
+export default function Jobs() {
+  const [jobs, setJobs] = useState([])
+  const [filteredJobs, setFilteredJobs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [locationQuery, setLocationQuery] = useState('')
+  const [filters, setFilters] = useState({
+    datePosted: '',
+    jobType: [],
+    salaryRange: [],
+    experienceLevel: [],
+  })
+  const supabase = createClientComponentClient()
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            job_recruiters (
+              recruiters (
+                first_name,
+                last_name,
+                avatar_url,
+                response_rate
+              )
+            )
+          `)
+          .order('posted_at', { ascending: false })
+        
+        if (error) {
+          console.error('Error fetching jobs:', error)
+          return
+        }
+
+        console.log('Fetched jobs:', data)
+        if (data) {
+          setJobs(data)
+          setFilteredJobs(data)
+        }
+      } catch (error) {
+        console.error('Error:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchJobs()
+  }, [])
+
+  useEffect(() => {
+    console.log('Current filters:', filters)
+    console.log('Search query:', searchQuery)
+    console.log('Location query:', locationQuery)
+    console.log('Total jobs before filtering:', jobs.length)
+
+    let result = [...jobs]
+
+    if (searchQuery || locationQuery) {
+      result = result.filter(job => {
+        const matchesSearch = !searchQuery || 
+          job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          job.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          job.description.toLowerCase().includes(searchQuery.toLowerCase())
+
+        const matchesLocation = !locationQuery ||
+          job.location.toLowerCase().includes(locationQuery.toLowerCase())
+
+        return matchesSearch && matchesLocation
+      })
+      console.log('Jobs after search/location filter:', result.length)
+    }
+
+    if (filters.datePosted) {
+      const now = new Date()
+      const days = {
+        "Last 24 hours": 1,
+        "Last 3 days": 3,
+        "Last 7 days": 7,
+        "Last 14 days": 14,
+        "Last 30 days": 30,
+      }
+      const daysAgo = days[filters.datePosted]
+      if (daysAgo) {
+        result = result.filter(job => {
+          const jobDate = new Date(job.posted_at)
+          const diffTime = Math.abs(now - jobDate)
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+          return diffDays <= daysAgo
+        })
+        console.log('Jobs after date filter:', result.length)
+      }
+    }
+
+    if (filters.jobType.length > 0) {
+      result = result.filter(job => 
+        filters.jobType.includes(job.job_type)
       )
-    `)
-    .eq('status', 'Open')
-    .order('posted_at', { ascending: false })
+      console.log('Jobs after job type filter:', result.length)
+    }
+
+    if (filters.experienceLevel.length > 0) {
+      result = result.filter(job => 
+        filters.experienceLevel.includes(job.experience_level)
+      )
+      console.log('Jobs after experience level filter:', result.length)
+    }
+
+    if (filters.salaryRange.length > 0) {
+      result = result.filter(job => {
+        return filters.salaryRange.some(range => {
+          const [min, max] = range.split(' - ').map(str => 
+            parseInt(str.replace(/[£,+]/g, ''))
+          )
+          return (
+            (job.salary_min >= min || !min) && 
+            (job.salary_max <= max || range.includes('+'))
+          )
+        })
+      })
+      console.log('Jobs after salary filter:', result.length)
+    }
+
+    console.log('Final filtered jobs:', result.length)
+    setFilteredJobs(result)
+  }, [jobs, searchQuery, locationQuery, filters])
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+  }
+
+  const handleFilterChange = (type, value) => {
+    setFilters(prev => {
+      if (type === 'datePosted') {
+        return { ...prev, datePosted: value }
+      }
+      
+      const updatedValues = prev[type].includes(value)
+        ? prev[type].filter(item => item !== value)
+        : [...prev[type], value]
+      
+      return { ...prev, [type]: updatedValues }
+    })
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      datePosted: '',
+      jobType: [],
+      salaryRange: [],
+      experienceLevel: [],
+    })
+    setSearchQuery('')
+    setLocationQuery('')
+  }
+
+  const searchFormJSX = (
+    <div className="bg-white p-6 rounded-xl shadow-xl">
+      <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Job title, keyword, or company"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <div className="flex-1">
+          <input
+            type="text"
+            value={locationQuery}
+            onChange={(e) => setLocationQuery(e.target.value)}
+            placeholder="City, state, or remote"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <button 
+          type="submit"
+          className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Search Jobs
+        </button>
+      </form>
+    </div>
+  )
+
+  const datePostedFilterJSX = (
+    <div className="space-y-3">
+      {[
+        { name: "Last 24 hours", count: 156 },
+        { name: "Last 3 days", count: 284 },
+        { name: "Last 7 days", count: 542 },
+        { name: "Last 14 days", count: 864 },
+        { name: "Last 30 days", count: 1205 },
+      ].map((option) => (
+        <label
+          key={option.name}
+          className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
+        >
+          <div className="flex items-center">
+            <input
+              type="radio"
+              name="date"
+              checked={filters.datePosted === option.name}
+              onChange={() => handleFilterChange('datePosted', option.name)}
+              className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+            />
+            <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
+              {option.name}
+            </span>
+          </div>
+          <span className="text-sm text-gray-500">
+            {option.count}
+          </span>
+        </label>
+      ))}
+    </div>
+  )
+
+  const jobTypeFilterJSX = (
+    <div className="space-y-2">
+      {[
+        "Full-time",
+        "Part-time",
+        "Contract",
+        "Freelance",
+      ].map((type) => (
+        <label key={type} className="flex items-center">
+          <input
+            type="checkbox"
+            checked={filters.jobType.includes(type)}
+            onChange={() => handleFilterChange('jobType', type)}
+            className="h-4 w-4 text-blue-600 rounded"
+          />
+          <span className="ml-2 text-sm text-gray-700">
+            {type}
+          </span>
+        </label>
+      ))}
+    </div>
+  )
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading jobs...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,28 +275,7 @@ export default async function Jobs() {
             daily
           </p>
 
-          {/* Search Form - Updated styling */}
-          <div className="bg-white p-6 rounded-xl shadow-xl">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Job title, keyword, or company"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="City, state, or remote"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                Search Jobs
-              </button>
-            </div>
-          </div>
+          {searchFormJSX}
         </div>
 
         {/* Added decorative background elements */}
@@ -75,68 +295,19 @@ export default async function Jobs() {
                 </button>
               </div>
 
-              {/* Updated filter sections with counts and hover states */}
               <div className="space-y-8">
-                {/* Date Posted - converted to modern style */}
                 <div className="mb-8">
                   <h4 className="font-medium text-gray-900 mb-4">
                     Date Posted
                   </h4>
-                  <div className="space-y-3">
-                    {[
-                      { name: "Last 24 hours", count: 156 },
-                      { name: "Last 3 days", count: 284 },
-                      { name: "Last 7 days", count: 542 },
-                      { name: "Last 14 days", count: 864 },
-                      { name: "Last 30 days", count: 1205 },
-                    ].map((option) => (
-                      <label
-                        key={option.name}
-                        className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
-                      >
-                        <div className="flex items-center">
-                          <input
-                            type="radio"
-                            name="date"
-                            className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                          />
-                          <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
-                            {option.name}
-                          </span>
-                        </div>
-                        <span className="text-sm text-gray-500">
-                          {option.count}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
+                  {datePostedFilterJSX}
                 </div>
 
-                {/* Job Type - similar updates for other filter sections */}
                 <div className="mb-6">
                   <h4 className="font-medium mb-2">Job Type</h4>
-                  <div className="space-y-2">
-                    {[
-                      "Full-time",
-                      "Part-time",
-                      "Contract",
-                      "Temporary",
-                      "Internship",
-                    ].map((type) => (
-                      <label key={type} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-600 rounded"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">
-                          {type}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
+                  {jobTypeFilterJSX}
                 </div>
 
-                {/* Salary Range */}
                 <div className="mb-6">
                   <h4 className="font-medium mb-2">Salary Range</h4>
                   <div className="space-y-2">
@@ -160,7 +331,6 @@ export default async function Jobs() {
                   </div>
                 </div>
 
-                {/* Experience Level */}
                 <div>
                   <h4 className="font-medium mb-2">Experience Level</h4>
                   <div className="space-y-2">
@@ -192,7 +362,7 @@ export default async function Jobs() {
             {/* Sort and Results Count */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-gray-600">
-                Showing <span className="font-semibold">1,205</span> jobs
+                Showing <span className="font-semibold">{filteredJobs.length}</span> jobs
               </p>
               <select className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option>Most relevant</option>
@@ -204,7 +374,7 @@ export default async function Jobs() {
 
             {/* Updated Job Cards */}
             <div className="space-y-6">
-              {jobs?.map((job) => (
+              {filteredJobs.map((job) => (
                 <div
                   key={job.id}
                   className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -302,6 +472,12 @@ export default async function Jobs() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="text-sm text-gray-500">
+          Total Jobs: {jobs.length} | Filtered Jobs: {filteredJobs.length}
+        </p>
       </div>
     </div>
   );
