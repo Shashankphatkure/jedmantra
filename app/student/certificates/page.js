@@ -28,9 +28,9 @@ export default function Certificates() {
     {
       id: 1,
       course: "Web Development Fundamentals",
-      issueDate: "2024-01-15",
+      issueDate: "2024-01-15", 
       status: "Issued",
-      image: "https://via.placeholder.com/400x300",
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=60",
       instructor: "Sarah Johnson",
       category: "Development",
       duration: "12 weeks",
@@ -42,15 +42,27 @@ export default function Certificates() {
       id: 2,
       course: "Digital Marketing Essentials",
       issueDate: "2024-02-01",
-      status: "Issued",
-      image: "https://via.placeholder.com/400x300",
+      status: "Issued", 
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60",
+      instructor: "Sarah Johnson",
+      category: "Development",
+      duration: "12 weeks",
+      score: "95%",
+      validUntil: "2025-01-15",
+      skills: ["HTML", "CSS", "JavaScript"]
     },
     {
       id: 3,
       course: "Data Science Basics",
       issueDate: "In Progress",
       status: "Pending",
-      image: "https://via.placeholder.com/400x300",
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60",
+      instructor: "Sarah Johnson",
+      category: "Development", 
+      duration: "12 weeks",
+      score: "95%",
+      validUntil: "2025-01-15",
+      skills: ["HTML", "CSS", "JavaScript"]
     },
   ];
 
@@ -101,7 +113,7 @@ export default function Certificates() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-blue-600/20" />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
           <div className="max-w-2xl">
             <h1 className="text-4xl font-bold text-white mb-4">
               My Certificates
@@ -186,7 +198,7 @@ export default function Certificates() {
         </div>
 
         {/* Enhanced Certificates Grid */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 mb-6">
           {filteredCertificates.map((certificate) => (
             <div
               key={certificate.id}
@@ -198,6 +210,9 @@ export default function Certificates() {
                   src={certificate.image}
                   alt={certificate.course}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  style={{ objectFit: 'cover' }}
+                  priority
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
