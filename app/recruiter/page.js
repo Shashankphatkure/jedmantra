@@ -144,6 +144,13 @@ export default function RecruiterDashboard() {
             </div>
             <div className="mt-4 sm:mt-0 flex space-x-4">
               <Link
+                href="/recruiter/company"
+                className="inline-flex items-center px-6 py-3 border-2 border-white rounded-lg text-white hover:bg-white/10 transition-colors font-medium group"
+              >
+                View Company
+                <ArrowRightIcon className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
                 href="/recruiter/jobs/create"
                 className="inline-flex items-center px-6 py-3 border-2 border-white rounded-lg text-white hover:bg-white/10 transition-colors font-medium group"
               >
