@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Jobs() {
   const [jobs, setJobs] = useState([])
@@ -20,6 +21,8 @@ export default function Jobs() {
   const [currentPage, setCurrentPage] = useState(1)
   const jobsPerPage = 5
   const supabase = createClientComponentClient()
+  const router = useRouter()
+  const [savedJobIds, setSavedJobIds] = useState(new Set())
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -140,6 +143,75 @@ export default function Jobs() {
     console.log('Jobs length:', jobs.length)
     console.log('Filtered jobs length:', filteredJobs.length)
   }, [loading, jobs, filteredJobs])
+
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
+        
+        if (userError || !user) {
+          return // Don't redirect, just return as saving is optional
+        }
+
+        const { data, error } = await supabase
+          .from('saved_jobs')
+          .select('job_id')
+          .eq('user_id', user.id)
+
+        if (error) throw error
+        
+        setSavedJobIds(new Set(data.map(item => item.job_id)))
+      } catch (error) {
+        console.error('Error fetching saved jobs:', error)
+      }
+    }
+
+    fetchSavedJobs()
+  }, [supabase])
+
+  const handleSaveJob = async (jobId) => {
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError || !user) {
+        router.push('/login')
+        return
+      }
+
+      if (savedJobIds.has(jobId)) {
+        // Unsave the job
+        const { error } = await supabase
+          .from('saved_jobs')
+          .delete()
+          .match({ 
+            job_id: jobId,
+            user_id: user.id 
+          })
+
+        if (error) throw error
+        
+        setSavedJobIds(prev => {
+          const next = new Set(prev)
+          next.delete(jobId)
+          return next
+        })
+      } else {
+        // Save the job
+        const { error } = await supabase
+          .from('saved_jobs')
+          .insert({ 
+            job_id: jobId,
+            user_id: user.id 
+          })
+
+        if (error) throw error
+
+        setSavedJobIds(prev => new Set([...prev, jobId]))
+      }
+    } catch (error) {
+      console.error('Error saving/unsaving job:', error)
+    }
+  }
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -423,10 +495,14 @@ export default function Jobs() {
                         </div>
                       </div>
                     </div>
-                    <button className="text-blue-600 hover:text-blue-700">
+                    <button 
+                      onClick={() => handleSaveJob(job.id)}
+                      className="text-blue-600 hover:text-blue-700 transition-colors"
+                      title={savedJobIds.has(job.id) ? "Remove from saved jobs" : "Save job"}
+                    >
                       <svg
                         className="h-6 w-6"
-                        fill="none"
+                        fill={savedJobIds.has(job.id) ? "currentColor" : "none"}
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >

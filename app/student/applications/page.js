@@ -141,14 +141,24 @@ export default function StudentApplications() {
             <p className="text-xl text-white/90 mb-8">
               Track and manage your job applications in one place
             </p>
-            <Link
-              href="/jobs"
-              className="inline-flex items-center px-6 py-3 border-2 border-white text-white 
-                font-medium rounded-lg hover:bg-white/10 transition-colors group"
-            >
-              Browse New Jobs
-              <ArrowRightIcon className="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <div className="flex gap-4">
+              <Link
+                href="/jobs"
+                className="inline-flex items-center px-6 py-3 border-2 border-white text-white 
+                  font-medium rounded-lg hover:bg-white/10 transition-colors group"
+              >
+                Browse New Jobs
+                <ArrowRightIcon className="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                href="/savedjobs"
+                className="inline-flex items-center px-6 py-3 border-2 border-white text-white 
+                  font-medium rounded-lg hover:bg-white/10 transition-colors group"
+              >
+                Saved Jobs
+                <ArrowRightIcon className="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </div>
         </div>
 
