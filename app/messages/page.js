@@ -2,22 +2,82 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Messages() {
+  // Mock conversation data
+  const conversations = [
+    {
+      id: 1,
+      name: "Sarah Johnson",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      online: true,
+      lastMessage: "That sounds great! Let me know when you're free",
+      time: "2m ago",
+      unread: 2
+    },
+    {
+      id: 2,
+      name: "Michael Chen",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+      online: false,
+      lastMessage: "The project files have been updated",
+      time: "1h ago",
+      unread: 0
+    },
+    {
+      id: 3,
+      name: "Emma Wilson",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+      online: true,
+      lastMessage: "Perfect, thanks for the quick response!",
+      time: "3h ago",
+      unread: 1
+    }
+  ];
+
+  // Mock messages data
+  const messages = [
+    {
+      id: 1,
+      type: "received",
+      sender: "Sarah Johnson",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      message: "Hi! How are you doing? I was wondering if you had time to review the latest designs?",
+      time: "10:23 AM"
+    },
+    {
+      id: 2,
+      type: "sent",
+      message: "Hey Sarah! I'm good, thanks. Yes, I've looked at them and they look great! Just had a couple of small suggestions.",
+      time: "10:25 AM"
+    },
+    {
+      id: 3,
+      type: "received",
+      sender: "Sarah Johnson",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      message: "That's great to hear! What suggestions did you have in mind?",
+      time: "10:26 AM"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex h-screen overflow-hidden">
+    <div className="min-h-screen bg-zinc-50/50">
+      <div className="flex h-screen">
         {/* Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
-          {/* Search */}
-          <div className="p-4 border-b border-gray-200">
+        <div className="w-[380px] bg-white border-r border-zinc-200 flex flex-col">
+          {/* Header Section */}
+          <div className="px-6 py-5 border-b border-zinc-200">
+            <h2 className="text-xl font-semibold text-zinc-900 mb-5">Messages</h2>
+            {/* Search */}
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search messages"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search conversations..."
+                className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl
+                focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/10 text-sm transition-all"
               />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg
-                  className="h-5 w-5 text-gray-400"
+                  className="h-5 w-5 text-zinc-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -35,102 +95,90 @@ export default function Messages() {
 
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto">
-            {[
-              {
-                name: "Sarah Johnson",
-                avatar: "https://via.placeholder.com/40",
-                lastMessage: "Thanks for the feedback on my portfolio!",
-                time: "2m ago",
-                unread: 2,
-                online: true,
-              },
-              {
-                name: "Tech Corp HR",
-                avatar: "https://via.placeholder.com/40",
-                lastMessage: "Your interview is scheduled for tomorrow at 2 PM",
-                time: "1h ago",
-                unread: 0,
-                online: true,
-              },
-              {
-                name: "Mike Chen",
-                avatar: "https://via.placeholder.com/40",
-                lastMessage: "The course materials have been updated",
-                time: "3h ago",
-                unread: 0,
-                online: false,
-              },
-            ].map((conversation) => (
-              <div
-                key={conversation.name}
-                className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-200"
-              >
-                <div className="flex items-center">
-                  <div className="relative">
-                    <Image
-                      src={conversation.avatar}
-                      alt={conversation.name}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    {conversation.online && (
-                      <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white" />
-                    )}
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-900">
-                        {conversation.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {conversation.time}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-500 truncate">
-                        {conversation.lastMessage}
-                      </p>
-                      {conversation.unread > 0 && (
-                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-blue-600">
-                          <span className="text-xs font-medium text-white">
-                            {conversation.unread}
-                          </span>
-                        </span>
+            <div className="px-3 py-4">
+              {conversations.map((conversation) => (
+                <div
+                  key={conversation.id}
+                  className="px-3 py-3.5 hover:bg-zinc-50 rounded-xl cursor-pointer transition-all 
+                  duration-200 group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-shrink-0">
+                      <Image
+                        src={conversation.avatar}
+                        alt={conversation.name}
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
+                      />
+                      {conversation.online && (
+                        <span className="absolute bottom-0.5 right-0.5 block h-3 w-3 rounded-full 
+                        bg-emerald-500 ring-2 ring-white" />
                       )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-semibold text-zinc-900 truncate group-hover:text-blue-600 
+                        transition-colors">
+                          {conversation.name}
+                        </p>
+                        <p className="text-xs text-zinc-500 tabular-nums pl-4">
+                          {conversation.time}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-zinc-600 truncate">
+                          {conversation.lastMessage}
+                        </p>
+                        {conversation.unread > 0 && (
+                          <span className="ml-3 inline-flex items-center justify-center h-5 w-5 rounded-full 
+                          bg-blue-600 shadow-sm">
+                            <span className="text-xs font-medium text-white">
+                              {conversation.unread}
+                            </span>
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col bg-white">
           {/* Chat Header */}
-          <div className="bg-white border-b border-gray-200 px-4 py-3">
+          <div className="px-8 py-5 bg-white border-b border-zinc-200 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <div className="relative">
                   <Image
-                    src="https://via.placeholder.com/40"
-                    alt="Sarah Johnson"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
+                    src={conversations[0].avatar}
+                    alt={conversations[0].name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
                   />
-                  <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white" />
+                  <span className="absolute bottom-0.5 right-0.5 block h-3 w-3 rounded-full 
+                  bg-emerald-500 ring-2 ring-white" />
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-900">
-                    Sarah Johnson
-                  </p>
-                  <p className="text-xs text-gray-500">Online</p>
+                <div className="ml-4">
+                  <h3 className="text-base font-semibold text-zinc-900">
+                    {conversations[0].name}
+                  </h3>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                    <p className="text-sm text-zinc-500">Online</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <button className="p-2 text-gray-400 hover:text-gray-500">
+              
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3">
+                <button className="p-2.5 text-zinc-500 hover:text-zinc-600 hover:bg-zinc-50 
+                rounded-xl transition-all duration-200">
                   <svg
                     className="h-6 w-6"
                     fill="none"
@@ -145,7 +193,7 @@ export default function Messages() {
                     />
                   </svg>
                 </button>
-                <button className="p-2 text-gray-400 hover:text-gray-500">
+                <button className="p-2.5 text-zinc-500 hover:text-zinc-600 hover:bg-zinc-50 rounded-xl transition-all duration-200">
                   <svg
                     className="h-6 w-6"
                     fill="none"
@@ -160,7 +208,7 @@ export default function Messages() {
                     />
                   </svg>
                 </button>
-                <button className="p-2 text-gray-400 hover:text-gray-500">
+                <button className="p-2.5 text-zinc-500 hover:text-zinc-600 hover:bg-zinc-50 rounded-xl transition-all duration-200">
                   <svg
                     className="h-6 w-6"
                     fill="none"
@@ -179,75 +227,36 @@ export default function Messages() {
             </div>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {[
-              {
-                sender: "Sarah Johnson",
-                avatar: "https://via.placeholder.com/32",
-                message:
-                  "Hi! I wanted to thank you for the detailed feedback on my portfolio. It was really helpful!",
-                time: "2:30 PM",
-                type: "received",
-              },
-              {
-                sender: "You",
-                message:
-                  "You're welcome! Your work shows great potential. I particularly liked your UI/UX projects.",
-                time: "2:31 PM",
-                type: "sent",
-              },
-              {
-                sender: "Sarah Johnson",
-                avatar: "https://via.placeholder.com/32",
-                message:
-                  "That means a lot coming from you! I've been working hard to improve my design skills.",
-                time: "2:33 PM",
-                type: "received",
-              },
-              {
-                sender: "You",
-                message:
-                  "It shows! Have you considered applying for the senior designer position at Tech Corp?",
-                time: "2:34 PM",
-                type: "sent",
-              },
-            ].map((message, index) => (
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 bg-gradient-to-b from-zinc-50/50 to-white">
+            {messages.map((message) => (
               <div
-                key={index}
-                className={`flex ${
-                  message.type === "sent" ? "justify-end" : "justify-start"
-                }`}
+                key={message.id}
+                className={`flex ${message.type === "sent" ? "justify-end" : "justify-start"}`}
               >
-                <div
-                  className={`flex items-end ${
-                    message.type === "sent" ? "flex-row-reverse" : ""
-                  }`}
-                >
+                <div className={`flex items-end max-w-[70%] gap-3 ${
+                  message.type === "sent" ? "flex-row-reverse" : ""
+                }`}>
                   {message.type === "received" && (
                     <Image
                       src={message.avatar}
                       alt={message.sender}
-                      width={32}
-                      height={32}
-                      className="rounded-full mr-2"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm"
                     />
                   )}
-                  <div
-                    className={`max-w-lg px-4 py-2 rounded-lg ${
+                  <div className={`px-5 py-3 rounded-2xl shadow-sm ${
+                    message.type === "sent"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white border border-zinc-200/80"
+                  }`}>
+                    <p className="text-[15px] leading-relaxed">{message.message}</p>
+                    <p className={`text-xs mt-2 ${
                       message.type === "sent"
-                        ? "bg-blue-600 text-white mr-2"
-                        : "bg-gray-100 text-gray-900 ml-2"
-                    }`}
-                  >
-                    <p className="text-sm">{message.message}</p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        message.type === "sent"
-                          ? "text-blue-100"
-                          : "text-gray-500"
-                      }`}
-                    >
+                        ? "text-blue-100"
+                        : "text-zinc-500"
+                    }`}>
                       {message.time}
                     </p>
                   </div>
@@ -257,9 +266,10 @@ export default function Messages() {
           </div>
 
           {/* Message Input */}
-          <div className="bg-white border-t border-gray-200 p-4">
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-500">
+          <div className="px-8 py-5 bg-white border-t border-zinc-200">
+            <div className="flex items-center gap-4 bg-zinc-50 p-2 rounded-xl border border-zinc-200/80">
+              <button className="p-2.5 text-zinc-500 hover:text-zinc-600 hover:bg-white 
+              rounded-lg transition-all duration-200">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -277,26 +287,30 @@ export default function Messages() {
               <input
                 type="text"
                 placeholder="Type your message..."
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 bg-transparent border-0 focus:ring-0 text-[15px] py-2.5 px-2"
               />
-              <button className="p-2 text-gray-400 hover:text-gray-500">
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                Send
-              </button>
+              <div className="flex items-center gap-2">
+                <button className="p-2.5 text-zinc-500 hover:text-zinc-600 hover:bg-white 
+                rounded-lg transition-all duration-200">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+                <button className="px-6 py-2.5 text-[15px] font-semibold rounded-lg text-white 
+                bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-sm">
+                  Send
+                </button>
+              </div>
             </div>
           </div>
         </div>
