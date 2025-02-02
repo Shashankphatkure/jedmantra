@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRightIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
@@ -16,28 +16,12 @@ import {
   DocumentCheckIcon,
   StarIcon
 } from "@heroicons/react/24/outline";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function RecruiterDashboard() {
-  const [recruiter] = useState({
-    id: "123e4567-e89b-12d3-a456-426614174000",
-    first_name: "Sarah",
-    last_name: "Johnson",
-    title: "Senior Technical Recruiter",
-    company: "TechCorp Inc.",
-    email: "sarah.johnson@techcorp.com",
-    avatar_url: "/avatars/sarah.jpg",
-    is_online: true,
-    response_rate: 95.5,
-    avg_response_time: 120,
-    current_hiring_count: 8,
-    office_location: "New York, NY",
-    performance_metrics: {
-      hire_rate: 78,
-      candidate_satisfaction: 4.8,
-      time_to_hire: 25,
-      active_candidates: 156
-    }
-  });
+  const [recruiter, setRecruiter] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClientComponentClient();
 
   const [stats] = useState([
     { name: "Active Jobs", stat: "12", icon: BriefcaseIcon },
@@ -78,6 +62,69 @@ export default function RecruiterDashboard() {
       status: "active",
     },
   ]);
+
+  useEffect(() => {
+    async function getRecruiterProfile() {
+      try {
+        // Get the current logged in user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+
+        // Fetch the recruiter profile for this user
+        const { data: recruiterData, error: recruiterError } = await supabase
+          .from('recruiters')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (recruiterError) throw recruiterError;
+
+        setRecruiter({
+          ...recruiterData,
+          performance_metrics: {
+            hire_rate: 78,
+            candidate_satisfaction: 4.8,
+            time_to_hire: 25,
+            active_candidates: 156
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching recruiter profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    getRecruiterProfile();
+  }, [supabase]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!recruiter) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900">No Recruiter Profile Found</h2>
+          <p className="mt-2 text-gray-600">Please complete your profile setup to continue.</p>
+          <Link
+            href="/recruiter/profile/setup"
+            className="mt-4 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700"
+          >
+            Setup Profile
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
