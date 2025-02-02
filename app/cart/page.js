@@ -1,7 +1,7 @@
 'use client';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { 
@@ -35,7 +35,8 @@ const logError = async (supabase, errorDetails) => {
   }
 };
 
-export default function Cart() {
+// Create a CartContent component that uses useSearchParams
+function CartContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [courseInfo, setCourseInfo] = useState(null);
@@ -372,5 +373,14 @@ export default function Cart() {
         </div>
       </div>
     </>
+  );
+}
+
+// Modify the main Cart component to use Suspense
+export default function Cart() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CartContent />
+    </Suspense>
   );
 }
