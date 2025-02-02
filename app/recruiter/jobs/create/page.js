@@ -1,15 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import {
   BriefcaseIcon,
-  BuildingOfficeIcon,
-  MapPinIcon,
-  CurrencyPoundIcon,
-  UsersIcon,
-  PlusIcon,
-  XMarkIcon,
+  DocumentTextIcon,
+  ClipboardDocumentCheckIcon,
+  CheckCircleIcon,
+  EyeIcon
 } from '@heroicons/react/24/outline';
 
 export default function CreateJob() {
@@ -37,6 +35,56 @@ export default function CreateJob() {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentSection, setCurrentSection] = useState('basic');
+  const [previewMode, setPreviewMode] = useState(false);
+  
+  const sections = [
+    { 
+      id: 'basic', 
+      name: 'Basic Information', 
+      icon: () => <BriefcaseIcon className="w-4 h-4" />
+    },
+    { 
+      id: 'details', 
+      name: 'Job Details', 
+      icon: () => <DocumentTextIcon className="w-4 h-4" />
+    },
+    { 
+      id: 'requirements', 
+      name: 'Requirements & Benefits', 
+      icon: () => <ClipboardDocumentCheckIcon className="w-4 h-4" />
+    }
+  ];
+
+  const validateSection = useCallback((sectionId) => {
+    switch(sectionId) {
+      case 'basic':
+        return !!(formData.title && formData.company_name && formData.location && formData.department);
+      case 'details':
+        return !!(formData.description && formData.job_type && formData.experience_level);
+      case 'requirements':
+        return !!(formData.requirements.some(Boolean) && formData.responsibilities.some(Boolean));
+      default:
+        return false;
+    }
+  }, [formData]);
+
+  const formatSalaryDisplay = () => {
+    const currency = {
+      GBP: '£',
+      USD: '$',
+      EUR: '€'
+    }[formData.salary_currency];
+
+    if (formData.salary_min && formData.salary_max) {
+      return `${currency}${formData.salary_min.toLocaleString()} - ${currency}${formData.salary_max.toLocaleString()}`;
+    } else if (formData.salary_min) {
+      return `From ${currency}${formData.salary_min.toLocaleString()}`;
+    } else if (formData.salary_max) {
+      return `Up to ${currency}${formData.salary_max.toLocaleString()}`;
+    }
+    return 'Competitive';
+  };
 
   const handleArrayFieldAdd = (fieldName) => {
     setFormData(prev => ({
@@ -124,405 +172,280 @@ export default function CreateJob() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-          <h1 className="text-4xl font-bold text-white">Create New Job</h1>
-          <p className="mt-2 text-xl text-white/90">
-            Post a new job opportunity and find the perfect candidate
-          </p>
+  const renderBasicInformation = () => (
+    <div className="bg-white shadow-sm rounded-lg p-6 ">
+      <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Job Title</label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+          />
         </div>
         
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Company Name</label>
+          <input
+            type="text"
+            value={formData.company_name}
+            onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+            className="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Location</label>
+          <input
+            type="text"
+            value={formData.location}
+            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            className="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Department</label>
+          <input
+            type="text"
+            value={formData.department}
+            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+            className="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+          />
+        </div>
       </div>
+    </div>
+  );
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 py-12">
-        <form onSubmit={handleSubmit} className="space-y-12">
-          {/* Basic Information */}
-          <div className="bg-white shadow rounded-lg p-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-8">Basic Information</h2>
-            <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Job Title <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                    required
-                  />
-                </div>
-              </div>
+  const renderJobDetails = () => (
+    <div className="bg-white shadow-sm rounded-lg p-6">
+      <h2 className="text-xl font-semibold mb-6">Job Details</h2>
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            rows={4}
+            className="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+          />
+        </div>
 
-              <div>
-                <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Company Name <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    id="company_name"
-                    value={formData.company_name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                    required
-                  />
-                </div>
-              </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Job Type</label>
+          <select
+            value={formData.job_type}
+            onChange={(e) => setFormData({ ...formData, job_type: e.target.value })}
+            className="mt-1 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 bg-white text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6"
+          >
+            <option value="FULL_TIME">Full Time</option>
+            <option value="PART_TIME">Part Time</option>
+            <option value="CONTRACT">Contract</option>
+            <option value="TEMPORARY">Temporary</option>
+          </select>
+        </div>
 
-              <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Location <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                    required
-                  />
-                </div>
-              </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Experience Level</label>
+          <select
+            value={formData.experience_level}
+            onChange={(e) => setFormData({ ...formData, experience_level: e.target.value })}
+            className="mt-1 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 bg-white text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6"
+          >
+            <option value="ENTRY_LEVEL">Entry Level</option>
+            <option value="MID_LEVEL">Mid Level</option>
+            <option value="SENIOR">Senior</option>
+            <option value="EXECUTIVE">Executive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
 
-              <div>
-                <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Department <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-1">
-                  <select
-                    id="department"
-                    value={formData.department}
-                    onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                    required
-                  >
-                    <option value="">Select Department</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Design">Design</option>
-                    <option value="Product">Product</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Sales">Sales</option>
-                    <option value="HR">HR</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Operations">Operations</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="job_type" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Job Type <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-1">
-                  <select
-                    id="job_type"
-                    value={formData.job_type}
-                    onChange={(e) => setFormData(prev => ({ ...prev, job_type: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                    required
-                  >
-                    <option value="FULL_TIME">Full Time</option>
-                    <option value="PART_TIME">Part Time</option>
-                    <option value="CONTRACT">Contract</option>
-                    <option value="INTERNSHIP">Internship</option>
-                    <option value="TEMPORARY">Temporary</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="experience_level" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Experience Level <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-1">
-                  <select
-                    id="experience_level"
-                    value={formData.experience_level}
-                    onChange={(e) => setFormData(prev => ({ ...prev, experience_level: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                    required
-                  >
-                    <option value="ENTRY_LEVEL">Entry Level</option>
-                    <option value="MID_LEVEL">Mid Level</option>
-                    <option value="SENIOR">Senior</option>
-                    <option value="LEAD">Lead</option>
-                    <option value="MANAGER">Manager</option>
-                    <option value="EXECUTIVE">Executive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 h-full pt-6">
-                <label htmlFor="is_remote" className="text-sm font-medium text-gray-700">
-                  Remote Position
-                </label>
-                <input
-                  type="checkbox"
-                  id="is_remote"
-                  checked={formData.is_remote}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_remote: e.target.checked }))}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="salary_min" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Minimum Salary
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="number"
-                    id="salary_min"
-                    value={formData.salary_min}
-                    onChange={(e) => setFormData(prev => ({ ...prev, salary_min: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="salary_max" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Maximum Salary
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="number"
-                    id="salary_max"
-                    value={formData.salary_max}
-                    onChange={(e) => setFormData(prev => ({ ...prev, salary_max: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="salary_currency" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Salary Currency
-                </label>
-                <div className="mt-1">
-                  <select
-                    id="salary_currency"
-                    value={formData.salary_currency}
-                    onChange={(e) => setFormData(prev => ({ ...prev, salary_currency: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                  >
-                    <option value="GBP">GBP (£)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="team_size" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Team Size
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    id="team_size"
-                    value={formData.team_size}
-                    onChange={(e) => setFormData(prev => ({ ...prev, team_size: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                    placeholder="e.g., 5-10 people"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="required_experience_years" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Required Years of Experience
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="number"
-                    id="required_experience_years"
-                    value={formData.required_experience_years}
-                    onChange={(e) => setFormData(prev => ({ ...prev, required_experience_years: e.target.value }))}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                  Job Description
-                </label>
-                <textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  rows={6}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-4"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Dynamic Arrays Section */}
-          <div className="bg-white shadow rounded-lg p-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-8">Additional Details</h2>
-            
-            {/* Responsibilities */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                Responsibilities
-              </label>
-              {formData.responsibilities.map((item, index) => (
-                <div key={index} className="flex gap-3 mb-3">
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => handleArrayFieldChange('responsibilities', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
-                    placeholder="Add a responsibility"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleArrayFieldRemove('responsibilities', index)}
-                    className="text-gray-400 hover:text-red-500"
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleArrayFieldAdd('responsibilities')}
-                className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-500"
-              >
-                <PlusIcon className="h-4 w-4 mr-1" />
-                Add Responsibility
-              </button>
-            </div>
-
-            {/* Requirements */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                Requirements
-              </label>
-              {formData.requirements.map((item, index) => (
-                <div key={index} className="flex gap-3 mb-3">
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => handleArrayFieldChange('requirements', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
-                    placeholder="Add a requirement"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleArrayFieldRemove('requirements', index)}
-                    className="text-gray-400 hover:text-red-500"
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleArrayFieldAdd('requirements')}
-                className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-500"
-              >
-                <PlusIcon className="h-4 w-4 mr-1" />
-                Add Requirement
-              </button>
-            </div>
-
-            {/* Benefits */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                Benefits
-              </label>
-              {formData.benefits.map((item, index) => (
-                <div key={index} className="flex gap-3 mb-3">
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => handleArrayFieldChange('benefits', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
-                    placeholder="Add a benefit"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleArrayFieldRemove('benefits', index)}
-                    className="text-gray-400 hover:text-red-500"
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleArrayFieldAdd('benefits')}
-                className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-500"
-              >
-                <PlusIcon className="h-4 w-4 mr-1" />
-                Add Benefit
-              </button>
-            </div>
-
-            {/* Skills */}
-            <div className="space-y-10">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                Required Skills
-              </label>
-              {formData.skills.map((item, index) => (
-                <div key={index} className="flex gap-3 mb-3">
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => handleArrayFieldChange('skills', index, e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3"
-                    placeholder="Add a skill"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleArrayFieldRemove('skills', index)}
-                    className="text-gray-400 hover:text-red-500"
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleArrayFieldAdd('skills')}
-                className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-500"
-              >
-                <PlusIcon className="h-4 w-4 mr-1" />
-                Add Skill
-              </button>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end gap-4 pt-4">
+  const renderRequirementsAndBenefits = () => (
+    <div className="bg-white shadow-sm rounded-lg p-6">
+      <h2 className="text-xl font-semibold mb-6">Requirements & Benefits</h2>
+      
+      {/* Requirements Section */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-4">Requirements</label>
+        {formData.requirements.map((req, index) => (
+          <div key={index} className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={req}
+              onChange={(e) => handleArrayFieldChange('requirements', index, e.target.value)}
+              className="flex-1 rounded-md border-0 py-1.5 px-3 bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            />
             <button
               type="button"
-              className="px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={() => handleArrayFieldRemove('requirements', index)}
+              className="p-2 text-gray-400 hover:text-red-500"
             >
-              Save as Draft
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Creating...' : 'Publish Job'}
+              Remove
             </button>
           </div>
-        </form>
+        ))}
+        <button
+          type="button"
+          onClick={() => handleArrayFieldAdd('requirements')}
+          className="mt-2 text-sm text-blue-600 hover:text-blue-500"
+        >
+          + Add Requirement
+        </button>
+      </div>
+
+      {/* Benefits Section */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-4">Benefits</label>
+        {formData.benefits.map((benefit, index) => (
+          <div key={index} className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={benefit}
+              onChange={(e) => handleArrayFieldChange('benefits', index, e.target.value)}
+              className="flex-1 rounded-md border-0 py-1.5 px-3 bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            />
+            <button
+              type="button"
+              onClick={() => handleArrayFieldRemove('benefits', index)}
+              className="p-2 text-gray-400 hover:text-red-500"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => handleArrayFieldAdd('benefits')}
+          className="mt-2 text-sm text-blue-600 hover:text-blue-500"
+        >
+          + Add Benefit
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Enhanced Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/[0.1] bg-[size:20px_20px]"></div>
+        <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-white/10 to-transparent"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-4xl font-bold text-white">Create New Job</h1>
+              <p className="mt-2 text-xl text-white/90">
+                Post a new job opportunity and find the perfect candidate
+              </p>
+            </div>
+            <button
+              onClick={() => setPreviewMode(!previewMode)}
+              className="flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+            >
+              <EyeIcon className="h-5 w-5 mr-2" />
+              {previewMode ? 'Edit Mode' : 'Preview'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-4">
+          <nav className="flex justify-between items-center space-x-4" aria-label="Progress">
+            {sections.map((section, index) => (
+              <button
+                key={section.id}
+                onClick={() => setCurrentSection(section.id)}
+                className={`flex items-center ${
+                  currentSection === section.id
+                    ? 'text-blue-600 scale-105 transform transition-all'
+                    : validateSection(section.id)
+                    ? 'text-green-600'
+                    : 'text-gray-500'
+                } relative group min-w-0 flex-1 p-2 rounded-lg hover:bg-gray-50`}
+              >
+                <span className={`relative flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+                  currentSection === section.id
+                    ? 'border-blue-400 bg-blue-50'
+                    : validateSection(section.id)
+                    ? 'border-green-400 bg-green-50'
+                    : 'border-gray-300 bg-white'
+                } group-hover:border-blue-400 transition-colors`}>
+                  {validateSection(section.id) ? (
+                    <CheckCircleIcon className="w-6 h-6 text-green-600" />
+                  ) : (
+                    <span className="text-xl">{section.icon()}</span>
+                  )}
+                </span>
+                <span className="ml-3 text-sm font-medium whitespace-nowrap">{section.name}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Main Form Content */}
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+        {previewMode ? (
+          <JobPreview formData={formData} formatSalaryDisplay={formatSalaryDisplay} />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {currentSection === 'basic' && renderBasicInformation()}
+            {currentSection === 'details' && renderJobDetails()}
+            {currentSection === 'requirements' && renderRequirementsAndBenefits()}
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between pt-2 pb-6">
+              {currentSection !== 'basic' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentIndex = sections.findIndex(s => s.id === currentSection);
+                    setCurrentSection(sections[currentIndex - 1].id);
+                  }}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+              )}
+              
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Save Draft
+                </button>
+                
+                {currentSection === 'requirements' ? (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Publishing...' : 'Publish Job'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const currentIndex = sections.findIndex(s => s.id === currentSection);
+                      setCurrentSection(sections[currentIndex + 1].id);
+                    }}
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Next
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
+        )}
       </main>
     </div>
   );
