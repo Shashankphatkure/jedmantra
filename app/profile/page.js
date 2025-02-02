@@ -152,96 +152,142 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section with gradient background */}
-      <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-              Professional Profile
-            </h1>
-            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-              Showcase your expertise, track your progress, and unlock new opportunities
-            </p>
+      {/* Modern Hero Section */}
+      <div className="relative bg-gradient-to-br from-blue-600 to-indigo-800 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-30"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="relative w-40 h-40 md:w-48 md:h-48">
+              <Image
+                src={user?.avatar_url || '/default-avatar.png'}
+                alt="Profile"
+                fill
+                className="rounded-full border-4 border-white shadow-xl object-cover"
+              />
+              <button 
+                onClick={() => handleOpenEdit('avatar')}
+                className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50"
+              >
+                <PencilSquareIcon className="h-5 w-5 text-gray-600" />
+              </button>
+            </div>
+            
+            <div className="text-center md:text-left">
+              <h1 className="text-4xl font-bold text-white mb-2">{user?.name}</h1>
+              <p className="text-xl text-white/90 mb-4">{user?.headline || 'Student'}</p>
+              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                {user?.major && (
+                  <span className="px-4 py-1.5 bg-white/20 rounded-full text-white text-sm">
+                    {user.major}
+                  </span>
+                )}
+                {user?.graduation_year && (
+                  <span className="px-4 py-1.5 bg-white/20 rounded-full text-white text-sm">
+                    Class of {user.graduation_year}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Enhanced Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse"></div>
       </div>
 
-      {/* Profile Stats Banner */}
-      <div className="bg-white shadow-lg transform -mt-16 relative z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="grid grid-cols-4 gap-4 text-center">
-            {[
-              { label: "Profile Views", value: user.profile_views || 0 },
-              { label: "Applications", value: user.applications_count || 0 },
-              { label: "Courses Completed", value: user.courses_completed || 0 },
-              { label: "Profile Strength", value: `${user.profile_strength || 0}%` },
-            ].map((stat) => (
-              <div key={stat.label} className="p-4">
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-              </div>
-            ))}
-          </div>
+      {/* Quick Stats */}
+      <div className="bg-white shadow-lg transform -mt-10 relative z-20 rounded-xl max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-200">
+          {[
+            { 
+              label: "Profile Completion", 
+              value: (() => {
+                const fields = [
+                  user?.name,
+                  user?.headline,
+                  user?.bio,
+                  user?.major,
+                  user?.graduation_year,
+                  user?.phone_number,
+                  user?.website,
+                  user?.skills?.length > 0,
+                  user?.projects?.length > 0,
+                  user?.experience?.length > 0
+                ];
+                const completedFields = fields.filter(Boolean).length;
+                return `${Math.round((completedFields / fields.length) * 100)}%`;
+              })()
+            },
+            { label: "Courses", value: user?.courses_completed || 0 },
+            { label: "Projects", value: user?.projects?.length || 0 },
+            { label: "Achievements", value: user?.achievements?.length || 0 }
+          ].map((stat) => (
+            <div key={stat.label} className="p-6 text-center">
+              <p className="text-2xl font-bold text-indigo-600">{stat.value}</p>
+              <p className="text-sm text-gray-500">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Sidebar */}
+          {/* Left Sidebar */}
           <div className="space-y-8">
-            {/* Profile Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-              <div className="relative h-40 bg-gradient-to-r from-blue-500 to-purple-500">
-                {user.cover_image_url && (
-                  <Image
-                    src={user.cover_image_url}
-                    alt="Cover"
-                    fill
-                    className="object-cover"
-                  />
-                )}
+            {/* Academic Information */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Academic Info</h2>
                 <button 
-                  className="absolute top-4 right-4 p-2 bg-white/20 rounded-full text-white hover:bg-white/30 transition-colors"
-                  onClick={() => {
-                    handleOpenEdit('basic', {
-                      name: user.name,
-                      headline: user.headline,
-                      location: user.location,
-                    });
-                  }}
+                  onClick={() => handleOpenEdit('academic')}
+                  className="text-gray-400 hover:text-gray-500"
                 >
                   <PencilSquareIcon className="h-5 w-5" />
                 </button>
               </div>
-              <div className="px-6 py-4">
-                <div className="relative -mt-20 mb-4">
-                  <Image
-                    src={user.avatar_url || '/default-avatar.png'}
-                    alt="User avatar"
-                    width={112}
-                    height={112}
-                    className="rounded-full border-4 border-white shadow-lg"
-                  />
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-500">Major</label>
+                  <p className="text-gray-900">{user?.major || 'Not specified'}</p>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
-                <p className="text-gray-600">{user.headline}</p>
-                {user.location && (
-                  <div className="mt-4 flex items-center text-gray-500">
-                    <MapPinIcon className="h-5 w-5 mr-2" />
-                    {user.location}
-                  </div>
-                )}
+                <div>
+                  <label className="text-sm text-gray-500">Minor</label>
+                  <p className="text-gray-900">{user?.minor || 'Not specified'}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Expected Graduation</label>
+                  <p className="text-gray-900">{user?.graduation_year || 'Not specified'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Skills */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Skills</h2>
+                <button 
+                  onClick={() => handleOpenEdit('skills')}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {user?.skills?.map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
               </div>
             </div>
 
             {/* Contact Information */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+            <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
                 <button 
@@ -274,69 +320,76 @@ export default function Profile() {
                 ))}
               </div>
             </div>
-
-            {/* Academic Information */}
-            {(user.academic_role || user.institution || user.department) && (
-              <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Academic Info</h3>
-                <div className="space-y-3">
-                  {user.academic_role && (
-                    <div className="text-gray-600">
-                      <span className="font-medium">Role:</span> {user.academic_role}
-                    </div>
-                  )}
-                  {user.institution && (
-                    <div className="text-gray-600">
-                      <span className="font-medium">Institution:</span> {user.institution}
-                    </div>
-                  )}
-                  {user.department && (
-                    <div className="text-gray-600">
-                      <span className="font-medium">Department:</span> {user.department}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Main Content Area */}
           <div className="lg:col-span-2 space-y-8">
             {/* About */}
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+            <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">About</h3>
+                <h2 className="text-lg font-semibold text-gray-900">About</h2>
                 <button 
+                  onClick={() => handleOpenEdit('bio')}
                   className="text-gray-400 hover:text-gray-500"
-                  onClick={() => {
-                    handleOpenEdit('bio', { bio: user.bio });
-                  }}
                 >
                   <PencilSquareIcon className="h-5 w-5" />
                 </button>
               </div>
-              <p className="text-gray-600">{user.bio || 'No bio provided yet.'}</p>
+              <p className="text-gray-600 whitespace-pre-wrap">{user?.bio || 'No bio provided yet.'}</p>
             </div>
 
-            {/* Expertise */}
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+            {/* Projects */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Fields of Expertise</h3>
-                <button className="text-gray-400 hover:text-gray-500">
+                <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
+                <button 
+                  onClick={() => handleOpenEdit('projects')}
+                  className="text-gray-400 hover:text-gray-500"
+                >
                   <PencilSquareIcon className="h-5 w-5" />
                 </button>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {[user.field_of_expertise, user.other_field_of_expertise]
-                  .filter(Boolean)
-                  .map((field) => (
-                    <span
-                      key={field}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-800"
-                    >
-                      {field}
-                    </span>
-                  ))}
+              <div className="space-y-6">
+                {user?.projects?.map((project, index) => (
+                  <div key={index} className="border-b last:border-0 pb-6 last:pb-0">
+                    <h3 className="font-medium text-gray-900">{project.name}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{project.description}</p>
+                    {project.url && (
+                      <a 
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-indigo-600 hover:text-indigo-500 mt-2 inline-block"
+                      >
+                        View Project →
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Coursework */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Relevant Coursework</h2>
+                <button 
+                  onClick={() => handleOpenEdit('courses')}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {user?.courses?.map((course, index) => (
+                  <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                    <h3 className="font-medium text-gray-900">{course.name}</h3>
+                    <p className="text-sm text-gray-500">{course.code}</p>
+                    {course.grade && (
+                      <p className="text-sm text-indigo-600 mt-1">Grade: {course.grade}</p>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -633,29 +686,11 @@ export default function Profile() {
       </EditModal>
 
       <EditModal
-        isOpen={isEditing && editSection === 'expertise'}
+        isOpen={isEditing && editSection === 'skills'}
         onClose={handleCloseEdit}
-        title="Edit Expertise"
+        title="Edit Skills"
       >
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Field of Expertise</label>
-            <input
-              type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.field_of_expertise || ''}
-              onChange={(e) => setFormData({ ...formData, field_of_expertise: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Other Field of Expertise</label>
-            <input
-              type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.other_field_of_expertise || ''}
-              onChange={(e) => setFormData({ ...formData, other_field_of_expertise: e.target.value })}
-            />
-          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Skills</label>
             <input
