@@ -3,13 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { 
+  BriefcaseIcon, 
+  UserGroupIcon, 
+  CalendarIcon, 
+  UserPlusIcon 
+} from "@heroicons/react/24/outline";
 
 export default function RecruiterDashboard() {
   const [stats] = useState([
-    { name: "Active Jobs", stat: "12" },
-    { name: "Total Applications", stat: "156" },
-    { name: "Interviews Scheduled", stat: "24" },
-    { name: "Hired Candidates", stat: "8" },
+    { name: "Active Jobs", stat: "12", icon: BriefcaseIcon },
+    { name: "Total Applications", stat: "156", icon: UserGroupIcon },
+    { name: "Interviews Scheduled", stat: "24", icon: CalendarIcon },
+    { name: "Hired Candidates", stat: "8", icon: UserPlusIcon },
   ]);
 
   const [recentJobs] = useState([
@@ -49,7 +55,8 @@ export default function RecruiterDashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-pink-500 to-pink-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        <div className="absolute inset-0 opacity-10 bg-[url('/grid-pattern.svg')]"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
           <div className="sm:flex sm:items-center sm:justify-between">
             <div>
               <h1 className="text-4xl font-bold text-white">
@@ -82,18 +89,23 @@ export default function RecruiterDashboard() {
           {stats.map((item) => (
             <div
               key={item.name}
-              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl shadow-sm px-6 py-4 hover:shadow-xl transition-all duration-200 border border-gray-100 hover:border-pink-100"
             >
-              <dt>
-                <p className="text-sm font-medium text-gray-500 truncate">
-                  {item.name}
-                </p>
-              </dt>
-              <dd className="mt-1">
-                <p className="text-3xl font-semibold text-gray-900">
-                  {item.stat}
-                </p>
-              </dd>
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-pink-50 text-pink-600">
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {item.stat}
+                  </p>
+                  <p className="text-sm font-medium text-gray-500">
+                    {item.name}
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -113,10 +125,10 @@ export default function RecruiterDashboard() {
           </div>
 
           <div className="mt-6">
-            <div className="overflow-hidden bg-white shadow-lg rounded-xl">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
+            <div className="overflow-hidden bg-white shadow-sm rounded-xl border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr className="bg-gray-50">
                     <th
                       scope="col"
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
@@ -157,36 +169,36 @@ export default function RecruiterDashboard() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {recentJobs.map((job) => (
-                    <tr key={job.id}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                    <tr key={job.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {job.title}
-                        <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                           {job.type}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                         {job.department}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                         {job.location}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                         {job.applicants}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                         {job.posted}
                       </td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                      <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <Link
                           href={`/recruiter/jobs/${job.id}`}
-                          className="text-indigo-600 hover:text-indigo-900 mr-4"
+                          className="text-indigo-600 hover:text-indigo-900 mr-4 hover:underline"
                         >
                           View
                         </Link>
-                        <button className="text-indigo-600 hover:text-indigo-900 mr-4">
+                        <button className="text-indigo-600 hover:text-indigo-900 mr-4 hover:underline">
                           Edit
                         </button>
-                        <button className="text-red-600 hover:text-red-900">
+                        <button className="text-red-600 hover:text-red-900 hover:underline">
                           Delete
                         </button>
                       </td>
@@ -216,18 +228,18 @@ export default function RecruiterDashboard() {
           ].map((action, index) => (
             <div
               key={index}
-              className="relative rounded-xl overflow-hidden group hover:shadow-xl transition-shadow"
+              className="relative rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
             >
               <div className={`bg-gradient-to-r ${action.gradient} p-8`}>
                 <Link href={action.href} className="focus:outline-none">
                   <span className="absolute inset-0" aria-hidden="true" />
-                  <p className="text-xl font-medium text-white mb-2">
+                  <p className="text-xl font-semibold text-white mb-2">
                     {action.title}
                   </p>
                   <p className="text-white/90">
                     {action.description}
                   </p>
-                  <ArrowRightIcon className="h-6 w-6 text-white mt-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRightIcon className="h-6 w-6 text-white mt-4 group-hover:translate-x-2 transition-transform duration-200" />
                 </Link>
               </div>
             </div>
