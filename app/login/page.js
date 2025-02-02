@@ -9,25 +9,38 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
       if (error) throw error;
-      router.push("/profile");
-      router.refresh();
+      
+      if (data?.user) {
+        router.push("/profile");
+        router.refresh();
+      }
     } catch (error) {
       setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setError(null);
+    
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -38,6 +51,7 @@ export default function Login() {
       if (error) throw error;
     } catch (error) {
       setError(error.message);
+      setIsLoading(false); // Only set loading false on error since success redirects
     }
   };
 
@@ -123,22 +137,30 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group"
+                  disabled={isLoading}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Sign in
-                  <svg
-                    className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                  {isLoading ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Signing in...
+                    </span>
+                  ) : (
+                    <>
+                      Sign in
+                      <svg
+                        className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </>
+                  )}
                 </button>
               </form>
 
@@ -154,10 +176,11 @@ export default function Login() {
 
                 <button
                   onClick={handleGoogleSignIn}
-                  className="mt-6 w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+                  disabled={isLoading}
+                  className="mt-6 w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-                  Sign in with Google
+                  {isLoading ? "Connecting..." : "Sign in with Google"}
                 </button>
               </div>
 

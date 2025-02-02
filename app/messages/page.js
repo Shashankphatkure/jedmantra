@@ -60,10 +60,10 @@ export default function Messages() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-50/50">
+    <div className="min-h-screen bg-zinc-50/50 border border-zinc-200" role="main">
       <div className="flex h-screen">
         {/* Sidebar */}
-        <div className="w-[380px] bg-white border-r border-zinc-200 flex flex-col">
+        <div className="w-full md:w-[380px] bg-white border-r border-zinc-200 flex flex-col">
           {/* Header Section */}
           <div className="px-6 py-5 border-b border-zinc-200">
             <h2 className="text-xl font-semibold text-zinc-900 mb-5">Messages</h2>
@@ -72,6 +72,7 @@ export default function Messages() {
               <input
                 type="text"
                 placeholder="Search conversations..."
+                aria-label="Search conversations"
                 className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl
                 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/10 text-sm transition-all"
               />
@@ -96,53 +97,59 @@ export default function Messages() {
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto">
             <div className="px-3 py-4">
-              {conversations.map((conversation) => (
-                <div
-                  key={conversation.id}
-                  className="px-3 py-3.5 hover:bg-zinc-50 rounded-xl cursor-pointer transition-all 
-                  duration-200 group"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="relative flex-shrink-0">
-                      <Image
-                        src={conversation.avatar}
-                        alt={conversation.name}
-                        width={48}
-                        height={48}
-                        className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
-                      />
-                      {conversation.online && (
-                        <span className="absolute bottom-0.5 right-0.5 block h-3 w-3 rounded-full 
-                        bg-emerald-500 ring-2 ring-white" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-sm font-semibold text-zinc-900 truncate group-hover:text-blue-600 
-                        transition-colors">
-                          {conversation.name}
-                        </p>
-                        <p className="text-xs text-zinc-500 tabular-nums pl-4">
-                          {conversation.time}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-zinc-600 truncate">
-                          {conversation.lastMessage}
-                        </p>
-                        {conversation.unread > 0 && (
-                          <span className="ml-3 inline-flex items-center justify-center h-5 w-5 rounded-full 
-                          bg-blue-600 shadow-sm">
-                            <span className="text-xs font-medium text-white">
-                              {conversation.unread}
-                            </span>
-                          </span>
+              {conversations.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                  <p className="text-zinc-500">No conversations yet</p>
+                </div>
+              ) : (
+                conversations.map((conversation) => (
+                  <div
+                    key={conversation.id}
+                    className={`px-3 py-3.5 hover:bg-zinc-50 rounded-xl cursor-pointer transition-all 
+                    duration-200 group ${conversation.id === 1 ? 'bg-zinc-100' : ''}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="relative flex-shrink-0">
+                        <Image
+                          src={conversation.avatar}
+                          alt={conversation.name}
+                          width={48}
+                          height={48}
+                          className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
+                        />
+                        {conversation.online && (
+                          <span className="absolute bottom-0.5 right-0.5 block h-3 w-3 rounded-full 
+                          bg-emerald-500 ring-2 ring-white" />
                         )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-sm font-semibold text-zinc-900 truncate group-hover:text-blue-600 
+                          transition-colors">
+                            {conversation.name}
+                          </p>
+                          <p className="text-xs text-zinc-500 tabular-nums pl-4">
+                            {conversation.time}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-zinc-600 truncate">
+                            {conversation.lastMessage}
+                          </p>
+                          {conversation.unread > 0 && (
+                            <span className="ml-3 inline-flex items-center justify-center h-5 w-5 rounded-full 
+                            bg-blue-600 shadow-sm">
+                              <span className="text-xs font-medium text-white">
+                                {conversation.unread}
+                              </span>
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -263,6 +270,11 @@ export default function Messages() {
                 </div>
               </div>
             ))}
+            <div className="flex justify-center my-4">
+              <span className="text-xs text-zinc-500 bg-white px-3 py-1 rounded-full">
+                Today
+              </span>
+            </div>
           </div>
 
           {/* Message Input */}
