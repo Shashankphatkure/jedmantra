@@ -18,7 +18,16 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editSection, setEditSection] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    name: '',
+    headline: '',
+    location: '',
+    bio: '',
+    phone_number: '',
+    website: '',
+    linkedin_url: '',
+    github_url: '',
+  });
   const [avatarFile, setAvatarFile] = useState(null);
   const supabase = createClientComponentClient();
 
@@ -99,17 +108,36 @@ export default function Profile() {
   };
 
   // Handle edit modal open
-  const handleOpenEdit = (section, initialData) => {
+  const handleOpenEdit = (section, initialData = {}) => {
     setIsEditing(true);
     setEditSection(section);
-    setFormData(initialData);
+    setFormData({
+      name: '',
+      headline: '',
+      location: '',
+      bio: '',
+      phone_number: '',
+      website: '',
+      linkedin_url: '',
+      github_url: '',
+      ...initialData
+    });
   };
 
   // Handle edit modal close
   const handleCloseEdit = () => {
     setIsEditing(false);
     setEditSection(null);
-    setFormData({});
+    setFormData({
+      name: '',
+      headline: '',
+      location: '',
+      bio: '',
+      phone_number: '',
+      website: '',
+      linkedin_url: '',
+      github_url: '',
+    });
   };
 
   // Edit Modal Component
@@ -297,7 +325,11 @@ export default function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Academic Info</h2>
                 <button 
-                  onClick={() => handleOpenEdit('academic')}
+                  onClick={() => handleOpenEdit('basic', {
+                    name: user.name,
+                    headline: user.headline,
+                    location: user.location
+                  })}
                   className="text-gray-400 hover:text-gray-500"
                 >
                   <PencilSquareIcon className="h-5 w-5" />
@@ -376,6 +408,37 @@ export default function Profile() {
                 ))}
               </div>
             </div>
+
+            {/* Basic Information */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
+                <button 
+                  onClick={() => handleOpenEdit('basic', {
+                    name: user.name,
+                    headline: user.headline,
+                    location: user.location
+                  })}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-500">Name</label>
+                  <p className="text-gray-900">{user?.name}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Headline</label>
+                  <p className="text-gray-900">{user?.headline || 'Not specified'}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Location</label>
+                  <p className="text-gray-900">{user?.location || 'Not specified'}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Main Content Area */}
@@ -399,7 +462,9 @@ export default function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
                 <button 
-                  onClick={() => handleOpenEdit('projects')}
+                  onClick={() => handleOpenEdit('projects', { 
+                    projects: user.projects || [] 
+                  })}
                   className="text-gray-400 hover:text-gray-500"
                 >
                   <PencilSquareIcon className="h-5 w-5" />
@@ -430,7 +495,9 @@ export default function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Relevant Coursework</h2>
                 <button 
-                  onClick={() => handleOpenEdit('courses')}
+                  onClick={() => handleOpenEdit('courses', { 
+                    courses: user.courses || [] 
+                  })}
                   className="text-gray-400 hover:text-gray-500"
                 >
                   <PencilSquareIcon className="h-5 w-5" />
@@ -558,7 +625,7 @@ export default function Profile() {
             <input
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.name || ''}
+              value={formData?.name || ''}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
@@ -567,7 +634,7 @@ export default function Profile() {
             <input
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.headline || ''}
+              value={formData?.headline || ''}
               onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
             />
           </div>
@@ -576,7 +643,7 @@ export default function Profile() {
             <input
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
-              value={formData.location || ''}
+              value={formData?.location || ''}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
             />
           </div>
@@ -1085,6 +1152,186 @@ export default function Profile() {
             className="w-full px-4 py-2 text-sm font-medium text-pink-600 border border-pink-600 rounded-md hover:bg-pink-50"
           >
             Add Certification
+          </button>
+          <div className="flex justify-end gap-2 mt-6">
+            <button
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              onClick={handleCloseEdit}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
+              onClick={handleUpdate}
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </div>
+      </EditModal>
+
+      {/* Projects Modal */}
+      <EditModal
+        isOpen={isEditing && editSection === 'projects'}
+        onClose={handleCloseEdit}
+        title="Edit Projects"
+      >
+        <div className="space-y-4">
+          {formData.projects?.map((project, index) => (
+            <div key={index} className="p-4 border rounded-lg space-y-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Project Name</label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  value={project.name || ''}
+                  onChange={(e) => {
+                    const newProjects = [...(formData.projects || [])];
+                    newProjects[index] = { ...project, name: e.target.value };
+                    setFormData({ ...formData, projects: newProjects });
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  rows={3}
+                  value={project.description || ''}
+                  onChange={(e) => {
+                    const newProjects = [...(formData.projects || [])];
+                    newProjects[index] = { ...project, description: e.target.value };
+                    setFormData({ ...formData, projects: newProjects });
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Project URL</label>
+                <input
+                  type="url"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  value={project.url || ''}
+                  onChange={(e) => {
+                    const newProjects = [...(formData.projects || [])];
+                    newProjects[index] = { ...project, url: e.target.value };
+                    setFormData({ ...formData, projects: newProjects });
+                  }}
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const newProjects = formData.projects.filter((_, i) => i !== index);
+                  setFormData({ ...formData, projects: newProjects });
+                }}
+                className="text-red-600 hover:text-red-700 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              const newProjects = [...(formData.projects || []), {
+                name: '',
+                description: '',
+                url: ''
+              }];
+              setFormData({ ...formData, projects: newProjects });
+            }}
+            className="w-full px-4 py-2 text-sm font-medium text-pink-600 border border-pink-600 rounded-md hover:bg-pink-50"
+          >
+            Add Project
+          </button>
+          <div className="flex justify-end gap-2 mt-6">
+            <button
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              onClick={handleCloseEdit}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700"
+              onClick={handleUpdate}
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </div>
+      </EditModal>
+
+      {/* Coursework Modal */}
+      <EditModal
+        isOpen={isEditing && editSection === 'courses'}
+        onClose={handleCloseEdit}
+        title="Edit Coursework"
+      >
+        <div className="space-y-4">
+          {formData.courses?.map((course, index) => (
+            <div key={index} className="p-4 border rounded-lg space-y-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Course Name</label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  value={course.name || ''}
+                  onChange={(e) => {
+                    const newCourses = [...(formData.courses || [])];
+                    newCourses[index] = { ...course, name: e.target.value };
+                    setFormData({ ...formData, courses: newCourses });
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Course Code</label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  value={course.code || ''}
+                  onChange={(e) => {
+                    const newCourses = [...(formData.courses || [])];
+                    newCourses[index] = { ...course, code: e.target.value };
+                    setFormData({ ...formData, courses: newCourses });
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Grade</label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                  value={course.grade || ''}
+                  onChange={(e) => {
+                    const newCourses = [...(formData.courses || [])];
+                    newCourses[index] = { ...course, grade: e.target.value };
+                    setFormData({ ...formData, courses: newCourses });
+                  }}
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const newCourses = formData.courses.filter((_, i) => i !== index);
+                  setFormData({ ...formData, courses: newCourses });
+                }}
+                className="text-red-600 hover:text-red-700 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              const newCourses = [...(formData.courses || []), {
+                name: '',
+                code: '',
+                grade: ''
+              }];
+              setFormData({ ...formData, courses: newCourses });
+            }}
+            className="w-full px-4 py-2 text-sm font-medium text-pink-600 border border-pink-600 rounded-md hover:bg-pink-50"
+          >
+            Add Course
           </button>
           <div className="flex justify-end gap-2 mt-6">
             <button
