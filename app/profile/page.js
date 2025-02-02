@@ -19,6 +19,7 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editSection, setEditSection] = useState(null);
   const [formData, setFormData] = useState({});
+  const [avatarFile, setAvatarFile] = useState(null);
   const supabase = createClientComponentClient();
 
   // Fetch user profile
@@ -126,6 +127,52 @@ export default function Profile() {
     );
   };
 
+  // Add this function to handle avatar updates
+  const handleAvatarUpdate = async (event) => {
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      setLoading(true);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = fileName;
+
+      // Upload file
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      console.log('Public URL:', publicUrl); // Check the URL in console
+
+      // Update user profile
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Update local state
+      setUser({ ...user, avatar_url: publicUrl });
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error uploading avatar');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -167,13 +214,22 @@ export default function Profile() {
                 alt="Profile"
                 fill
                 className="rounded-full border-4 border-white shadow-xl object-cover"
+                loader={({ src }) => src}
+                unoptimized={true}
               />
-              <button 
-                onClick={() => handleOpenEdit('avatar')}
-                className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50"
+              <label 
+                htmlFor="avatar-upload"
+                className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 cursor-pointer"
               >
                 <PencilSquareIcon className="h-5 w-5 text-gray-600" />
-              </button>
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpdate}
+                />
+              </label>
             </div>
             
             <div className="text-center md:text-left">
