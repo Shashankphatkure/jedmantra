@@ -265,10 +265,10 @@ export default function CompanyDetails() {
                   value={company.name || ''}
                   onChange={handleChange}
                   disabled={!editing}
-                  className={`w-full rounded-lg shadow-sm transition-colors duration-200
+                  className={`w-full px-4 py-2 rounded-lg shadow-sm transition-colors duration-200
                     ${editing 
-                      ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                      : 'border border-transparent bg-gray-50 text-gray-700'
                     }`}
                 />
               </div>
@@ -281,10 +281,10 @@ export default function CompanyDetails() {
                   value={company.industry}
                   onChange={handleChange}
                   disabled={!editing}
-                  className={`w-full rounded-lg shadow-sm transition-colors duration-200
+                  className={`w-full px-4 py-2 rounded-lg shadow-sm transition-colors duration-200
                     ${editing 
-                      ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                      : 'border border-transparent bg-gray-50 text-gray-700'
                     }`}
                 />
               </div>
@@ -297,10 +297,10 @@ export default function CompanyDetails() {
                   value={company.location}
                   onChange={handleChange}
                   disabled={!editing}
-                  className={`w-full rounded-lg shadow-sm transition-colors duration-200
+                  className={`w-full px-4 py-2 rounded-lg shadow-sm transition-colors duration-200
                     ${editing 
-                      ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                      : 'border border-transparent bg-gray-50 text-gray-700'
                     }`}
                 />
               </div>
@@ -319,10 +319,10 @@ export default function CompanyDetails() {
                   onChange={handleChange}
                   disabled={!editing}
                   placeholder="e.g., 50-100 employees"
-                  className={`w-full rounded-lg shadow-sm transition-colors duration-200
+                  className={`w-full px-4 py-2 rounded-lg shadow-sm transition-colors duration-200
                     ${editing 
-                      ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                      : 'border border-transparent bg-gray-50 text-gray-700'
                     }`}
                 />
               </div>
@@ -337,10 +337,10 @@ export default function CompanyDetails() {
                   disabled={!editing}
                   min="1800"
                   max={new Date().getFullYear()}
-                  className={`w-full rounded-lg shadow-sm transition-colors duration-200
+                  className={`w-full px-4 py-2 rounded-lg shadow-sm transition-colors duration-200
                     ${editing 
-                      ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                      : 'border border-transparent bg-gray-50 text-gray-700'
                     }`}
                 />
               </div>
@@ -357,10 +357,10 @@ export default function CompanyDetails() {
               disabled={!editing}
               rows={4}
               placeholder="Tell us about your company..."
-              className={`w-full rounded-lg shadow-sm transition-colors duration-200
+              className={`w-full rounded-lg shadow-sm transition-colors duration-200 p-4 resize-y min-h-[120px]
                 ${editing 
-                  ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                  : 'border-gray-200 bg-gray-50'
+                  ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                  : 'border border-transparent bg-gray-50 text-gray-700'
                 }`}
             />
           </div>
@@ -383,10 +383,10 @@ export default function CompanyDetails() {
                     value={company.website_url}
                     onChange={handleChange}
                     disabled={!editing}
-                    className={`pl-10 w-full rounded-lg shadow-sm transition-colors duration-200
+                    className={`pl-10 pr-4 py-2 w-full rounded-lg shadow-sm transition-colors duration-200
                       ${editing 
-                        ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                        : 'border-gray-200 bg-gray-50'
+                        ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                        : 'border border-transparent bg-gray-50 text-gray-700'
                       }`}
                   />
                 </div>
@@ -406,10 +406,10 @@ export default function CompanyDetails() {
                     value={company.linkedin_url}
                     onChange={handleChange}
                     disabled={!editing}
-                    className={`pl-10 w-full rounded-lg shadow-sm transition-colors duration-200
+                    className={`pl-10 pr-4 py-2 w-full rounded-lg shadow-sm transition-colors duration-200
                       ${editing 
-                        ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                        : 'border-gray-200 bg-gray-50'
+                        ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                        : 'border border-transparent bg-gray-50 text-gray-700'
                       }`}
                   />
                 </div>
@@ -430,10 +430,10 @@ export default function CompanyDetails() {
                   onChange={(e) => handleArrayChange(e, 'benefits')}
                   disabled={!editing}
                   placeholder="Health insurance, 401k, Remote work..."
-                  className={`w-full rounded-lg shadow-sm transition-colors duration-200
+                  className={`w-full px-4 py-2 rounded-lg shadow-sm transition-colors duration-200
                     ${editing 
-                      ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                      : 'border border-transparent bg-gray-50 text-gray-700'
                     }`}
                 />
                 <p className="mt-1 text-sm text-gray-500">Separate multiple benefits with commas</p>
@@ -448,10 +448,10 @@ export default function CompanyDetails() {
                   onChange={(e) => handleArrayChange(e, 'culture_values')}
                   disabled={!editing}
                   placeholder="Innovation, Teamwork, Growth..."
-                  className={`w-full rounded-lg shadow-sm transition-colors duration-200
+                  className={`w-full px-4 py-2 rounded-lg shadow-sm transition-colors duration-200
                     ${editing 
-                      ? 'border-gray-300 focus:border-blue-500 focus:ring-blue-500 hover:border-gray-400' 
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400' 
+                      : 'border border-transparent bg-gray-50 text-gray-700'
                     }`}
                 />
                 <p className="mt-1 text-sm text-gray-500">Separate multiple values with commas</p>
