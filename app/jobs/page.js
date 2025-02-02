@@ -17,6 +17,8 @@ export default function Jobs() {
     salaryRange: [],
     experienceLevel: [],
   })
+  const [currentPage, setCurrentPage] = useState(1)
+  const jobsPerPage = 5
   const supabase = createClientComponentClient()
 
   useEffect(() => {
@@ -251,6 +253,16 @@ export default function Jobs() {
     </div>
   )
 
+  const indexOfLastJob = currentPage * jobsPerPage
+  const indexOfFirstJob = indexOfLastJob - jobsPerPage
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob)
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage)
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -374,7 +386,7 @@ export default function Jobs() {
 
             {/* Updated Job Cards */}
             <div className="space-y-6">
-              {filteredJobs.map((job) => (
+              {currentJobs.map((job) => (
                 <div
                   key={job.id}
                   className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -443,31 +455,37 @@ export default function Jobs() {
             {/* Enhanced Pagination */}
             <div className="mt-8 flex justify-center">
               <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                  }`}
                 >
                   Previous
-                </a>
-                {[1, 2, 3, 4, 5].map((page) => (
-                  <a
-                    key={page}
-                    href="#"
+                </button>
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => handlePageChange(index + 1)}
                     className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
-                      page === 1
+                      currentPage === index + 1
                         ? "text-blue-600 bg-blue-50"
                         : "text-gray-500 hover:bg-gray-50"
                     }`}
                   >
-                    {page}
-                  </a>
+                    {index + 1}
+                  </button>
                 ))}
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                  }`}
                 >
                   Next
-                </a>
+                </button>
               </nav>
             </div>
           </div>
