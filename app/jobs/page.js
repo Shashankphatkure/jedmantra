@@ -120,7 +120,7 @@ export default function Jobs() {
       result = result.filter(job => {
         return filters.salaryRange.some(range => {
           const [min, max] = range.split(' - ').map(str => 
-            parseInt(str.replace(/[£,+]/g, ''))
+            parseInt(str.replace(/[₹,+]/g, ''))
           )
           return (
             (job.salary_min >= min || !min) && 
@@ -312,11 +312,11 @@ export default function Jobs() {
                   <h4 className="font-medium mb-2">Salary Range</h4>
                   <div className="space-y-2">
                     {[
-                      "£0 - £20,000",
-                      "£20,000 - £30,000",
-                      "£30,000 - £50,000",
-                      "£50,000 - £70,000",
-                      "£70,000+",
+                      "₹0 - ₹20,000",
+                      "₹20,000 - ₹30,000",
+                      "₹30,000 - ₹50,000",
+                      "₹50,000 - ₹70,000",
+                      "₹70,000+",
                     ].map((range) => (
                       <label key={range} className="flex items-center">
                         <input
@@ -392,7 +392,7 @@ export default function Jobs() {
                       <div className="mt-2 space-y-2">
                         {(job.salary_min || job.salary_max) && (
                           <p className="text-gray-600">
-                            {job.salary_currency} {job.salary_min?.toLocaleString()} - {job.salary_max?.toLocaleString()} a year
+                            ₹{job.salary_min?.toLocaleString()} - ₹{job.salary_max?.toLocaleString()} a year
                           </p>
                         )}
                         <div className="flex flex-wrap gap-2">
