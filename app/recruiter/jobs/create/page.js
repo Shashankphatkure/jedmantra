@@ -13,7 +13,7 @@ import {
   UsersIcon
 } from '@heroicons/react/24/outline';
 
-const JobPreview = ({ formData, formatSalaryDisplay }) => {
+const JobPreview = ({ formData, formatSalaryDisplay, onPublish, isSubmitting }) => {
   return (
     <div className="bg-white shadow-sm rounded-lg p-8">
       {/* Header */}
@@ -100,6 +100,17 @@ const JobPreview = ({ formData, formatSalaryDisplay }) => {
           </div>
         </div>
       )}
+
+      {/* Add Publish Button at the bottom */}
+      <div className="mt-8 flex justify-end">
+        <button
+          onClick={onPublish}
+          disabled={isSubmitting}
+          className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isSubmitting ? 'Publishing...' : 'Publish Job'}
+        </button>
+      </div>
     </div>
   );
 };
@@ -202,29 +213,51 @@ export default function CreateJob() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setIsSubmitting(true);
     setErrors({});
 
     try {
+      // Validate required fields
+      const requiredFields = {
+        title: 'Job Title',
+        company_name: 'Company Name',
+        location: 'Location',
+        department: 'Department',
+        description: 'Description',
+      };
+
+      const missingFields = Object.entries(requiredFields)
+        .filter(([key]) => !formData[key])
+        .map(([_, label]) => label);
+
+      if (missingFields.length > 0) {
+        setErrors({ submit: `Please fill in required fields: ${missingFields.join(', ')}` });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Filter out empty array items before submission
+      const cleanedFormData = {
+        ...formData,
+        responsibilities: formData.responsibilities.filter(Boolean),
+        requirements: formData.requirements.filter(Boolean),
+        benefits: formData.benefits.filter(Boolean),
+        skills: formData.skills.filter(Boolean),
+      };
+
       // Insert job posting
       const { data: job, error: jobError } = await supabase
         .from('jobs')
-        .insert([{
-          ...formData,
-          responsibilities: formData.responsibilities.filter(Boolean),
-          requirements: formData.requirements.filter(Boolean),
-          benefits: formData.benefits.filter(Boolean),
-        }])
+        .insert([cleanedFormData])
         .select()
         .single();
 
       if (jobError) throw jobError;
 
-      // Insert skills
-      const skillPromises = formData.skills
-        .filter(Boolean)
-        .map(async (skillName) => {
+      // Handle skills if any are provided
+      if (cleanedFormData.skills.length > 0) {
+        const skillPromises = cleanedFormData.skills.map(async (skillName) => {
           // First try to insert the skill
           const { data: skill, error: skillError } = await supabase
             .from('job_skills')
@@ -245,16 +278,17 @@ export default function CreateJob() {
           return skill;
         });
 
-      const skills = await Promise.all(skillPromises);
+        const skills = await Promise.all(skillPromises);
 
-      // Link skills to job
-      await Promise.all(
-        skills.map((skill) =>
-          supabase
-            .from('job_skill_requirements')
-            .insert([{ job_id: job.id, skill_id: skill.id }])
-        )
-      );
+        // Link skills to job
+        await Promise.all(
+          skills.map((skill) =>
+            supabase
+              .from('job_skill_requirements')
+              .insert([{ job_id: job.id, skill_id: skill.id }])
+          )
+        );
+      }
 
       // Redirect to job listing
       window.location.href = `/recruiter/jobs/${job.id}`;
@@ -486,7 +520,12 @@ export default function CreateJob() {
       {/* Main Form Content */}
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
         {previewMode ? (
-          <JobPreview formData={formData} formatSalaryDisplay={formatSalaryDisplay} />
+          <JobPreview 
+            formData={formData} 
+            formatSalaryDisplay={formatSalaryDisplay}
+            onPublish={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8">
             {currentSection === 'basic' && renderBasicInformation()}
@@ -539,6 +578,12 @@ export default function CreateJob() {
               </div>
             </div>
           </form>
+        )}
+        
+        {errors.submit && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600">{errors.submit}</p>
+          </div>
         )}
       </main>
     </div>
