@@ -1,19 +1,109 @@
+'use client'
 import Image from "next/image";
 import Link from "next/link";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useState, useEffect } from 'react';
 
-export default async function Courses() {
+export default function Courses() {
   // Initialize Supabase client
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createClientComponentClient();
   
-  // Fetch courses
-  const { data: courses, error } = await supabase
-    .from('courses')
-    .select('*');
+  // State management
+  const [courses, setCourses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    categories: [],
+    levels: [],
+    duration: [],
+    price: [],
+    rating: []
+  });
+
+  // Fetch courses on component mount
+  useEffect(() => {
+    async function fetchCourses() {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*');
+
+      if (error) {
+        console.error('Error fetching courses:', error);
+        setError(error);
+        return;
+      }
+
+      setCourses(data);
+      setFilteredCourses(data);
+    }
+
+    fetchCourses();
+  }, []);
+
+  // Update the useEffect to apply filters
+  useEffect(() => {
+    const filtered = courses.filter(course => {
+      // Apply search term filter
+      const matchesSearch = !searchTerm || 
+        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // Apply category filter
+      const matchesCategory = filters.categories.length === 0 || 
+        filters.categories.includes(course.category);
+
+      // Apply level filter
+      const matchesLevel = filters.levels.length === 0 || 
+        filters.levels.includes(course.skill_level);
+
+      // Apply rating filter
+      const matchesRating = filters.rating.length === 0 || 
+        filters.rating.some(minRating => course.rating >= minRating);
+
+      // Return true only if all filters match
+      return matchesSearch && matchesCategory && matchesLevel && matchesRating;
+    });
+
+    setFilteredCourses(filtered);
+  }, [courses, searchTerm, filters]);
+
+  // Handle search input change
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+  };
+
+  // Add handler for filter changes
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => {
+      const updatedFilters = { ...prev };
+      
+      if (updatedFilters[filterType].includes(value)) {
+        // Remove value if already selected
+        updatedFilters[filterType] = updatedFilters[filterType].filter(item => item !== value);
+      } else {
+        // Add value if not selected
+        updatedFilters[filterType] = [...updatedFilters[filterType], value];
+      }
+      
+      return updatedFilters;
+    });
+  };
+
+  // Add clear filters handler
+  const clearFilters = () => {
+    setFilters({
+      categories: [],
+      levels: [],
+      duration: [],
+      price: [],
+      rating: []
+    });
+    setSearchTerm('');
+  };
 
   if (error) {
-    console.error('Error fetching courses:', error);
     return <div>Error loading courses</div>;
   }
 
@@ -30,11 +120,13 @@ export default async function Courses() {
             month
           </p>
 
-          {/* Search Form */}
+          {/* Updated Search Form */}
           <div className="bg-white p-6 rounded-xl shadow-xl">
             <div className="relative">
               <input
                 type="text"
+                value={searchTerm}
+                onChange={handleSearch}
                 placeholder="Search courses, skills, or topics"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -57,7 +149,10 @@ export default async function Courses() {
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                <button 
+                  onClick={clearFilters}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
                   Clear All
                 </button>
               </div>
@@ -83,6 +178,8 @@ export default async function Courses() {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
+                          checked={filters.categories.includes(category.name)}
+                          onChange={() => handleFilterChange('categories', category.name)}
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
@@ -130,6 +227,8 @@ export default async function Courses() {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
+                          checked={filters.levels.includes(level.name)}
+                          onChange={() => handleFilterChange('levels', level.name)}
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
@@ -161,6 +260,8 @@ export default async function Courses() {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
+                          checked={filters.duration.includes(duration.name)}
+                          onChange={() => handleFilterChange('duration', duration.name)}
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
@@ -193,6 +294,8 @@ export default async function Courses() {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
+                          checked={filters.price.includes(price.name)}
+                          onChange={() => handleFilterChange('price', price.name)}
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
@@ -219,6 +322,8 @@ export default async function Courses() {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
+                          checked={filters.rating.includes(rating)}
+                          onChange={() => handleFilterChange('rating', rating)}
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <div className="ml-3 flex items-center">
@@ -261,7 +366,7 @@ export default async function Courses() {
             {/* Sort and Results Count */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-gray-600">
-                Showing <span className="font-semibold">{courses.length}</span> courses
+                Showing <span className="font-semibold">{filteredCourses.length}</span> courses
               </p>
               <select className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option>Most Popular</option>
@@ -274,7 +379,7 @@ export default async function Courses() {
 
             {/* Course Cards */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => (
+              {filteredCourses.map((course) => (
                 <div
                   key={course.id}
                   className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
