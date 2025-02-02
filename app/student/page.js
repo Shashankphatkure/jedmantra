@@ -1,68 +1,111 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function StudentDashboard() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  const skipLinks = [
+    { id: "main-content", label: "Skip to main content" },
+    { id: "active-courses", label: "Skip to active courses" },
+    { id: "learning-goals", label: "Skip to learning goals" }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="fixed top-0 left-0 z-50">
+        {skipLinks.map(link => (
+          <a
+            key={link.id}
+            href={`#${link.id}`}
+            className="sr-only focus:not-sr-only focus:block focus:bg-indigo-600 
+              focus:text-white focus:px-4 focus:py-2 focus:m-2 focus:rounded-lg
+              focus:shadow-lg focus:outline-none"
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Progress Overview */}
-            <section className="bg-white shadow-lg rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Learning Progress
-              </h2>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                <div className="bg-blue-50 p-6 rounded-xl">
-                  <div className="text-3xl font-bold text-blue-600">4</div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    Courses in Progress
-                  </div>
-                </div>
-                <div className="bg-green-50 p-6 rounded-xl">
-                  <div className="text-3xl font-bold text-green-600">8</div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    Completed Courses
-                  </div>
-                </div>
-                <div className="bg-purple-50 p-6 rounded-xl">
-                  <div className="text-3xl font-bold text-purple-600">12</div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    Certificates Earned
-                  </div>
+            {isLoading ? (
+              <div className="animate-pulse space-y-4">
+                <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
+                  ))}
                 </div>
               </div>
-            </section>
+            ) : (
+              <section className="bg-white shadow-lg rounded-xl p-6 transform transition-all duration-300 hover:shadow-xl">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Learning Progress
+                </h2>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                  <div className="bg-blue-50 p-6 rounded-xl">
+                    <div className="text-3xl font-bold text-blue-600">4</div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      Courses in Progress
+                    </div>
+                  </div>
+                  <div className="bg-green-50 p-6 rounded-xl">
+                    <div className="text-3xl font-bold text-green-600">8</div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      Completed Courses
+                    </div>
+                  </div>
+                  <div className="bg-purple-50 p-6 rounded-xl">
+                    <div className="text-3xl font-bold text-purple-600">12</div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      Certificates Earned
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {/* Active Courses */}
-            <section className="bg-white shadow-lg rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Active Courses
-              </h2>
+            <section id="active-courses" className="bg-white shadow-lg rounded-xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Active Courses</h2>
+                <div className="relative">
+                  <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium 
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-lg
+                    px-3 py-1">
+                    Sort by
+                  </button>
+                </div>
+              </div>
+
               <div className="space-y-6">
-                {[
-                  {
-                    title: "Advanced Web Development",
-                    image: "https://picsum.photos/seed/webdev/400/300",
-                    progress: 75,
-                    nextLesson: "React Hooks Deep Dive",
-                    instructor: "John Smith",
-                    lastAccessed: "2 days ago",
-                  },
-                  {
-                    title: "UI/UX Design Fundamentals",
-                    image: "https://picsum.photos/seed/uidesign/400/300",
-                    progress: 45,
-                    nextLesson: "User Research Methods",
-                    instructor: "Sarah Johnson",
-                    lastAccessed: "1 week ago",
-                  },
-                ].map((course) => (
-                  <div
-                    key={course.title}
-                    className="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-                  >
+                {courses.length === 0 ? (
+                  <div className="text-center py-12 bg-gray-50 rounded-xl">
+                    <div className="text-gray-400 mb-4">
+                      <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900">No Active Courses</h3>
+                    <p className="text-gray-500 mt-2">Start your learning journey today</p>
+                    <button className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg 
+                      hover:bg-indigo-700 active:scale-95 transition-all duration-200
+                      focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Browse Courses
+                    </button>
+                  </div>
+                ) : (
+                  <div className="group relative bg-white border border-gray-100 rounded-xl p-6 
+                    hover:shadow-lg transition-all duration-300 hover:scale-[1.02] 
+                    hover:border-indigo-200">
                     <div className="flex items-start gap-6">
                       <Image
                         src={course.image}
@@ -101,107 +144,7 @@ export default function StudentDashboard() {
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Recent Activities */}
-            <section className="bg-white shadow-lg rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Recent Activities
-              </h2>
-              <div className="space-y-6">
-                {[
-                  {
-                    type: "assignment",
-                    title: "JavaScript Basics Quiz",
-                    course: "Advanced Web Development",
-                    score: "90%",
-                    date: "Yesterday",
-                  },
-                  {
-                    type: "certificate",
-                    title: "HTML & CSS Mastery",
-                    course: "Web Development Fundamentals",
-                    date: "3 days ago",
-                  },
-                  {
-                    type: "forum",
-                    title: "Discussion: Best Practices in UI Design",
-                    course: "UI/UX Design Fundamentals",
-                    date: "1 week ago",
-                  },
-                ].map((activity, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="flex-shrink-0">
-                      {activity.type === "assignment" && (
-                        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
-                          <svg
-                            className="h-5 w-5 text-blue-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                        </span>
-                      )}
-                      {activity.type === "certificate" && (
-                        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
-                          <svg
-                            className="h-5 w-5 text-green-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                            />
-                          </svg>
-                        </span>
-                      )}
-                      {activity.type === "forum" && (
-                        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-purple-100">
-                          <svg
-                            className="h-5 w-5 text-purple-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-                            />
-                          </svg>
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {activity.title}
-                      </p>
-                      <p className="text-sm text-gray-500">{activity.course}</p>
-                    </div>
-                    <div className="text-right">
-                      {activity.score && (
-                        <p className="text-sm font-medium text-green-600">
-                          {activity.score}
-                        </p>
-                      )}
-                      <p className="text-sm text-gray-500">{activity.date}</p>
-                    </div>
-                  </div>
-                ))}
+                )}
               </div>
             </section>
           </div>
@@ -209,7 +152,7 @@ export default function StudentDashboard() {
           {/* Sidebar */}
           <div className="space-y-8">
             {/* Learning Goals */}
-            <section className="bg-white shadow-lg rounded-xl p-6">
+            <section id="learning-goals" className="bg-white shadow-lg rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
                 Learning Goals
               </h2>
@@ -307,46 +250,40 @@ export default function StudentDashboard() {
                 </button>
               </div>
             </section>
-
-            {/* Upcoming Events */}
-            <section className="bg-white shadow-lg rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Upcoming Events
-              </h2>
-              <div className="space-y-6">
-                {[
-                  {
-                    title: "Live Q&A: React Best Practices",
-                    date: "Tomorrow, 2:00 PM",
-                    instructor: "John Smith",
-                  },
-                  {
-                    title: "Workshop: UI Design Principles",
-                    date: "Friday, 11:00 AM",
-                    instructor: "Sarah Johnson",
-                  },
-                ].map((event) => (
-                  <div
-                    key={event.title}
-                    className="border-l-4 border-blue-600 pl-4"
-                  >
-                    <h3 className="text-sm font-medium text-gray-900">
-                      {event.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">{event.date}</p>
-                    <p className="text-sm text-gray-500">
-                      By {event.instructor}
-                    </p>
-                    <button className="mt-2 text-sm text-blue-600 hover:text-blue-500 font-medium">
-                      Set Reminder
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
           </div>
         </div>
       </main>
+
+      {/* Toast Notifications Container */}
+      <div className="fixed bottom-6 left-6 z-50">
+        {/* Add toast notifications here */}
+      </div>
     </div>
   );
 }
+
+// Utility components
+const LoadingSkeleton = () => (
+  <div className="animate-pulse">
+    {/* Add skeleton structure */}
+  </div>
+);
+
+const ToastNotification = ({ message, type }) => (
+  <div className="bg-white shadow-lg rounded-lg p-4 flex items-center gap-3 
+    transform transition-all duration-300 hover:shadow-xl">
+    {/* Add toast notification structure */}
+  </div>
+);
+
+const Tooltip = ({ children, content }) => (
+  <div className="relative group">
+    {children}
+    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 
+      hidden group-hover:block z-50">
+      <div className="bg-gray-900 text-white text-sm rounded-lg py-1 px-2 whitespace-nowrap">
+        {content}
+      </div>
+    </div>
+  </div>
+);

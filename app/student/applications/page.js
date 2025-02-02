@@ -1,47 +1,133 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { ArrowRightIcon, MagnifyingGlassIcon, MapPinIcon, BriefcaseIcon, CalendarIcon } from "@heroicons/react/24/outline";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from 'react-hot-toast';
 
-export default async function StudentApplications() {
-  const supabase = createServerComponentClient({ cookies });
-  
-  // Get current user
-  const { data: { user } } = await supabase.auth.getUser();
+const statusColors = {
+  Interview: { bg: "bg-green-100", text: "text-green-800" },
+  Open: { bg: "bg-blue-100", text: "text-blue-800" },
+  Offer: { bg: "bg-purple-100", text: "text-purple-800" },
+  Rejected: { bg: "bg-red-100", text: "text-red-800" }
+};
 
-  // Fetch user's applications with job details
-  const { data: applications, error } = await supabase
-    .from('job_applications')
-    .select(`
-      id,
-      status,
-      created_at,
-      jobs (
-        id,
-        title,
-        company_name,
-        location,
-        job_type,
-        salary_min,
-        salary_max,
-        salary_currency
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+export default function StudentApplications() {
+  const [applications, setApplications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [stats, setStats] = useState({
+    totalApplications: 0,
+    activeApplications: 0,
+    interviews: 0,
+    responseRate: 0
+  });
 
-  // Calculate stats
-  const totalApplications = applications?.length || 0;
-  const activeApplications = applications?.filter(app => 
-    ['Open', 'Interview'].includes(app.status)
-  ).length || 0;
-  const interviews = applications?.filter(app => 
-    app.status === 'Interview'
-  ).length || 0;
-  const responseRate = applications?.length 
-    ? Math.round((applications.filter(app => app.status !== 'Open').length / applications.length) * 100)
-    : 0;
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    fetchApplications();
+  }, []);
+
+  const fetchApplications = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { data, error } = await supabase
+        .from('job_applications')
+        .select(`
+          id,
+          status,
+          created_at,
+          jobs (
+            id,
+            title,
+            company_name,
+            location,
+            job_type,
+            salary_min,
+            salary_max,
+            salary_currency
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setApplications(data);
+      calculateStats(data);
+    } catch (error) {
+      toast.error("Failed to load applications");
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const calculateStats = (data) => {
+    const total = data.length;
+    const active = data.filter(app => ['Open', 'Interview'].includes(app.status)).length;
+    const interviews = data.filter(app => app.status === 'Interview').length;
+    const responseRate = total 
+      ? Math.round((data.filter(app => app.status !== 'Open').length / total) * 100)
+      : 0;
+
+    setStats({
+      totalApplications: total,
+      activeApplications: active,
+      interviews,
+      responseRate
+    });
+  };
+
+  const filteredApplications = applications
+    .filter(app => {
+      const matchesSearch = app.jobs.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          app.jobs.company_name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === "All" || app.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+  const StatCard = ({ title, value, subtext, color }) => (
+    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      <dt className="text-sm font-medium text-gray-500 truncate mb-2">
+        {title}
+      </dt>
+      <dd>
+        <div className={`text-3xl font-bold text-${color}-600 mb-2`}>
+          {value}
+        </div>
+        <div className="text-sm text-gray-600">
+          {subtext}
+        </div>
+      </dd>
+    </div>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 animate-pulse">
+        <div className="bg-gradient-to-r from-pink-500 to-pink-600 h-64" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl h-32" />
+            ))}
+          </div>
+          <div className="bg-white rounded-xl h-20 mb-8" />
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl h-40" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,7 +143,8 @@ export default async function StudentApplications() {
             </p>
             <Link
               href="/jobs"
-              className="inline-flex items-center px-6 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white/10 transition-colors group"
+              className="inline-flex items-center px-6 py-3 border-2 border-white text-white 
+                font-medium rounded-lg hover:bg-white/10 transition-colors group"
             >
               Browse New Jobs
               <ArrowRightIcon className="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
@@ -65,63 +152,44 @@ export default async function StudentApplications() {
           </div>
         </div>
 
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 
+          bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70" />
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 
+          bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Application Stats */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
-          {[
-            { 
-              name: "Total Applications", 
-              stat: totalApplications, 
-              change: `${applications?.filter(app => {
-                const oneMonthAgo = new Date();
-                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-                return new Date(app.created_at) > oneMonthAgo;
-              }).length} this month`, 
-              color: "blue" 
-            },
-            { 
-              name: "Active Applications", 
-              stat: activeApplications, 
-              change: `${interviews} interviews scheduled`, 
-              color: "green" 
-            },
-            { 
-              name: "Interviews", 
-              stat: interviews, 
-              change: applications?.find(app => 
-                app.status === 'Interview'
-              )?.next_interview || "No interviews scheduled", 
-              color: "purple" 
-            },
-            { 
-              name: "Response Rate", 
-              stat: `${responseRate}%`, 
-              change: "Based on status updates", 
-              color: "pink" 
-            },
-          ].map((item) => (
-            <div
-              key={item.name}
-              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
-            >
-              <dt className="text-sm font-medium text-gray-500 truncate mb-2">
-                {item.name}
-              </dt>
-              <dd>
-                <div className={`text-3xl font-bold text-${item.color}-600 mb-2`}>
-                  {item.stat}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {item.change}
-                </div>
-              </dd>
-            </div>
-          ))}
+          <StatCard
+            title="Total Applications"
+            value={stats.totalApplications}
+            subtext={`${applications.filter(app => {
+              const oneMonthAgo = new Date();
+              oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+              return new Date(app.created_at) > oneMonthAgo;
+            }).length} this month`}
+            color="blue"
+          />
+          <StatCard
+            title="Active Applications"
+            value={stats.activeApplications}
+            subtext={`${stats.interviews} interviews scheduled`}
+            color="green"
+          />
+          <StatCard
+            title="Interviews"
+            value={stats.interviews}
+            subtext="Upcoming interviews"
+            color="purple"
+          />
+          <StatCard
+            title="Response Rate"
+            value={`${stats.responseRate}%`}
+            subtext="Based on status updates"
+            color="pink"
+          />
         </div>
 
         {/* Filters */}
@@ -130,28 +198,22 @@ export default async function StudentApplications() {
             <div className="relative flex-1">
               <input
                 type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search applications..."
-                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 
+                  focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
-            <select className="w-full sm:w-48 pl-4 pr-10 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-              <option>All Status</option>
-              <option>Applied</option>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full sm:w-48 pl-4 pr-10 py-3 rounded-lg border border-gray-300 
+                focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            >
+              <option>All</option>
+              <option>Open</option>
               <option>Interview</option>
               <option>Offer</option>
               <option>Rejected</option>
@@ -161,145 +223,80 @@ export default async function StudentApplications() {
 
         {/* Applications List */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
-          <ul className="divide-y divide-gray-200">
-            {applications?.map((application) => (
-              <li key={application.id}>
-                <div className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
+          {filteredApplications.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="mx-auto h-24 w-24 text-gray-400">
+                <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} 
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-medium text-gray-900">No applications found</h3>
+              <p className="mt-2 text-gray-500">
+                {searchTerm || statusFilter !== "All" 
+                  ? "Try adjusting your filters"
+                  : "Start applying to jobs to track your applications"}
+              </p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-200">
+              {filteredApplications.map((application) => (
+                <li key={application.id} className="group">
+                  <div className="p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-medium text-gray-900 group-hover:text-pink-600 
+                          transition-colors">
                           {application.jobs.title}
-                        </div>
-                        <div className="text-sm text-gray-500">
+                        </h3>
+                        <p className="text-sm text-gray-500">
                           {application.jobs.company_name}
-                        </div>
+                        </p>
                       </div>
-                    </div>
-                    <div className="ml-6 flex items-center space-x-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        application.status === "Interview"
-                          ? "bg-green-100 text-green-800"
-                          : application.status === "Open"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-red-100 text-red-800"
-                      }`}>
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm 
+                        font-medium ${statusColors[application.status].bg} 
+                        ${statusColors[application.status].text}`}>
                         {application.status}
                       </span>
                     </div>
-                  </div>
-                  <div className="mt-4">
-                    <div className="sm:flex sm:justify-between">
-                      <div className="sm:flex">
-                        <div className="mr-6 flex items-center text-sm text-gray-500">
-                          <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                               // ... existing SVG ...
-                          />
-                          {application.jobs.job_type}
-                        </div>
-                        <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                          <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                               // ... existing SVG ...
-                          />
-                          {application.jobs.location}
-                        </div>
-                      </div>
-                      <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                        <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                             // ... existing SVG ...
-                        />
-                        Applied on {new Date(application.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="mt-2 text-sm text-gray-500">
-                      Salary: {application.jobs.salary_currency} {application.jobs.salary_min.toLocaleString()} 
-                      - {application.jobs.salary_max.toLocaleString()} per year
-                    </div>
-                  </div>
-                  <div className="mt-4 flex space-x-4">
-                    <Link href={`/applications/${application.id}`}
-                          className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200">
-                      View Details
-                    </Link>
-                    {/* ... other action buttons ... */}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
 
-        {/* Upcoming Interviews */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-200">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Upcoming Interviews
-            </h2>
-          </div>
-          <div className="border-t border-gray-200">
-            <ul className="divide-y divide-gray-200">
-              {[
-                {
-                  company: "Tech Corp",
-                  position: "Senior React Developer",
-                  type: "Technical Interview",
-                  date: "Jan 20, 2024",
-                  time: "10:00 AM",
-                  interviewer: "David Lee",
-                  logo: "https://via.placeholder.com/40",
-                },
-                {
-                  company: "Startup Inc",
-                  position: "Full Stack Developer",
-                  type: "HR Interview",
-                  date: "Jan 22, 2024",
-                  time: "2:00 PM",
-                  interviewer: "Sarah Chen",
-                  logo: "https://via.placeholder.com/40",
-                },
-              ].map((interview, index) => (
-                <li key={index} className="px-4 py-4 sm:px-6 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <Image
-                          className="h-12 w-12 rounded-full"
-                          src={interview.logo}
-                          alt={interview.company}
-                          width={48}
-                          height={48}
-                        />
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <BriefcaseIcon className="h-5 w-5 text-gray-400 mr-2" />
+                        {application.jobs.job_type}
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {interview.position}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {interview.company}
-                        </div>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <MapPinIcon className="h-5 w-5 text-gray-400 mr-2" />
+                        {application.jobs.location}
+                      </div>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <CalendarIcon className="h-5 w-5 text-gray-400 mr-2" />
+                        Applied {new Date(application.created_at).toLocaleDateString()}
                       </div>
                     </div>
-                    <div className="ml-6">
-                      <div className="text-sm text-gray-900">
-                        {interview.type}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {interview.date} at {interview.time}
-                      </div>
+
+                    <div className="mt-4 flex space-x-4">
+                      <Link
+                        href={`/applications/${application.id}`}
+                        className="inline-flex items-center px-4 py-2 border border-transparent 
+                          text-sm font-medium rounded-lg text-white bg-pink-600 
+                          hover:bg-pink-700 transition-colors"
+                      >
+                        View Details
+                      </Link>
+                      <button
+                        className="inline-flex items-center px-4 py-2 border border-gray-300 
+                          text-sm font-medium rounded-lg text-gray-700 bg-white 
+                          hover:bg-gray-50 transition-colors"
+                      >
+                        Update Status
+                      </button>
                     </div>
-                  </div>
-                  <div className="mt-4 flex space-x-4">
-                    <button className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200">
-                      Join Meeting
-                    </button>
-                    <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
-                      Reschedule
-                    </button>
                   </div>
                 </li>
               ))}
             </ul>
-          </div>
+          )}
         </div>
       </div>
     </div>
