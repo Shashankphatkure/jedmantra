@@ -23,7 +23,6 @@ export default function Jobs() {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      setLoading(true)
       try {
         const { data, error } = await supabase
           .from('jobs')
@@ -42,17 +41,16 @@ export default function Jobs() {
         
         if (error) {
           console.error('Error fetching jobs:', error)
+          setLoading(false)
           return
         }
 
         console.log('Fetched jobs:', data)
-        if (data) {
-          setJobs(data)
-          setFilteredJobs(data)
-        }
+        setJobs(data || [])
+        setFilteredJobs(data || [])
+        setLoading(false)
       } catch (error) {
         console.error('Error:', error)
-      } finally {
         setLoading(false)
       }
     }
@@ -136,6 +134,12 @@ export default function Jobs() {
     console.log('Final filtered jobs:', result.length)
     setFilteredJobs(result)
   }, [jobs, searchQuery, locationQuery, filters])
+
+  useEffect(() => {
+    console.log('Loading state:', loading)
+    console.log('Jobs length:', jobs.length)
+    console.log('Filtered jobs length:', filteredJobs.length)
+  }, [loading, jobs, filteredJobs])
 
   const handleSearch = (e) => {
     e.preventDefault()
