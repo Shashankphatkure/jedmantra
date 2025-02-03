@@ -21,6 +21,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 export default function RecruiterDashboard() {
   const [recruiter, setRecruiter] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recentJobs, setRecentJobs] = useState([]);
   const supabase = createClientComponentClient();
 
   const [stats] = useState([
@@ -30,47 +31,14 @@ export default function RecruiterDashboard() {
     { name: "Hired Candidates", stat: "8", icon: UserPlusIcon },
   ]);
 
-  const [recentJobs] = useState([
-    {
-      id: 1,
-      title: "Senior Software Engineer",
-      department: "Engineering",
-      location: "Remote",
-      type: "Full-time",
-      applicants: 45,
-      posted: "2d ago",
-      status: "active",
-    },
-    {
-      id: 2,
-      title: "Product Designer",
-      department: "Design",
-      location: "New York, NY",
-      type: "Full-time",
-      applicants: 28,
-      posted: "3d ago",
-      status: "active",
-    },
-    {
-      id: 3,
-      title: "Marketing Manager",
-      department: "Marketing",
-      location: "San Francisco, CA",
-      type: "Full-time",
-      applicants: 34,
-      posted: "5d ago",
-      status: "active",
-    },
-  ]);
-
   useEffect(() => {
     async function getRecruiterProfile() {
       try {
-        // Get the current logged in user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
+        console.log('Current user:', user);
 
-        // Fetch the recruiter profile for this user
+        // Fetch recruiter profile
         const { data: recruiterData, error: recruiterError } = await supabase
           .from('recruiters')
           .select('*')
@@ -78,6 +46,44 @@ export default function RecruiterDashboard() {
           .single();
         
         if (recruiterError) throw recruiterError;
+        console.log('Recruiter data:', recruiterData);
+
+        // First get the recruiter's jobs through job_recruiters
+        const { data: jobsData, error: jobsError } = await supabase
+          .from('jobs')
+          .select(`
+            id,
+            title,
+            department,
+            location,
+            job_type,
+            status,
+            posted_at,
+            is_remote,
+            job_recruiters!inner(recruiter_id)
+          `)
+          .eq('job_recruiters.recruiter_id', recruiterData.id)
+          .order('posted_at', { ascending: false })
+          .limit(5);
+
+        if (jobsError) {
+          console.error('Jobs fetch error:', jobsError);
+          throw jobsError;
+        }
+        console.log('Fetched jobs:', jobsData);
+
+        if (jobsData) {
+          setRecentJobs(jobsData.map(job => ({
+            id: job.id,
+            title: job.title,
+            department: job.department,
+            location: job.is_remote ? 'Remote' : job.location,
+            type: job.job_type,
+            posted: formatTimeAgo(job.posted_at),
+            status: job.status?.toLowerCase() || 'open',
+            applicants: '0' // You might want to add a count of applications here
+          })));
+        }
 
         setRecruiter({
           ...recruiterData,
@@ -89,7 +95,7 @@ export default function RecruiterDashboard() {
           }
         });
       } catch (error) {
-        console.error('Error fetching recruiter profile:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
@@ -97,6 +103,17 @@ export default function RecruiterDashboard() {
 
     getRecruiterProfile();
   }, [supabase]);
+
+  // Add this helper function to format the time ago
+  function formatTimeAgo(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays === 0) return 'Today';
+    if (diffInDays === 1) return 'Yesterday';
+    return `${diffInDays}d ago`;
+  }
 
   if (loading) {
     return (
@@ -356,7 +373,10 @@ export default function RecruiterDashboard() {
                     <tr key={job.id} className="hover:bg-gray-50 transition-colors">
                       <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {job.title}
-                        <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                        <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                          ${job.status === 'open' ? 'bg-green-50 text-green-700 border border-green-200' :
+                          job.status === 'closed' ? 'bg-red-50 text-red-700 border border-red-200' :
+                          'bg-yellow-50 text-yellow-700 border border-yellow-200'}`}>
                           {job.type}
                         </span>
                       </td>
