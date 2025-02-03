@@ -8,8 +8,24 @@ import {
   StarIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
-export default function Home() {
+export default async function Home() {
+  const supabase = createServerComponentClient({ cookies })
+  
+  const { data: jobs } = await supabase
+    .from('jobs')
+    .select('*')
+    .order('posted_at', { ascending: false })
+    .limit(6)
+
+  const { data: courses } = await supabase
+    .from('courses')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(6)
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -269,64 +285,9 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Senior Software Engineer",
-                company: "Tech Innovators Ltd",
-                type: "Full-time",
-                location: "London, UK",
-                salary: "₹15,00,000 - ₹25,00,000",
-                tags: ["React", "Node.js", "AWS"],
-                color: "blue",
-              },
-              {
-                title: "UX/UI Designer",
-                company: "Creative Studios",
-                type: "Remote",
-                location: "Manchester, UK",
-                salary: "₹8,00,000 - ₹15,00,000",
-                tags: ["Figma", "Adobe XD", "User Research"],
-                color: "purple",
-              },
-              {
-                title: "Data Scientist",
-                company: "Analytics Pro",
-                type: "Hybrid",
-                location: "Edinburgh, UK",
-                salary: "₹12,00,000 - ₹20,00,000",
-                tags: ["Python", "Machine Learning", "SQL"],
-                color: "green",
-              },
-              {
-                title: "Marketing Manager",
-                company: "Global Brands Inc",
-                type: "Full-time",
-                location: "Birmingham, UK",
-                salary: "₹8,00,000 - ₹12,00,000",
-                tags: ["Digital Marketing", "SEO", "Content Strategy"],
-                color: "pink",
-              },
-              {
-                title: "DevOps Engineer",
-                company: "Cloud Solutions",
-                type: "Remote",
-                location: "Bristol, UK",
-                salary: "₹14,00,000 - ₹22,00,000",
-                tags: ["Docker", "Kubernetes", "CI/CD"],
-                color: "indigo",
-              },
-              {
-                title: "Product Manager",
-                company: "Innovation Hub",
-                type: "Full-time",
-                location: "Glasgow, UK",
-                salary: "₹12,00,000 - ₹18,00,000",
-                tags: ["Agile", "Product Strategy", "Scrum"],
-                color: "blue",
-              },
-            ].map((job, index) => (
+            {jobs?.map((job) => (
               <div
-                key={index}
+                key={job.id}
                 className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="flex items-start justify-between mb-4">
@@ -334,37 +295,38 @@ export default function Home() {
                     <h3 className="font-semibold text-xl text-gray-900">
                       {job.title}
                     </h3>
-                    <p className="text-gray-600">{job.company}</p>
+                    <p className="text-gray-600">{job.company_name}</p>
                   </div>
-                  <span
-                    className={`bg-${job.color}-100 text-${job.color}-800 px-3 py-1 rounded-full text-sm font-medium`}
-                  >
-                    {job.type}
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {job.job_type}
                   </span>
                 </div>
                 <div className="space-y-3 mb-4">
                   <p className="text-gray-600 flex items-center">
                     <MapPinIcon className="h-5 w-5 mr-2 text-gray-400" />
-                    {job.location}
+                    {job.location} {job.is_remote && '(Remote)'}
                   </p>
-                  <p className="text-gray-600 flex items-center">
-                    <CurrencyPoundIcon className="h-5 w-5 mr-2 text-gray-400" />
-                    {job.salary}
-                  </p>
+                  {(job.salary_min || job.salary_max) && (
+                    <p className="text-gray-600 flex items-center">
+                      <CurrencyPoundIcon className="h-5 w-5 mr-2 text-gray-400" />
+                      {job.salary_min && `${job.salary_min.toLocaleString()}`}
+                      {job.salary_min && job.salary_max && ' - '}
+                      {job.salary_max && `${job.salary_max.toLocaleString()}`}
+                      {' ' + job.salary_currency}
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-2 mt-3">
-                    {job.tags.map((tag, tagIndex) => (
+                    {job.skills?.slice(0, 3).map((skill, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className={`bg-${job.color}-50 text-${job.color}-700 text-sm px-3 py-1 rounded-full`}
+                        className="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full"
                       >
-                        {tag}
+                        {skill}
                       </span>
                     ))}
                   </div>
                 </div>
-                <button
-                  className={`w-full bg-${job.color}-600 text-white rounded-lg px-4 py-2 hover:bg-${job.color}-700 transition-colors flex items-center justify-center group`}
-                >
+                <button className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition-colors flex items-center justify-center group">
                   Apply Now
                   <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -392,98 +354,43 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                id: 1025,
-                title: "Complete Web Development Bootcamp",
-                instructor: "Sarah Johnson",
-                rating: 4.8,
-                reviews: 2431,
-                price: 4999,
-                level: "Beginner",
-                duration: "12 weeks",
-                category: "Development",
-              },
-              {
-                id: 1026,
-                title: "Advanced Data Science & AI",
-                instructor: "Dr. Michael Chen",
-                rating: 4.9,
-                reviews: 1876,
-                price: 6999,
-                level: "Advanced",
-                duration: "16 weeks",
-                category: "Data Science",
-              },
-              {
-                id: 1027,
-                title: "Digital Marketing Masterclass",
-                instructor: "Emma Thompson",
-                rating: 4.7,
-                reviews: 3254,
-                price: 3999,
-                level: "Intermediate",
-                duration: "8 weeks",
-                category: "Marketing",
-              },
-              {
-                id: 1028,
-                title: "UI/UX Design Fundamentals",
-                instructor: "Alex Rodriguez",
-                rating: 4.8,
-                reviews: 1543,
-                price: 4499,
-                level: "Beginner",
-                duration: "10 weeks",
-                category: "Design",
-              },
-              {
-                id: 1029,
-                title: "Cloud Architecture on AWS",
-                instructor: "James Wilson",
-                rating: 4.9,
-                reviews: 987,
-                price: 7999,
-                level: "Advanced",
-                duration: "14 weeks",
-                category: "Cloud Computing",
-              },
-              {
-                id: 1030,
-                title: "Project Management Professional",
-                instructor: "Lisa Anderson",
-                rating: 4.7,
-                reviews: 2198,
-                price: 5999,
-                level: "Intermediate",
-                duration: "12 weeks",
-                category: "Management",
-              },
-            ].map((course, index) => (
+            {courses?.map((course) => (
               <div
-                key={index}
+                key={course.id}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="relative">
                   <img
-                    src={`https://picsum.photos/id/${course.id}/800/600`}
+                    src={course.course_image || `https://picsum.photos/800/600`}
                     alt={course.title}
                     className="w-full h-48 object-cover"
                   />
                   <div className="absolute top-4 right-4 flex space-x-2">
-                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {course.level}
-                    </span>
-                    <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {course.duration}
-                    </span>
+                    {course.skill_level && (
+                      <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {course.skill_level}
+                      </span>
+                    )}
+                    {course.video_hours && (
+                      <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {course.video_hours}h
+                      </span>
+                    )}
                   </div>
+                  {course.bestseller && (
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        Bestseller
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <h3 className="font-semibold text-xl mb-2">{course.title}</h3>
                   <p className="text-gray-600 mb-4 flex items-center">
                     <UserCircleIcon className="h-5 w-5 mr-2" />
-                    {course.instructor}
+                    {course.instructor_name}
+                    {course.instructor_title && ` - ${course.instructor_title}`}
                   </p>
                   <div className="flex items-center mb-4">
                     <div className="flex items-center text-yellow-400">
@@ -491,11 +398,18 @@ export default function Home() {
                       <span className="ml-1 font-medium">{course.rating}</span>
                     </div>
                     <span className="text-gray-500 ml-2">
-                      ({course.reviews.toLocaleString()} reviews)
+                      ({course.review_count?.toLocaleString() || 0} reviews)
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-2xl">₹{course.price}</span>
+                    <div>
+                      <span className="font-bold text-2xl">₹{course.price}</span>
+                      {course.original_price && (
+                        <span className="text-gray-500 line-through ml-2">
+                          ₹{course.original_price}
+                        </span>
+                      )}
+                    </div>
                     <button className="flex items-center text-blue-600 font-medium hover:text-blue-800 group">
                       Learn More
                       <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
