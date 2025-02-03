@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import Link from 'next/link'
 
 export default async function Home() {
   const supabase = createServerComponentClient({ cookies })
@@ -67,10 +68,13 @@ export default async function Home() {
                   </button>
                 </div>
               </div>
-              <button className="w-full mt-4 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group">
+              <Link
+                href="/jobs"
+                className="w-full mt-4 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group"
+              >
                 Search Jobs
                 <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </Link>
             </div>
 
             {/* Job Stats */}
@@ -143,6 +147,7 @@ export default async function Home() {
                   "Salary insights",
                 ],
                 cta: "Find Jobs",
+                href: "/jobs"
               },
               {
                 title: "Course Learner",
@@ -156,6 +161,7 @@ export default async function Home() {
                   "Expert mentorship",
                 ],
                 cta: "Start Learning",
+                href: "/courses"
               },
               {
                 title: "Recruiter/Tutor",
@@ -169,6 +175,7 @@ export default async function Home() {
                   "Applicant tracking",
                 ],
                 cta: "Get Started",
+                href: "/recruiter"
               },
             ].map((item, index) => (
               <div
@@ -226,7 +233,8 @@ export default async function Home() {
                     ))}
                   </div>
 
-                  <button
+                  <Link
+                    href={item.href}
                     className={`w-full py-4 rounded-xl font-medium text-white transition-all duration-300 flex items-center justify-center group/btn ${
                       index === 0
                         ? "bg-blue-500 hover:bg-blue-600"
@@ -237,7 +245,7 @@ export default async function Home() {
                   >
                     {item.cta}
                     <ArrowRightIcon className="w-5 h-5 ml-2 transform group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -334,10 +342,13 @@ export default async function Home() {
             ))}
           </div>
           <div className="text-center mt-10">
-            <button className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors group">
+            <Link
+              href="/jobs"
+              className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors group"
+            >
               View all jobs
               <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -420,10 +431,13 @@ export default async function Home() {
             ))}
           </div>
           <div className="text-center mt-10">
-            <button className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors group">
+            <Link
+              href="/courses"
+              className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors group"
+            >
               View all courses
               <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
