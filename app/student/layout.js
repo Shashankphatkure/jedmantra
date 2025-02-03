@@ -13,8 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: "Dashboard", href: "/student/", icon: HomeIcon },
-  { name: "Courses", href: "/student/courses", icon: AcademicCapIcon },
+  { name: "Courses", href: "/student/", icon: AcademicCapIcon },
   { name: "Applications", href: "/student/applications", icon: BriefcaseIcon },
   { name: "Progress", href: "/student/progress", icon: ChartBarIcon },
   { name: "Certificates", href: "/student/certificates", icon: AcademicCapIcon },
