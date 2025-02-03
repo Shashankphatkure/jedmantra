@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
@@ -18,14 +18,14 @@ export default function CourseDetail({ params }) {
   const [course, setCourse] = useState(null);
   const [error, setError] = useState(null);
   const supabase = createClientComponentClient();
+  const courseId = use(params).id;
 
-  // Move the data fetching logic into useEffect
   useEffect(() => {
     async function fetchCourse() {
       const { data, error } = await supabase
         .from('courses')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', courseId)
         .single();
 
       if (error) {
@@ -38,35 +38,29 @@ export default function CourseDetail({ params }) {
     }
 
     fetchCourse();
-  }, [params.id]);
+  }, [courseId]);
 
-  // Show loading state
   if (!course) return <div>Loading...</div>;
   if (error) return <div>Error loading course: {error}</div>;
 
-  // Helper function to parse JSON fields safely
   const parseJsonField = (field, defaultValue = []) => {
     try {
-      // Log the incoming field for debugging
       console.log('Parsing field:', {
         type: typeof field,
         value: field,
         defaultValue: defaultValue
       });
 
-      // If field is null or undefined, return default
       if (field == null) {
         console.log('Field is null or undefined, returning default:', defaultValue);
         return defaultValue;
       }
 
-      // If field is already an object/array, return as is
       if (typeof field === 'object') {
         console.log('Field is already an object, returning:', field);
         return field;
       }
 
-      // Attempt to parse string
       const parsed = JSON.parse(field);
       console.log('Successfully parsed JSON:', parsed);
       return parsed;
@@ -80,7 +74,6 @@ export default function CourseDetail({ params }) {
     }
   };
 
-  // Provide default values for JSON fields
   const defaultTargetAudience = [
     {
       title: "Beginners",
@@ -121,7 +114,6 @@ export default function CourseDetail({ params }) {
     }
   ];
 
-  // Parse JSON fields with defaults
   const targetAudience = parseJsonField(course.target_audience, defaultTargetAudience);
   const features = parseJsonField(course.features, defaultFeatures);
   const learningOutcomes = parseJsonField(course.learning_outcomes, defaultLearningOutcomes);
@@ -132,7 +124,6 @@ export default function CourseDetail({ params }) {
   const prerequisites = parseJsonField(course.prerequisites, ["None"]);
   const resources = parseJsonField(course.resources, []);
 
-  // Log parsed data
   console.log('Parsed course data:', {
     targetAudience,
     features,
@@ -142,7 +133,6 @@ export default function CourseDetail({ params }) {
     reviews
   });
 
-  // Calculate discount percentage if not provided
   const discountPercentage = course.discount_percentage || 
     (course.original_price ? 
       Math.round(((course.original_price - course.price) / course.original_price) * 100) 
@@ -150,11 +140,9 @@ export default function CourseDetail({ params }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Course Info */}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-6">
                 {course.bestseller && (
@@ -176,8 +164,6 @@ export default function CourseDetail({ params }) {
                 {course.description}
               </p>
 
-              
-
               <div className="flex items-center space-x-4 text-white/90 mb-6">
                 <div className="flex items-center">
                   <StarIconSolid className="h-5 w-5 text-yellow-400" />
@@ -188,9 +174,6 @@ export default function CourseDetail({ params }) {
                 
               </div>
 
-              
-
-              {/* New Description Box */}
               <div className="mt-8 bg-white/10 rounded-xl p-6 backdrop-blur-sm">
                 <h3 className="text-xl font-semibold text-white mb-4">About This Course</h3>
                 <div className="space-y-4 text-white/90">
@@ -214,10 +197,8 @@ export default function CourseDetail({ params }) {
               </div>
             </div>
 
-            {/* Course Preview Card */}
             <div className="lg:col-span-1">
               <div className="bg-white p-8 rounded-2xl shadow-2xl">
-                {/* Video Preview */}
                 <div className="relative aspect-video mb-6 rounded-xl overflow-hidden">
                   {course.preview_video_url && (
                     <VideoPlayer
@@ -228,7 +209,6 @@ export default function CourseDetail({ params }) {
                   )}
                 </div>
 
-                {/* Pricing */}
                 <div className="text-center mb-8">
                   <div className="flex items-center justify-center gap-3">
                     <p className="text-4xl font-bold text-gray-900">£{course.price}</p>
@@ -246,20 +226,18 @@ export default function CourseDetail({ params }) {
                   )}
                 </div>
 
-                {/* Action Buttons */}
                 <div className="space-y-4 mb-8">
                   <button 
                     onClick={() => {
-                      router.push(`/cart?courseId=${params.id}&title=${encodeURIComponent(course.title)}&price=${course.price}&original_price=${course.original_price}&image=${encodeURIComponent(course.course_image)}&instructor=${encodeURIComponent(course.instructor_name)}`);
+                      router.push(`/cart?courseId=${courseId}&title=${encodeURIComponent(course.title)}&price=${course.price}&original_price=${course.original_price}&image=${encodeURIComponent(course.course_image)}&instructor=${encodeURIComponent(course.instructor_name)}`);
                     }}
                     className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200"
                   >
                     Enroll Now - £{course.price}
                   </button>
-                  <WishlistButton courseId={params.id} />
+                  <WishlistButton courseId={courseId} />
                 </div>
 
-                {/* Course Features */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     This course includes:
@@ -290,7 +268,6 @@ export default function CourseDetail({ params }) {
           </div>
         </div>
 
-        {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
         <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
@@ -321,7 +298,7 @@ export default function CourseDetail({ params }) {
               </h2>
               <CourseContent
                 courseSections={courseSections}
-                courseId={params.id}
+                courseId={courseId}
                 isEnrolled={false}
               />
             </div>
@@ -347,7 +324,7 @@ export default function CourseDetail({ params }) {
                 Student Reviews
               </h2>
               <ReviewSystem
-                courseId={params.id}
+                courseId={courseId}
                 existingReviews={reviews}
               />
             </div>
