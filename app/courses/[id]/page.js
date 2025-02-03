@@ -19,6 +19,7 @@ export default function CourseDetail({ params }) {
   const [error, setError] = useState(null);
   const supabase = createClientComponentClient();
   const courseId = use(params).id;
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     async function fetchCourse() {
@@ -37,7 +38,29 @@ export default function CourseDetail({ params }) {
       setCourse(data);
     }
 
+    async function fetchReviews() {
+      const { data, error } = await supabase
+        .from('course_reviews')
+        .select(`
+          *,
+          users:user_id (
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq('course_id', courseId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching reviews:', error);
+        return;
+      }
+
+      setReviews(data || []);
+    }
+
     fetchCourse();
+    fetchReviews();
   }, [courseId]);
 
   if (!course) return <div>Loading...</div>;
@@ -104,22 +127,11 @@ export default function CourseDetail({ params }) {
     "Basic computer knowledge"
   ];
 
-  const defaultReviews = [
-    {
-      student_name: "John Doe",
-      student_image: "https://example.com/default-avatar.jpg",
-      rating: 5,
-      review_text: "Great course!",
-      created_at: new Date().toISOString()
-    }
-  ];
-
   const targetAudience = parseJsonField(course.target_audience, defaultTargetAudience);
   const features = parseJsonField(course.features, defaultFeatures);
   const learningOutcomes = parseJsonField(course.learning_outcomes, defaultLearningOutcomes);
   const courseSections = parseJsonField(course.course_sections, defaultCourseSections);
   const requirements = parseJsonField(course.requirements, defaultRequirements);
-  const reviews = parseJsonField(course.reviews, defaultReviews);
   const subtitlesLanguages = parseJsonField(course.subtitles_languages, ["English"]);
   const prerequisites = parseJsonField(course.prerequisites, ["None"]);
   const resources = parseJsonField(course.resources, []);
@@ -324,7 +336,11 @@ export default function CourseDetail({ params }) {
               </h2>
               <ReviewSystem
                 courseId={courseId}
-                existingReviews={reviews}
+                reviews={reviews}
+                onReviewAdded={(newReview) => {
+                  setReviews(prevReviews => [newReview, ...prevReviews]);
+                }}
+                isEnrolled={false}
               />
             </div>
           </div>
