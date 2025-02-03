@@ -148,8 +148,9 @@ export default function CourseLearn({ params }) {
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center space-x-4">
               <Link 
-                href="/courses" 
+                href="/student"
                 className="p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                title="Back to dashboard"
               >
                 <ArrowLeftIcon className="h-6 w-6" />
               </Link>
