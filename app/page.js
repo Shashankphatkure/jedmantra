@@ -12,7 +12,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 
-export default async function Home() {
+ export default async function Home() {
   const supabase = createServerComponentClient({ cookies })
   
   const { data: jobs } = await supabase
@@ -519,12 +519,15 @@ export default async function Home() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group">
+                <Link
+                  href="/courses"
+                  className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group"
+                >
                   Explore Courses
                   <span className="ml-2 transform group-hover:translate-x-1 transition-transform">
                     →
                   </span>
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -568,12 +571,15 @@ export default async function Home() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-6 w-full bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center group">
+                <Link
+                  href="/career-advice"
+                  className="mt-6 w-full bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center group"
+                >
                   Get Career Advice
                   <span className="ml-2 transform group-hover:translate-x-1 transition-transform">
                     →
                   </span>
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -617,12 +623,15 @@ export default async function Home() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-6 w-full bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group">
+                <Link
+                  href="/career-advice"
+                  className="mt-6 w-full bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group"
+                >
                   Explore Resources
                   <span className="ml-2 transform group-hover:translate-x-1 transition-transform">
                     →
                   </span>
-                </button>
+                </Link>
               </div>
             </div>
           </div>
