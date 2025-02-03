@@ -355,12 +355,53 @@ export default function Jobs() {
       {/* Hero Search Section - Updated with gradient background */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Find Your Dream Job
-          </h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-white">
+              Find Your Dream Job
+            </h1>
+            <div className="flex gap-4">
+              <Link 
+                href="/savedjobs"
+                className="inline-flex items-center px-4 py-2 border border-white text-sm font-medium rounded-md text-white hover:bg-white/10 transition-colors"
+              >
+                <svg
+                  className="h-5 w-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+                Saved Jobs
+              </Link>
+              <Link 
+                href="/applied-jobs"
+                className="inline-flex items-center px-4 py-2 border border-white text-sm font-medium rounded-md text-white hover:bg-white/10 transition-colors"
+              >
+                <svg
+                  className="h-5 w-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  />
+                </svg>
+                Applied Jobs
+              </Link>
+            </div>
+          </div>
           <p className="text-lg md:text-xl text-white/90 mb-8">
-            Discover thousands of job opportunities with new positions added
-            daily
+            Discover thousands of job opportunities with new positions added daily
           </p>
 
           {searchFormJSX}
