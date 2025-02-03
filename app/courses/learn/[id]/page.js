@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ import {
 export default function CourseLearn({ params }) {
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const courseId = use(params).id;
   const [course, setCourse] = useState(null);
   const [enrollment, setEnrollment] = useState(null);
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
@@ -34,7 +35,7 @@ export default function CourseLearn({ params }) {
         const { data: courseData, error: courseError } = await supabase
           .from('courses')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', courseId)
           .single();
 
         if (courseError) throw courseError;
@@ -50,7 +51,7 @@ export default function CourseLearn({ params }) {
         const { data: enrollmentData, error: enrollmentError } = await supabase
           .from('enrollments')
           .select('*')
-          .eq('course_id', params.id)
+          .eq('course_id', courseId)
           .eq('user_id', session.user.id)
           .single();
 
@@ -58,7 +59,7 @@ export default function CourseLearn({ params }) {
 
         if (!enrollmentData) {
           toast.error('You are not enrolled in this course');
-          router.push(`/courses/${params.id}`);
+          router.push(`/courses/${courseId}`);
           return;
         }
 
@@ -80,7 +81,7 @@ export default function CourseLearn({ params }) {
     };
 
     fetchCourseAndEnrollment();
-  }, [params.id, router, supabase]);
+  }, [courseId, router, supabase]);
 
   const updateProgress = async (sectionIndex, itemIndex) => {
     try {
