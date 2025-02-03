@@ -380,7 +380,7 @@ export default function Jobs() {
                 Saved Jobs
               </Link>
               <Link 
-                href="/applied-jobs"
+                href="/student/applications"
                 className="inline-flex items-center px-4 py-2 border border-white text-sm font-medium rounded-md text-white hover:bg-white/10 transition-colors"
               >
                 <svg
