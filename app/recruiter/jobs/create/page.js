@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import {
   BriefcaseIcon,
@@ -116,7 +116,8 @@ const JobPreview = ({ formData, formatSalaryDisplay, onPublish, isSubmitting }) 
   );
 };
 
-export default function CreateJob() {
+// Create a separate component for the form content
+function JobForm() {
   const supabase = createClientComponentClient();
   const searchParams = useSearchParams();
   const editJobId = searchParams.get('edit');
@@ -653,5 +654,21 @@ export default function CreateJob() {
         )}
       </main>
     </div>
+  );
+}
+
+// Main page component
+export default function CreateJob() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <JobForm />
+    </Suspense>
   );
 }
