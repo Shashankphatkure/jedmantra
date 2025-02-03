@@ -46,6 +46,7 @@ export default async function StudentCourses() {
     .from('courses')
     .select('*')
     .limit(3)
+    .order('created_at', { ascending: false })
     // You might want to add more sophisticated recommendation logic here
 
   return (
@@ -115,69 +116,103 @@ export default async function StudentCourses() {
           ))}
         </div>
 
-        {/* Active Courses - Improved card layout */}
+        {/* Active Courses - Premium card layout */}
         <div className="mb-16">
           <h2 className="text-2xl font-semibold text-gray-900 mb-8">Active Courses</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {enrollments?.map((enrollment) => (
               <div
                 key={enrollment.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+                className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden"
               >
-                <div className="relative h-40">
+                <div className="relative h-56">
                   <Image
                     src={enrollment.course.course_image}
                     alt={enrollment.course.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-4 left-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                  
+                  {/* Status Badge */}
+                  <div className="absolute top-4 right-4">
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm ${
                       enrollment.status === "completed"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-blue-100 text-blue-800"
+                        ? "bg-green-100/90 text-green-800"
+                        : "bg-blue-100/90 text-blue-800"
                     }`}>
-                      {enrollment.status}
+                      {enrollment.status === "completed" ? "Completed" : "In Progress"}
                     </span>
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+                      {enrollment.course.title}
+                    </h3>
                   </div>
                 </div>
 
-                <div className="p-5">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-1">
-                    {enrollment.course.title}
-                  </h3>
-                  
-                  <div className="space-y-2 text-sm text-gray-600 mb-4">
-                    <div className="flex items-center">
-                      <UserCircleIcon className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="line-clamp-1">{enrollment.course.instructor_name}</span>
+                <div className="p-6 space-y-5">
+                  {/* Instructor Info */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-100">
+                        <Image
+                          src={enrollment.course.instructor_image}
+                          alt={enrollment.course.instructor_name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Instructor</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {enrollment.course.instructor_name}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center">
-                      <ClockIcon className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>{enrollment.last_accessed}</span>
+                    <div className="flex flex-col items-end">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <ClockIcon className="h-4 w-4 mr-1" />
+                        {enrollment.course.video_hours}h
+                      </div>
+                      <div className="flex items-center text-sm text-gray-500 mt-1">
+                        <BookOpenIcon className="h-4 w-4 mr-1" />
+                        {enrollment.course.lecture_count} lectures
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mb-4">
+                  {/* Progress Section */}
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-gray-600">Progress</span>
-                      <span className="font-medium text-blue-600">{enrollment.progress?.overall}%</span>
+                      <span className="text-gray-600 font-medium">Course Progress</span>
+                      <span className="font-bold text-blue-600">{enrollment.progress?.overall}%</span>
                     </div>
-                    <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
                       <div
                         style={{ width: `${enrollment.progress?.overall}%` }}
-                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
                       ></div>
                     </div>
                   </div>
 
+                  {/* Action Button */}
                   <Link
                     href={`/courses/learn/${enrollment.course.id}`}
-                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors group"
+                    className="group/button w-full inline-flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-sm hover:shadow-md"
                   >
-                    {enrollment.status === "completed" ? "Review Course" : "Continue Learning"}
-                    <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    {enrollment.status === "completed" ? (
+                      <>
+                        <BookOpenIcon className="h-5 w-5 mr-2" />
+                        Review Course
+                      </>
+                    ) : (
+                      <>
+                        <ArrowRightIcon className="h-5 w-5 mr-2 group-hover/button:translate-x-1 transition-transform" />
+                        Continue Learning
+                      </>
+                    )}
                   </Link>
                 </div>
               </div>
@@ -185,47 +220,83 @@ export default async function StudentCourses() {
           </div>
         </div>
 
-        {/* Recommended Courses - Improved card layout */}
+        {/* Recommended Courses - Premium card layout */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold text-gray-900 mb-8">
             Recommended for You
           </h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {recommendedCourses?.map((course, index) => (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {recommendedCourses?.map((course) => (
               <div
-                key={index}
-                className="bg-white overflow-hidden shadow rounded-lg"
+                key={course.id}
+                className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden"
               >
-                <div className="relative pb-2/3">
+                <div className="relative h-56">
                   <Image
                     src={course.course_image}
                     alt={course.title}
-                    width={300}
-                    height={200}
-                    className="absolute h-full w-full object-cover"
+                    fill
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-300"
                   />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {course.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Instructor: {course.instructor_name}
-                  </p>
-                  <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-                    <span>{course.video_hours} hours</span>
-                    <span>{course.lecture_count} lectures</span>
-                  </div>
-                  <div className="mt-4">
-                    <span className="text-lg font-medium text-gray-900">
-                      {course.price}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                  
+                  {/* Price Badge */}
+                  <div className="absolute top-4 right-4">
+                    <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-white/90 text-gray-900 backdrop-blur-sm">
+                      ${course.price}
                     </span>
                   </div>
-                  <div className="mt-6">
-                    <button className="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-                      Enroll Now
-                    </button>
+
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+                      {course.title}
+                    </h3>
                   </div>
+                </div>
+
+                <div className="p-6 space-y-5">
+                  {/* Instructor Info */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-100">
+                        <Image
+                          src={course.instructor_image}
+                          alt={course.instructor_name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Instructor</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {course.instructor_name}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Course Stats */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-50 rounded-xl p-3">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <ClockIcon className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>{course.video_hours} hours</span>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-3">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <BookOpenIcon className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>{course.lecture_count} lectures</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <button className="group/button w-full inline-flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-sm hover:shadow-md">
+                    <AcademicCapIcon className="h-5 w-5 mr-2" />
+                    Enroll Now
+                    <ArrowRightIcon className="ml-2 h-5 w-5 group-hover/button:translate-x-1 transition-transform" />
+                  </button>
                 </div>
               </div>
             ))}
