@@ -10,7 +10,8 @@ import {
   CheckIcon,
   DevicePhoneMobileIcon,
   AcademicCapIcon,
-  DocumentArrowDownIcon
+  DocumentArrowDownIcon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 
@@ -165,29 +166,23 @@ function CartContent() {
   if (!courseInfo) return <div>Loading...</div>;
 
   return (
-    <>
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center space-x-3">
-            <ShoppingCartIcon className="h-8 w-8" />
-            <h1 className="text-3xl font-bold">Shopping Cart</h1>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <div className="text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-blue-600">Home</Link>
-          <span className="mx-2">›</span>
-          <span>Shopping Cart</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb with enhanced styling */}
+        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+          <Link href="/" className="hover:text-pink-600 transition-colors">Home</Link>
+          <span className="text-gray-400">›</span>
+          <Link href="/courses" className="hover:text-pink-600 transition-colors">Courses</Link>
+          <span className="text-gray-400">›</span>
+          <span className="text-gray-900">Shopping Cart</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Course Details Section */}
-          <div className="md:col-span-2">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          {/* Course Details Section with enhanced card styling */}
+          <div className="md:col-span-2 space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200">
               <div className="p-6">
                 <div className="flex flex-col md:flex-row gap-6">
                   <div className="relative w-full md:w-48 h-32">
@@ -200,14 +195,17 @@ function CartContent() {
                     />
                   </div>
                   <div className="flex-1 space-y-4">
-                    <h2 className="text-xl font-semibold hover:text-blue-600">
-                      <Link href={`/courses/${courseInfo.courseId}`}>
+                    <h2 className="text-xl font-semibold">
+                      <Link href={`/courses/${courseInfo.courseId}`} className="hover:text-pink-600 transition-colors">
                         {courseInfo.title}
                       </Link>
                     </h2>
-                    <p className="text-gray-600">By {courseInfo.instructor}</p>
+                    <p className="text-gray-600 flex items-center">
+                      <UserCircleIcon className="h-5 w-5 mr-2 text-gray-400" />
+                      {courseInfo.instructor}
+                    </p>
                     <div className="flex items-center space-x-2">
-                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                         Bestseller
                       </span>
                       <span className="text-sm text-gray-500">
@@ -219,33 +217,30 @@ function CartContent() {
               </div>
             </div>
 
-            {/* Features Section */}
-            <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4">What you'll get</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-3">
-                  <CheckIcon className="h-5 w-5 text-green-500" />
-                  <span>Lifetime access</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <DevicePhoneMobileIcon className="h-5 w-5 text-green-500" />
-                  <span>Access on mobile and TV</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <AcademicCapIcon className="h-5 w-5 text-green-500" />
-                  <span>Certificate of completion</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <DocumentArrowDownIcon className="h-5 w-5 text-green-500" />
-                  <span>Downloadable resources</span>
-                </div>
+            {/* Enhanced Features Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-200">
+              <h3 className="text-lg font-semibold mb-6">What you'll get</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { icon: CheckIcon, text: "Lifetime access to course content" },
+                  { icon: DevicePhoneMobileIcon, text: "Access on mobile and TV" },
+                  { icon: AcademicCapIcon, text: "Certificate of completion" },
+                  { icon: DocumentArrowDownIcon, text: "Downloadable resources" }
+                ].map((feature, index) => (
+                  <div key={index} className="flex items-center space-x-3 p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="p-2 bg-pink-100 rounded-lg">
+                      <feature.icon className="h-5 w-5 text-pink-600" />
+                    </div>
+                    <span className="text-gray-700">{feature.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Order Summary Section */}
+          {/* Enhanced Order Summary Section */}
           <div className="md:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-4 hover:shadow-md transition-all duration-200">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
               <div className="space-y-4">
                 <div className="flex justify-between">
@@ -270,7 +265,7 @@ function CartContent() {
                     <input
                       type="text"
                       placeholder="Enter coupon code"
-                      className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                     />
                     <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                       Apply
@@ -281,7 +276,7 @@ function CartContent() {
                 <button 
                   onClick={handleCheckout}
                   disabled={loading}
-                  className={`w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
+                  className={`w-full bg-pink-600 text-white py-3 px-4 rounded-lg hover:bg-pink-700 
                     transition duration-200 mt-4 flex items-center justify-center space-x-2
                     ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
@@ -301,12 +296,12 @@ function CartContent() {
           </div>
         </div>
 
-        {/* Related Courses Section */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">You might also like</h2>
+        {/* Enhanced Related Courses Section */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold mb-8">You might also like</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {relatedCourses.map((course) => (
-              <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div key={course.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 hover:-translate-y-1">
                 {/* Course Image */}
                 <div className="relative h-36">
                   <Image
@@ -319,7 +314,7 @@ function CartContent() {
 
                 {/* Course Info */}
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-blue-600">
+                  <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-pink-600">
                     <Link href={`/courses/${course.id}`}>
                       {course.title}
                     </Link>
@@ -372,7 +367,7 @@ function CartContent() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
