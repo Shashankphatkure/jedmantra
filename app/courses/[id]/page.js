@@ -200,11 +200,19 @@ export default function CourseDetail({ params }) {
             <div className="lg:col-span-1">
               <div className="bg-white p-8 rounded-2xl shadow-2xl">
                 <div className="relative aspect-video mb-6 rounded-xl overflow-hidden">
-                  {course.preview_video_url && (
+                  {course.preview_video_url ? (
                     <VideoPlayer
                       videoUrl={course.preview_video_url}
                       posterImage={course.course_image}
                       isPreview={true}
+                    />
+                  ) : (
+                    <Image
+                      src={course.course_image || "https://picsum.photos/seed/default-course/800/450"}
+                      alt={course.title}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-xl"
                     />
                   )}
                 </div>
@@ -243,24 +251,15 @@ export default function CourseDetail({ params }) {
                     This course includes:
                   </h3>
                   <ul className="space-y-4">
-                    {features.map((feature) => (
-                      <li key={feature.text} className="flex items-center gap-3 text-gray-600">
-                        <VideoCameraIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
-                        <span>{feature.text}</span>
-                      </li>
-                    ))}
-                    {course.certificate_included && (
-                      <li className="flex items-center gap-3 text-gray-600">
-                        <AcademicCapIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
-                        <span>Certificate of completion</span>
-                      </li>
-                    )}
-                    {course.access_type && (
-                      <li className="flex items-center gap-3 text-gray-600">
-                        <LockClosedIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
-                        <span>{course.access_type === 'lifetime' ? 'Full lifetime access' : `${course.access_type} access`}</span>
-                      </li>
-                    )}
+                    
+                    <li className="flex items-center gap-3 text-gray-600">
+                      <AcademicCapIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
+                      <span>Certificate of completion</span>
+                    </li>
+                    <li className="flex items-center gap-3 text-gray-600">
+                      <LockClosedIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
+                      <span>Full lifetime access</span>
+                    </li>
                   </ul>
                 </div>
               </div>
