@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import {
   BriefcaseIcon,
@@ -12,6 +12,7 @@ import {
   BuildingOfficeIcon,
   UsersIcon
 } from '@heroicons/react/24/outline';
+import { useSearchParams } from 'next/navigation';
 
 const JobPreview = ({ formData, formatSalaryDisplay, onPublish, isSubmitting }) => {
   return (
@@ -117,6 +118,9 @@ const JobPreview = ({ formData, formatSalaryDisplay, onPublish, isSubmitting }) 
 
 export default function CreateJob() {
   const supabase = createClientComponentClient();
+  const searchParams = useSearchParams();
+  const editJobId = searchParams.get('edit');
+  const [isEditMode, setIsEditMode] = useState(!!editJobId);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -212,6 +216,43 @@ export default function CreateJob() {
     }));
   };
 
+  useEffect(() => {
+    async function fetchJobForEditing() {
+      if (!editJobId) return;
+
+      try {
+        const { data: job, error } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            job_skill_requirements (
+              job_skills (
+                name
+              )
+            )
+          `)
+          .eq('id', editJobId)
+          .single();
+
+        if (error) throw error;
+
+        // Transform the data to match form structure
+        setFormData({
+          ...job,
+          skills: job.job_skill_requirements?.map(sr => sr.job_skills.name) || [''],
+          requirements: job.requirements || [''],
+          benefits: job.benefits || [''],
+          responsibilities: job.responsibilities || ['']
+        });
+      } catch (error) {
+        console.error('Error fetching job:', error);
+        alert('Failed to fetch job details for editing');
+      }
+    }
+
+    fetchJobForEditing();
+  }, [editJobId, supabase]);
+
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     setIsSubmitting(true);
@@ -246,17 +287,40 @@ export default function CreateJob() {
         skills: formData.skills.filter(Boolean),
       };
 
-      // Insert job posting
-      const { data: job, error: jobError } = await supabase
-        .from('jobs')
-        .insert([cleanedFormData])
-        .select()
-        .single();
+      let jobId;
+      if (isEditMode) {
+        // Update existing job
+        const { data: job, error: jobError } = await supabase
+          .from('jobs')
+          .update(cleanedFormData)
+          .eq('id', editJobId)
+          .select()
+          .single();
 
-      if (jobError) throw jobError;
+        if (jobError) throw jobError;
+        jobId = job.id;
+      } else {
+        // Create new job
+        const { data: job, error: jobError } = await supabase
+          .from('jobs')
+          .insert([cleanedFormData])
+          .select()
+          .single();
 
-      // Handle skills if any are provided
+        if (jobError) throw jobError;
+        jobId = job.id;
+      }
+
+      // Handle skills update
       if (cleanedFormData.skills.length > 0) {
+        if (isEditMode) {
+          // Delete existing skill requirements
+          await supabase
+            .from('job_skill_requirements')
+            .delete()
+            .eq('job_id', jobId);
+        }
+
         const skillPromises = cleanedFormData.skills.map(async (skillName) => {
           // First try to insert the skill
           const { data: skill, error: skillError } = await supabase
@@ -285,16 +349,16 @@ export default function CreateJob() {
           skills.map((skill) =>
             supabase
               .from('job_skill_requirements')
-              .insert([{ job_id: job.id, skill_id: skill.id }])
+              .insert([{ job_id: jobId, skill_id: skill.id }])
           )
         );
       }
 
       // Redirect to job listing
-      window.location.href = `/recruiter/jobs/${job.id}`;
+      window.location.href = `/jobs/${jobId}`;
     } catch (error) {
-      console.error('Error creating job:', error);
-      setErrors({ submit: 'Failed to create job posting. Please try again.' });
+      console.error('Error saving job:', error);
+      setErrors({ submit: `Failed to ${isEditMode ? 'update' : 'create'} job posting. Please try again.` });
     } finally {
       setIsSubmitting(false);
     }
@@ -465,7 +529,9 @@ export default function CreateJob() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold text-white">Create New Job</h1>
+              <h1 className="text-4xl font-bold text-white">
+                {isEditMode ? 'Edit Job Posting' : 'Create New Job'}
+              </h1>
               <p className="mt-2 text-xl text-white/90">
                 Post a new job opportunity and find the perfect candidate
               </p>

@@ -115,6 +115,27 @@ export default function RecruiterDashboard() {
     return `${diffInDays}d ago`;
   }
 
+  const handleDeleteJob = async (jobId) => {
+    if (!confirm('Are you sure you want to delete this job posting?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', jobId);
+
+      if (error) throw error;
+
+      // Update the jobs list after deletion
+      setRecentJobs(recentJobs.filter(job => job.id !== jobId));
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      alert('Failed to delete job posting');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -394,15 +415,21 @@ export default function RecruiterDashboard() {
                       </td>
                       <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <Link
-                          href={`/recruiter/jobs/${job.id}`}
+                          href={`/jobs/${job.id}`}
                           className="text-indigo-600 hover:text-indigo-900 mr-4 hover:underline"
                         >
                           View
                         </Link>
-                        <button className="text-indigo-600 hover:text-indigo-900 mr-4 hover:underline">
+                        <Link
+                          href={`/recruiter/jobs/create?edit=${job.id}`}
+                          className="text-indigo-600 hover:text-indigo-900 mr-4 hover:underline"
+                        >
                           Edit
-                        </button>
-                        <button className="text-red-600 hover:text-red-900 hover:underline">
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteJob(job.id)}
+                          className="text-red-600 hover:text-red-900 hover:underline"
+                        >
                           Delete
                         </button>
                       </td>
