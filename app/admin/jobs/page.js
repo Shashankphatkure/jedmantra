@@ -14,13 +14,31 @@ import {
   ClockIcon,
   ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
+import { useRouter } from 'next/navigation';
 
 export default function AdminJobs() {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [isDeleting, setIsDeleting] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const supabase = createClientComponentClient();
+  const router = useRouter();
+
+  // Format currency in Indian format (INR)
+  const formatIndianCurrency = (amount) => {
+    if (!amount) return '—';
+    
+    // Format number in Indian style (with commas at thousands, lakhs, crores)
+    const formatter = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    });
+    
+    return formatter.format(amount);
+  };
 
   // Fetch jobs with recruiters
   useEffect(() => {
@@ -256,7 +274,7 @@ export default function AdminJobs() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {job.salary_currency} {job.salary_min?.toLocaleString()} - {job.salary_max?.toLocaleString()}
+                        {formatIndianCurrency(job.salary_min)} - {formatIndianCurrency(job.salary_max)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

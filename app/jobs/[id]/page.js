@@ -83,11 +83,13 @@ export default async function JobDetail({ params }) {
   const recruiter = job.job_recruiters?.[0]?.recruiters || null;
   const skills = job.job_skill_requirements?.map(skill => skill.job_skills.name) || [];
 
-  // Format salary for display
+  // Format salary for display in Indian format (INR)
   const formatSalary = (amount) => {
-    return new Intl.NumberFormat('en-GB', {
+    if (!amount) return '—';
+    
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: job.salary_currency,
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(amount);
   };
@@ -225,10 +227,10 @@ export default async function JobDetail({ params }) {
               <div className="bg-white rounded-2xl shadow-2xl p-8">
                 <div className="text-center mb-8">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-4xl font-bold text-gray-900">£65,000</span>
-                    <span className="text-xl text-gray-500">- £85,000</span>
+                    <span className="text-4xl font-bold text-gray-900">{formatSalary(job.salary_min)}</span>
+                    <span className="text-xl text-gray-500">- {formatSalary(job.salary_max)}</span>
                   </div>
-                  <p className="text-gray-600">Annual Salary</p>
+                  <p className="text-gray-600">Monthly Salary</p>
                 </div>
 
                 <div className="space-y-4">
@@ -535,7 +537,7 @@ export default async function JobDetail({ params }) {
                         Salary
                       </p>
                       <p className="text-sm text-gray-500">
-                        £65,000 - £85,000 a year
+                        {formatSalary(job.salary_min)} - {formatSalary(job.salary_max)} Monthly
                       </p>
                     </div>
                   </div>

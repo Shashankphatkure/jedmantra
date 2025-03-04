@@ -17,12 +17,27 @@ export default function Jobs() {
     jobType: [],
     salaryRange: [],
     experienceLevel: [],
+    remote: false,
   })
   const [currentPage, setCurrentPage] = useState(1)
   const jobsPerPage = 5
   const supabase = createClientComponentClient()
   const router = useRouter()
   const [savedJobIds, setSavedJobIds] = useState(new Set())
+
+  // Format currency in Indian format (INR)
+  const formatIndianCurrency = (amount) => {
+    if (!amount) return '—';
+    
+    // Format number in Indian style (with commas at thousands, lakhs, crores)
+    const formatter = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    });
+    
+    return formatter.format(amount);
+  };
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -117,6 +132,11 @@ export default function Jobs() {
         filters.experienceLevel.includes(job.experience_level)
       )
       console.log('Jobs after experience level filter:', result.length)
+    }
+
+    if (filters.remote) {
+      result = result.filter(job => job.is_remote === true)
+      console.log('Jobs after remote filter:', result.length)
     }
 
     if (filters.salaryRange.length > 0) {
@@ -223,6 +243,10 @@ export default function Jobs() {
         return { ...prev, datePosted: value }
       }
       
+      if (type === 'remote') {
+        return { ...prev, remote: !prev.remote }
+      }
+      
       const updatedValues = prev[type].includes(value)
         ? prev[type].filter(item => item !== value)
         : [...prev[type], value]
@@ -237,6 +261,7 @@ export default function Jobs() {
       jobType: [],
       salaryRange: [],
       experienceLevel: [],
+      remote: false,
     })
     setSearchQuery('')
     setLocationQuery('')
@@ -601,6 +626,23 @@ export default function Jobs() {
                     </div>
                   </label>
                 </div>
+
+                {/* Add Remote Filter */}
+                <div className="mt-4">
+                  <label className="flex items-center group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={filters.remote}
+                        onChange={() => handleFilterChange('remote')}
+                        className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                        Remote Jobs Only
+                      </span>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -853,7 +895,7 @@ export default function Jobs() {
                                   <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
                                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
                                 </svg>
-                                {job.salary_currency || '₹'}{job.salary_min?.toLocaleString() || '—'} - {job.salary_currency || '₹'}{job.salary_max?.toLocaleString() || '—'}
+                                {formatIndianCurrency(job.salary_min)} - {formatIndianCurrency(job.salary_max)}
                               </span>
                             )}
                             <span className="flex items-center">

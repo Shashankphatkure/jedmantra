@@ -8,8 +8,23 @@ import { useRouter } from 'next/navigation'
 export default function SavedJobs() {
   const [savedJobs, setSavedJobs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const supabase = createClientComponentClient()
   const router = useRouter()
+
+  // Format currency in Indian format (INR)
+  const formatIndianCurrency = (amount) => {
+    if (!amount) return '—';
+    
+    // Format number in Indian style (with commas at thousands, lakhs, crores)
+    const formatter = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    });
+    
+    return formatter.format(amount);
+  };
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -138,7 +153,7 @@ export default function SavedJobs() {
                     <div className="mt-2 space-y-2">
                       {(job.salary_min || job.salary_max) && (
                         <p className="text-gray-600">
-                          ₹{job.salary_min?.toLocaleString()} - ₹{job.salary_max?.toLocaleString()} a year
+                          {formatIndianCurrency(job.salary_min)} - {formatIndianCurrency(job.salary_max)} a year
                         </p>
                       )}
                       <div className="flex flex-wrap gap-2">
