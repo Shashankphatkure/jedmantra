@@ -343,17 +343,21 @@ export default function Courses() {
         <div className="lg:hidden mb-4">
           <button
             onClick={toggleFilterSidebar}
-            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full flex items-center justify-between px-4 py-2 border border-gray-200 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             aria-expanded={isFilterOpen}
             aria-controls="filter-section"
           >
-            <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-            </svg>
-            {isFilterOpen ? 'Hide Filters' : 'Show Filters'}
-            <span className="ml-1 bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full text-xs">
-              {Object.values(filters).flat().length}
-            </span>
+            <div className="flex items-center">
+              <svg className="h-4 w-4 mr-2 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+              </svg>
+              <span>{isFilterOpen ? 'Hide Filters' : 'Show Filters'}</span>
+            </div>
+            {Object.values(filters).flat().length > 0 && (
+              <span className="bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full text-xs font-medium">
+                {Object.values(filters).flat().length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -364,196 +368,191 @@ export default function Courses() {
             className={`${isFilterOpen ? 'block' : 'hidden'} lg:block w-full lg:w-72 space-y-6 lg:flex-shrink-0`}
             aria-label="Filter options"
           >
-            <div className="bg-white p-5 md:p-6 rounded-xl shadow-md sticky top-4">
+            <div className="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+                <h3 className="text-sm font-semibold text-gray-900">Filters</h3>
                 <button 
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Clear All
                 </button>
               </div>
 
-              {/* Category - Improved spacing */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-gray-900">Category</h4>
-                  <span className="text-xs text-gray-500">
-                    {showAllCategories ? allCategories.length : 5} of {allCategories.length}
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  {displayedCategories.map((category) => (
-                    <label
-                      key={category.name}
-                      className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={filters.categories.includes(category.name)}
-                          onChange={() => handleFilterChange('categories', category.name)}
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
-                          {category.name}
+              <div className="space-y-5">
+                {/* Category - Improved spacing */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Category</h4>
+                  <div className="space-y-1.5">
+                    {displayedCategories.map((category) => (
+                      <label
+                        key={category.name}
+                        className="flex items-center justify-between group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.categories.includes(category.name)}
+                            onChange={() => handleFilterChange('categories', category.name)}
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                            {category.name}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                          {category.count}
                         </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {category.count}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-                <button 
-                  onClick={toggleShowAllCategories}
-                  className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center"
-                >
-                  {showAllCategories ? 'Show Less' : 'Show More'}
-                  <svg
-                    className={`w-4 h-4 ml-1 transition-transform ${showAllCategories ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                      </label>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={toggleShowAllCategories}
+                    className="mt-2 text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Level - Improved spacing */}
-              <div className="mb-6">
-                <h4 className="font-medium text-gray-900 mb-3">Level</h4>
-                <div className="space-y-2">
-                  {[
-                    { name: "Beginner", count: 1423 },
-                    { name: "Intermediate", count: 867 },
-                    { name: "Advanced", count: 534 },
-                    { name: "Expert", count: 234 },
-                  ].map((level) => (
-                    <label
-                      key={level.name}
-                      className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
+                    {showAllCategories ? 'Show Less' : 'Show More'}
+                    <svg
+                      className={`w-3.5 h-3.5 ml-1 transition-transform ${showAllCategories ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={filters.levels.includes(level.name)}
-                          onChange={() => handleFilterChange('levels', level.name)}
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
-                          {level.name}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {level.count}
-                      </span>
-                    </label>
-                  ))}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
                 </div>
-              </div>
 
-              {/* Duration - Improved spacing */}
-              <div className="mb-6">
-                <h4 className="font-medium text-gray-900 mb-3">Duration</h4>
-                <div className="space-y-2">
-                  {[
-                    { name: "0-2 Hours", count: 645 },
-                    { name: "2-5 Hours", count: 834 },
-                    { name: "5-10 Hours", count: 456 },
-                    { name: "10+ Hours", count: 267 },
-                  ].map((duration) => (
-                    <label
-                      key={duration.name}
-                      className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={filters.duration.includes(duration.name)}
-                          onChange={() => handleFilterChange('duration', duration.name)}
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
-                          {duration.name}
+                {/* Level - Improved spacing */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Level</h4>
+                  <div className="space-y-1.5">
+                    {[
+                      { name: "Beginner", count: 1423 },
+                      { name: "Intermediate", count: 867 },
+                      { name: "Advanced", count: 534 },
+                      { name: "Expert", count: 234 },
+                    ].map((level) => (
+                      <label
+                        key={level.name}
+                        className="flex items-center justify-between group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.levels.includes(level.name)}
+                            onChange={() => handleFilterChange('levels', level.name)}
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                            {level.name}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                          {level.count}
                         </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {duration.count}
-                      </span>
-                    </label>
-                  ))}
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Price - Improved spacing */}
-              <div className="mb-6">
-                <h4 className="font-medium text-gray-900 mb-3">Price</h4>
-                <div className="space-y-2">
-                  {[
-                    { name: "Free", count: 283 },
-                    { name: "Under ₹1,000", count: 645 },
-                    { name: "₹1,000 - ₹5,000", count: 834 },
-                    { name: "₹5,000 - ₹10,000", count: 456 },
-                    { name: "₹10,000+", count: 267 },
-                  ].map((price) => (
-                    <label
-                      key={price.name}
-                      className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={filters.price.includes(price.name)}
-                          onChange={() => handleFilterChange('price', price.name)}
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
-                          {price.name}
+                {/* Duration - Improved spacing */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Duration</h4>
+                  <div className="space-y-1.5">
+                    {[
+                      { name: "0-2 Hours", count: 645 },
+                      { name: "2-5 Hours", count: 834 },
+                      { name: "5-10 Hours", count: 456 },
+                      { name: "10+ Hours", count: 267 },
+                    ].map((duration) => (
+                      <label
+                        key={duration.name}
+                        className="flex items-center justify-between group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.duration.includes(duration.name)}
+                            onChange={() => handleFilterChange('duration', duration.name)}
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                            {duration.name}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                          {duration.count}
                         </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {price.count}
-                      </span>
-                    </label>
-                  ))}
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Ratings - Improved spacing */}
-              <div>
-                <h4 className="font-medium text-gray-900 mb-3">Ratings</h4>
-                <div className="space-y-2">
-                  {[
-                    { rating: 4.5, count: 752 },
-                    { rating: 4.0, count: 409 },
-                    { rating: 3.5, count: 287 },
-                    { rating: 3.0, count: 164 }
-                  ].map((ratingOption) => (
-                    <label
-                      key={ratingOption.rating}
-                      className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={filters.rating.includes(ratingOption.rating)}
-                          onChange={() => handleFilterChange('rating', ratingOption.rating)}
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <div className="ml-3 flex items-center">
-                          <div className="flex items-center">
+                {/* Price - Improved spacing */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Price</h4>
+                  <div className="space-y-1.5">
+                    {[
+                      { name: "Free", count: 283 },
+                      { name: "Under ₹1,000", count: 645 },
+                      { name: "₹1,000 - ₹5,000", count: 834 },
+                      { name: "₹5,000 - ₹10,000", count: 456 },
+                      { name: "₹10,000+", count: 267 },
+                    ].map((price) => (
+                      <label
+                        key={price.name}
+                        className="flex items-center justify-between group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.price.includes(price.name)}
+                            onChange={() => handleFilterChange('price', price.name)}
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                            {price.name}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                          {price.count}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Ratings - Improved spacing */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Ratings</h4>
+                  <div className="space-y-1.5">
+                    {[
+                      { rating: 4.5, count: 752 },
+                      { rating: 4.0, count: 409 },
+                      { rating: 3.5, count: 287 },
+                      { rating: 3.0, count: 164 }
+                    ].map((ratingOption) => (
+                      <label
+                        key={ratingOption.rating}
+                        className="flex items-center justify-between group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.rating.includes(ratingOption.rating)}
+                            onChange={() => handleFilterChange('rating', ratingOption.rating)}
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <div className="ml-2 flex items-center">
                             {[...Array(5)].map((_, i) => (
                               <svg
                                 key={i}
-                                className={`w-4 h-4 ${
+                                className={`w-3.5 h-3.5 ${
                                   i < Math.floor(ratingOption.rating)
                                     ? "text-yellow-400"
                                     : i === Math.floor(ratingOption.rating) &&
@@ -567,41 +566,140 @@ export default function Courses() {
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                               </svg>
                             ))}
+                            <span className="ml-1 text-xs text-gray-700">& up</span>
                           </div>
-                          <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
-                            & up
-                          </span>
                         </div>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {ratingOption.count}
-                      </span>
-                    </label>
-                  ))}
+                        <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                          {ratingOption.count}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Active Filters */}
+            {(filters.categories.length > 0 || filters.levels.length > 0 || filters.duration.length > 0 || 
+              filters.price.length > 0 || filters.rating.length > 0 || searchTerm) && (
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Active Filters</h3>
+                <div className="flex flex-wrap gap-2">
+                  {searchTerm && (
+                    <div className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">Search: {searchTerm}</span>
+                      <button 
+                        onClick={() => setSearchTerm('')}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                  {filters.categories.map(category => (
+                    <div key={category} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{category}</span>
+                      <button 
+                        onClick={() => handleFilterChange('categories', category)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {filters.levels.map(level => (
+                    <div key={level} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{level}</span>
+                      <button 
+                        onClick={() => handleFilterChange('levels', level)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {filters.duration.map(duration => (
+                    <div key={duration} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{duration}</span>
+                      <button 
+                        onClick={() => handleFilterChange('duration', duration)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {filters.price.map(price => (
+                    <div key={price} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{price}</span>
+                      <button 
+                        onClick={() => handleFilterChange('price', price)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {filters.rating.map(rating => (
+                    <div key={rating} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{rating}+ Stars</span>
+                      <button 
+                        onClick={() => handleFilterChange('rating', rating)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Course Listings - Improved spacing and responsiveness */}
           <div className="flex-1">
             {/* Sort and Results Count - Improved alignment */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm">
-              <p className="text-gray-600">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <p className="text-sm text-gray-600">
                 Showing <span className="font-semibold">{filteredCourses.length}</span> courses
+                {searchTerm && <span> for "<span className="italic">{searchTerm}</span>"</span>}
               </p>
-              <select 
-                value={sortOption}
-                onChange={handleSortChange}
-                className="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                aria-label="Sort courses by"
-              >
-                <option>Most Popular</option>
-                <option>Highest Rated</option>
-                <option>Newest</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-              </select>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                  </svg>
+                </div>
+                <select 
+                  value={sortOption}
+                  onChange={handleSortChange}
+                  className="pl-9 pr-8 py-2 text-sm border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md appearance-none bg-white"
+                  aria-label="Sort courses by"
+                >
+                  <option>Most Popular</option>
+                  <option>Highest Rated</option>
+                  <option>Newest</option>
+                  <option>Price: Low to High</option>
+                  <option>Price: High to Low</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             {/* Course Cards - Improved grid and spacing */}

@@ -634,7 +634,15 @@ export default function Jobs() {
             {/* Active Filters */}
             {(filters.datePosted || filters.jobType.length > 0 || filters.salaryRange.length > 0 || filters.experienceLevel.length > 0 || searchQuery || locationQuery) && (
               <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Active Filters</h3>
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-sm font-semibold text-gray-900">Active Filters</h3>
+                  <button 
+                    onClick={clearFilters}
+                    className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Clear all
+                  </button>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {searchQuery && (
                     <div className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
@@ -722,43 +730,51 @@ export default function Jobs() {
           {/* Job Listings - Updated to use real data */}
           <div className="flex-1">
             {/* Sort and Results Count */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
               <p className="text-sm text-gray-600">
-                <span className="font-semibold">{filteredJobs.length}</span> jobs found
+                Showing <span className="font-semibold">{filteredJobs.length}</span> jobs found
                 {searchQuery && <span> for "<span className="italic">{searchQuery}</span>"</span>}
               </p>
-              <div className="flex items-center gap-2">
-                <label htmlFor="sort" className="text-sm text-gray-600 sr-only">Sort by</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                  </svg>
+                </div>
                 <select 
                   id="sort"
-                  className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                  className="pl-9 pr-8 py-2 text-sm border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md appearance-none bg-white"
+                  aria-label="Sort jobs by"
                 >
                   <option>Most relevant</option>
                   <option>Newest first</option>
                   <option>Highest paid</option>
                   <option>Closest to you</option>
                 </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
               </div>
             </div>
 
             {/* Empty State */}
             {currentJobs.length === 0 && (
               <div className="bg-white p-8 rounded-xl shadow-md text-center">
-                <div className="mx-auto w-24 h-24 mb-4">
-                  <svg className="w-full h-full text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="mt-2 text-lg font-medium text-gray-900">No jobs found</h3>
+                <p className="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+                <div className="mt-6">
+                  <button 
+                    onClick={clearFilters}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Clear all filters
+                  </button>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
-                <p className="text-gray-600 mb-6">
-                  We couldn't find any jobs matching your search criteria. Try adjusting your filters or search terms.
-                </p>
-                <button 
-                  onClick={clearFilters}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Clear all filters
-                </button>
               </div>
             )}
 

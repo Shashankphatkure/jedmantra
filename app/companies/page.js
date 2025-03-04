@@ -26,7 +26,28 @@ export default function Companies() {
       try {
         const { data, error } = await supabase
           .from('companies')
-          .select('*')
+          .select(`
+            id,
+            name,
+            logo_url,
+            industry,
+            location,
+            description,
+            company_size,
+            founded_year,
+            website_url,
+            linkedin_url,
+            open_positions,
+            rating,
+            review_count,
+            benefits,
+            culture_values,
+            featured,
+            verified,
+            created_at,
+            updated_at,
+            recruiter_id
+          `)
           .order('featured', { ascending: false })
         
         if (error) {
@@ -34,8 +55,20 @@ export default function Companies() {
           return
         }
 
-        setCompanies(data)
-        setFilteredCompanies(data)
+        // Process the data to ensure all fields are properly formatted
+        const processedData = data.map(company => ({
+          ...company,
+          company_size: company.company_size || '',
+          rating: company.rating || 0,
+          open_positions: company.open_positions || 0,
+          review_count: company.review_count || 0,
+          benefits: company.benefits || [],
+          culture_values: company.culture_values || [],
+          size: company.company_size // Add size alias for backward compatibility
+        }))
+
+        setCompanies(processedData)
+        setFilteredCompanies(processedData)
       } catch (error) {
         console.error('Error:', error)
       } finally {
@@ -75,7 +108,7 @@ export default function Companies() {
 
     if (filters.companySize.length > 0) {
       result = result.filter(company => 
-        filters.companySize.includes(company.size)
+        filters.companySize.includes(company.company_size)
       )
     }
 
@@ -208,23 +241,50 @@ export default function Companies() {
                 />
               </div>
               <div className="md:col-span-2">
-                <select 
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  aria-label="Select industry"
-                  onChange={(e) => {
-                    if (e.target.value !== "All Industries") {
-                      handleFilterChange('industries', e.target.value);
-                    }
-                  }}
-                  value={filters.industries.length === 1 ? filters.industries[0] : "All Industries"}
-                >
-                  <option>All Industries</option>
-                  <option>Technology</option>
-                  <option>Healthcare</option>
-                  <option>Finance</option>
-                  <option>Education</option>
-                  <option>Manufacturing</option>
-                </select>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
+                      <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                    </svg>
+                  </div>
+                  <select 
+                    className="w-full pl-9 pr-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                    aria-label="Select industry"
+                    onChange={(e) => {
+                      if (e.target.value !== "All Industries") {
+                        handleFilterChange('industries', e.target.value);
+                      } else {
+                        // Clear industry filters if "All Industries" is selected
+                        setFilters(prev => ({
+                          ...prev,
+                          industries: []
+                        }));
+                      }
+                    }}
+                    value={filters.industries.length === 1 ? filters.industries[0] : "All Industries"}
+                  >
+                    <option>All Industries</option>
+                    <option>Technology</option>
+                    <option>Healthcare</option>
+                    <option>Finance</option>
+                    <option>Education</option>
+                    <option>Manufacturing</option>
+                    <option>Retail</option>
+                    <option>Media</option>
+                    <option>Hospitality</option>
+                    <option>Transportation</option>
+                    <option>Construction</option>
+                    <option>Energy</option>
+                    <option>Agriculture</option>
+                    <option>Other</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
               </div>
               <div className="md:col-span-2">
                 <button 
@@ -252,17 +312,21 @@ export default function Companies() {
         <div className="lg:hidden mb-4">
           <button
             onClick={toggleFilterSidebar}
-            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full flex items-center justify-between px-4 py-2 border border-gray-200 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             aria-expanded={isFilterOpen}
             aria-controls="filter-section"
           >
-            <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-            </svg>
-            {isFilterOpen ? 'Hide Filters' : 'Show Filters'}
-            <span className="ml-1 bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full text-xs">
-              {Object.values(filters).flat().length}
-            </span>
+            <div className="flex items-center">
+              <svg className="h-4 w-4 mr-2 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+              </svg>
+              <span>{isFilterOpen ? 'Hide Filters' : 'Show Filters'}</span>
+            </div>
+            {Object.values(filters).flat().length > 0 && (
+              <span className="bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full text-xs font-medium">
+                {Object.values(filters).flat().length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -273,119 +337,198 @@ export default function Companies() {
             className={`${isFilterOpen ? 'block' : 'hidden'} lg:block lg:w-72 space-y-6`}
             aria-label="Filter options"
           >
-            <div className="bg-white p-6 rounded-xl shadow-lg">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+                <h3 className="text-sm font-semibold text-gray-900">Filters</h3>
                 <button 
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Clear All
                 </button>
               </div>
 
-              {/* Industry Filter */}
-              <div className="mb-8">
-                <h4 className="font-medium text-gray-900 mb-4">Industry</h4>
-                <div className="space-y-3">
-                  {[
-                    { name: "Technology", count: 156 },
-                    { name: "Healthcare", count: 89 },
-                    { name: "Finance", count: 78 },
-                    { name: "Education", count: 45 },
-                    { name: "Manufacturing", count: 34 },
-                  ].map((industry) => (
-                    <label
-                      key={industry.name}
-                      className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                          checked={filters.industries.includes(industry.name)}
-                          onChange={() => handleFilterChange('industries', industry.name)}
-                        />
-                        <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
-                          {industry.name}
-                        </span>
-                      </div>
-                      <span className="text-sm text-gray-500">
-                        {industry.count}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Company Size Filter */}
-              <div className="mb-8">
-                <h4 className="font-medium text-gray-900 mb-4">Company Size</h4>
-                <div className="space-y-3">
-                  {[
-                    "1-50 employees",
-                    "51-200 employees",
-                    "201-500 employees",
-                    "501-1000 employees",
-                    "1000+ employees",
-                  ].map((size) => (
-                    <label key={size} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        checked={filters.companySize.includes(size)}
-                        onChange={() => handleFilterChange('companySize', size)}
-                      />
-                      <span className="ml-3 text-sm text-gray-700">
-                        {size}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Rating Filter */}
-              <div>
-                <h4 className="font-medium text-gray-900 mb-4">Rating</h4>
-                <div className="space-y-3">
-                  {[4.5, 4.0, 3.5, 3.0].map((rating) => (
-                    <label
-                      key={rating}
-                      className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                          checked={filters.rating.includes(rating)}
-                          onChange={() => handleFilterChange('rating', rating)}
-                        />
-                        <div className="ml-3 flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <svg
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.floor(rating)
-                                  ? "text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                          <span className="ml-2 text-sm text-gray-700">& up</span>
+              <div className="space-y-5">
+                {/* Industry Filter */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Industry</h4>
+                  <div className="space-y-1.5">
+                    {[
+                      { name: "Technology", count: 156 },
+                      { name: "Healthcare", count: 89 },
+                      { name: "Finance", count: 78 },
+                      { name: "Education", count: 45 },
+                      { name: "Manufacturing", count: 34 },
+                    ].map((industry) => (
+                      <label
+                        key={industry.name}
+                        className="flex items-center justify-between group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            checked={filters.industries.includes(industry.name)}
+                            onChange={() => handleFilterChange('industries', industry.name)}
+                          />
+                          <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                            {industry.name}
+                          </span>
                         </div>
-                      </div>
-                      <span className="text-sm text-gray-500">
-                        {Math.floor(Math.random() * 50) + 10}
-                      </span>
-                    </label>
-                  ))}
+                        <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                          {industry.count}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Company Size Filter */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Company Size</h4>
+                  <div className="space-y-1.5">
+                    {[
+                      "1-10 employees",
+                      "11-50 employees",
+                      "51-200 employees",
+                      "201-500 employees",
+                      "501-1000 employees",
+                      "1001-5000 employees",
+                      "5001+ employees"
+                    ].map((size) => (
+                      <label key={size} className="flex items-center group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            checked={filters.companySize.includes(size)}
+                            onChange={() => handleFilterChange('companySize', size)}
+                          />
+                          <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
+                            {size}
+                          </span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rating Filter */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-700 uppercase mb-2">Rating</h4>
+                  <div className="space-y-1.5">
+                    {[4.5, 4.0, 3.5, 3.0].map((rating) => (
+                      <label
+                        key={rating}
+                        className="flex items-center justify-between group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            checked={filters.rating.includes(rating)}
+                            onChange={() => handleFilterChange('rating', rating)}
+                          />
+                          <div className="ml-2 flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <svg
+                                key={i}
+                                className={`w-3.5 h-3.5 ${
+                                  i < Math.floor(rating)
+                                    ? "text-yellow-400"
+                                    : i === Math.floor(rating) && rating % 1 > 0
+                                    ? "text-yellow-400"
+                                    : "text-gray-300"
+                                }`}
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                            ))}
+                            <span className="ml-1 text-xs text-gray-700">& up</span>
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Active Filters */}
+            {(filters.industries.length > 0 || filters.companySize.length > 0 || filters.rating.length > 0 || searchQuery || locationQuery) && (
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Active Filters</h3>
+                <div className="flex flex-wrap gap-2">
+                  {searchQuery && (
+                    <div className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">Search: {searchQuery}</span>
+                      <button 
+                        onClick={() => setSearchQuery('')}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                  {locationQuery && (
+                    <div className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">Location: {locationQuery}</span>
+                      <button 
+                        onClick={() => setLocationQuery('')}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                  {filters.industries.map(industry => (
+                    <div key={industry} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{industry}</span>
+                      <button 
+                        onClick={() => handleFilterChange('industries', industry)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {filters.companySize.map(size => (
+                    <div key={size} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{size}</span>
+                      <button 
+                        onClick={() => handleFilterChange('companySize', size)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {filters.rating.map(rating => (
+                    <div key={rating} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full px-2.5 py-1 text-xs">
+                      <span className="mr-1">{rating}+ Stars</span>
+                      <button 
+                        onClick={() => handleFilterChange('rating', rating)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Company Listings */}
@@ -397,11 +540,16 @@ export default function Companies() {
                   Featured Companies
                 </h2>
                 
-                <div className="mt-3 sm:mt-0">
+                <div className="mt-3 sm:mt-0 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                    </svg>
+                  </div>
                   <select
                     value={sortOption}
                     onChange={handleSortChange}
-                    className="block w-full sm:w-auto pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                    className="pl-9 pr-8 py-2 text-sm border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md appearance-none bg-white"
                     aria-label="Sort companies"
                   >
                     <option>Featured</option>
@@ -409,6 +557,11 @@ export default function Companies() {
                     <option>Most Jobs</option>
                     <option>Alphabetical</option>
                   </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
               </div>
               
