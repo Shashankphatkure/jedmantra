@@ -293,43 +293,52 @@ export default function Courses() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Search Section */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-10">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
-            Discover Your Next Learning Journey
-          </h1>
-          <p className="text-base md:text-lg lg:text-xl text-white/90 mb-6 md:mb-8 max-w-3xl">
-            Choose from thousands of online courses with new additions every
-            month
-          </p>
-
-          {/* Updated Search Form with better spacing and responsiveness */}
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-xl max-w-3xl">
-            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={handleSearch}
-                placeholder="Search courses, skills, or topics"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button 
-                type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Search
-              </button>
-            </form>
+      {/* Redesigned Header Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="max-w-xl">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                Explore Courses
+              </h1>
+              <p className="text-sm md:text-base text-white/80 mt-1">
+                Find the perfect course to enhance your skills and advance your career
+              </p>
+            </div>
+            
+            {/* Integrated Search Form */}
+            <div className="w-full md:w-auto md:min-w-[320px] lg:min-w-[400px]">
+              <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  placeholder="Search courses, skills, or topics"
+                  className="w-full px-4 py-2 rounded-lg border border-transparent focus:ring-2 focus:ring-blue-300 focus:border-transparent shadow-md"
+                />
+                <button 
+                  type="submit"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 transition-colors"
+                  aria-label="Search courses"
+                >
+                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-
+        
+        {/* Subtle wave decoration */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gray-50" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }}></div>
+        
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-64 h-64 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Mobile filter toggle */}
         <div className="lg:hidden mb-4">
           <button
