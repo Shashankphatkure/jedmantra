@@ -101,38 +101,53 @@ export default async function CareerAdvice() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-purple-500 to-purple-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Career Advice & Resources
-          </h1>
-          <p className="text-lg md:text-xl text-white/90 mb-8">
-            Expert insights and guidance to help you advance in your career
-            journey
-          </p>
+      {/* Redesigned Header Section */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-700 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div className="max-w-xl">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                Career Advice & Resources
+              </h1>
+              <p className="text-sm md:text-base text-white/80 mt-1">
+                Expert insights and guidance to help you advance in your career journey
+              </p>
+            </div>
+          </div>
 
-          {/* Search Form */}
-          <div className="bg-white p-6 rounded-xl shadow-xl">
+          {/* Integrated Search Form */}
+          <div className="bg-white p-4 rounded-xl shadow-md">
             <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
               <input
                 type="text"
                 placeholder="Search articles, topics, or advice"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-20 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                aria-label="Search articles"
               />
-              <button className="absolute right-2 top-2 bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition-colors">
+              <button 
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 text-white px-4 py-1 rounded-md hover:bg-purple-700 transition-colors text-sm"
+                aria-label="Search"
+              >
                 Search
               </button>
             </div>
           </div>
         </div>
-
+        
+        {/* Subtle wave decoration */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gray-50" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }}></div>
+        
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
       </div>
 
-      <main className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Featured Articles - Updated */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">

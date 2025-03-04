@@ -122,56 +122,79 @@ export default function Companies() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Search Section with Gradient Background */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Top Companies Hiring Now
-          </h1>
-          <p className="text-lg md:text-xl text-white/90 mb-8">
-            Discover and connect with leading companies across various industries
-          </p>
+      {/* Redesigned Header Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div className="max-w-xl">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                Top Companies Hiring Now
+              </h1>
+              <p className="text-sm md:text-base text-white/80 mt-1">
+                Discover and connect with leading companies across various industries
+              </p>
+            </div>
+          </div>
 
-          {/* Updated Search Form */}
-          <div className="bg-white p-6 rounded-xl shadow-xl">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-              <div className="md:col-span-2">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search companies..."
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+          {/* Integrated Search Form */}
+          <div className="bg-white p-4 rounded-xl shadow-md">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+              <div className="md:col-span-2 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
                 </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search companies..."
+                  className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  aria-label="Search companies"
+                />
+              </div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value={locationQuery}
+                  onChange={(e) => setLocationQuery(e.target.value)}
+                  placeholder="Location"
+                  className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  aria-label="Location"
+                />
               </div>
               <div>
-                <select className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select 
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  aria-label="Select industry"
+                >
                   <option>All Industries</option>
                   <option>Technology</option>
                   <option>Healthcare</option>
                   <option>Finance</option>
                   <option>Education</option>
-                </select>
-              </div>
-              <div>
-                <select className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option>All Locations</option>
-                  <option>London</option>
-                  <option>Manchester</option>
-                  <option>Birmingham</option>
-                  <option>Remote</option>
+                  <option>Manufacturing</option>
                 </select>
               </div>
             </div>
           </div>
         </div>
-
+        
+        {/* Subtle wave decoration */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gray-50" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }}></div>
+        
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-64 h-64 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
       </div>
 
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-72 space-y-6">
