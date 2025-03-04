@@ -4,28 +4,56 @@ import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState, useEffect } from 'react';
 import React from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Courses() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   // Initialize Supabase client
   const supabase = createClientComponentClient();
   
   // State management
   const [courses, setCourses] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortOption, setSortOption] = useState('Most Popular');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [sortOption, setSortOption] = useState(searchParams.get('sort') || 'Most Popular');
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
   const [coursesPerPage] = useState(9);
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState({
-    categories: [],
-    levels: [],
-    duration: [],
-    price: [],
-    rating: []
+    categories: searchParams.get('categories') ? searchParams.get('categories').split(',') : [],
+    levels: searchParams.get('levels') ? searchParams.get('levels').split(',') : [],
+    duration: searchParams.get('duration') ? searchParams.get('duration').split(',') : [],
+    price: searchParams.get('price') ? searchParams.get('price').split(',') : [],
+    rating: searchParams.get('rating') ? searchParams.get('rating').split(',').map(Number) : []
   });
+
+  // Update URL with current filters and sort
+  const updateUrlParams = () => {
+    const params = new URLSearchParams();
+    
+    if (searchTerm) params.set('search', searchTerm);
+    if (sortOption !== 'Most Popular') params.set('sort', sortOption);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value.length > 0) {
+        params.set(key, value.join(','));
+      }
+    });
+    
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.replaceState({}, '', newUrl);
+  };
+
+  // Update URL when filters, sort, or page changes
+  useEffect(() => {
+    updateUrlParams();
+  }, [filters, sortOption, currentPage, searchTerm]);
 
   // Fetch courses on component mount
   useEffect(() => {
@@ -211,6 +239,11 @@ export default function Courses() {
     setShowAllCategories(prev => !prev);
   };
 
+  // Toggle filter sidebar on mobile
+  const toggleFilterSidebar = () => {
+    setIsFilterOpen(prev => !prev);
+  };
+
   // Category data with more options
   const allCategories = [
     { name: "Programming", count: 1234 },
@@ -297,9 +330,31 @@ export default function Courses() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Mobile filter toggle */}
+        <div className="lg:hidden mb-4">
+          <button
+            onClick={toggleFilterSidebar}
+            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            aria-expanded={isFilterOpen}
+            aria-controls="filter-section"
+          >
+            <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+            {isFilterOpen ? 'Hide Filters' : 'Show Filters'}
+            <span className="ml-1 bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full text-xs">
+              {Object.values(filters).flat().length}
+            </span>
+          </button>
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
           {/* Filters Sidebar - Improved spacing and consistency */}
-          <div className="w-full lg:w-72 space-y-6 lg:flex-shrink-0">
+          <div 
+            id="filter-section"
+            className={`${isFilterOpen ? 'block' : 'hidden'} lg:block w-full lg:w-72 space-y-6 lg:flex-shrink-0`}
+            aria-label="Filter options"
+          >
             <div className="bg-white p-5 md:p-6 rounded-xl shadow-md sticky top-4">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
@@ -530,6 +585,7 @@ export default function Courses() {
                 value={sortOption}
                 onChange={handleSortChange}
                 className="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                aria-label="Sort courses by"
               >
                 <option>Most Popular</option>
                 <option>Highest Rated</option>
@@ -696,6 +752,7 @@ export default function Courses() {
                     className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
                       currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
                     }`}
+                    aria-label="Previous page"
                   >
                     <span className="sr-only">Previous</span>
                     <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -735,6 +792,7 @@ export default function Courses() {
                     className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
                       currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
                     }`}
+                    aria-label="Next page"
                   >
                     <span className="sr-only">Next</span>
                     <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
