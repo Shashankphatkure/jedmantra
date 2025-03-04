@@ -618,21 +618,6 @@ export default function Jobs() {
                     <div className="flex items-center">
                       <input
                         type="checkbox"
-                        className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
-                        Remote Only
-                      </span>
-                    </div>
-                  </label>
-                </div>
-
-                {/* Add Remote Filter */}
-                <div className="mt-4">
-                  <label className="flex items-center group cursor-pointer py-1 px-1.5 hover:bg-gray-50 rounded text-sm">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
                         checked={filters.remote}
                         onChange={() => handleFilterChange('remote')}
                         className="h-3.5 w-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
