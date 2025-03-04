@@ -14,6 +14,7 @@ export default function Courses() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [sortOption, setSortOption] = useState('Most Popular');
   const [currentPage, setCurrentPage] = useState(1);
   const [coursesPerPage] = useState(9);
@@ -29,18 +30,53 @@ export default function Courses() {
   // Fetch courses on component mount
   useEffect(() => {
     async function fetchCourses() {
-      const { data, error } = await supabase
-        .from('courses')
-        .select('*');
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('courses')
+          .select('*');
 
-      if (error) {
-        console.error('Error fetching courses:', error);
-        setError(error);
-        return;
+        if (error) {
+          console.error('Error fetching courses:', error);
+          setError(error);
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          // Handle empty data
+          setCourses([]);
+          setFilteredCourses([]);
+        } else {
+          // Validate and normalize course data
+          const validatedCourses = data.map(course => ({
+            id: course.id || Math.random().toString(36).substr(2, 9),
+            title: course.title || 'Untitled Course',
+            description: course.description || 'No description available',
+            price: typeof course.price === 'number' ? course.price : 0,
+            original_price: course.original_price,
+            rating: course.rating || 0,
+            review_count: course.review_count || 0,
+            instructor_name: course.instructor_name || 'Instructor',
+            instructor_image: course.instructor_image,
+            course_image: course.course_image,
+            category: course.category || 'Uncategorized',
+            skill_level: course.skill_level || 'All Levels',
+            duration_hours: course.duration_hours || 0,
+            student_count: course.student_count || 0,
+            bestseller: course.bestseller || false,
+            new_course: course.new_course || false,
+            created_at: course.created_at || new Date().toISOString()
+          }));
+          
+          setCourses(validatedCourses);
+          setFilteredCourses(validatedCourses);
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setError(err);
+      } finally {
+        setIsLoading(false);
       }
-
-      setCourses(data);
-      setFilteredCourses(data);
     }
 
     fetchCourses();
@@ -194,8 +230,32 @@ export default function Courses() {
   // Display limited or all categories based on state
   const displayedCategories = showAllCategories ? allCategories : allCategories.slice(0, 5);
 
+  // Handle search form submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    // The search is already applied on input change, but this could be used
+    // for analytics tracking or other functionality
+    console.log('Search submitted:', searchTerm);
+  };
+
   if (error) {
-    return <div>Error loading courses</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-8 max-w-md mx-auto bg-white rounded-xl shadow-md">
+          <svg className="mx-auto h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 className="mt-4 text-xl font-bold text-gray-900">Error Loading Courses</h2>
+          <p className="mt-2 text-gray-600">{error.message || 'An unexpected error occurred. Please try again later.'}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -213,7 +273,7 @@ export default function Courses() {
 
           {/* Updated Search Form with better spacing and responsiveness */}
           <div className="bg-white p-4 md:p-6 rounded-xl shadow-xl max-w-3xl">
-            <form onSubmit={(e) => { e.preventDefault(); }} className="relative flex items-center">
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
               <input
                 type="text"
                 value={searchTerm}
@@ -481,7 +541,30 @@ export default function Courses() {
 
             {/* Course Cards - Improved grid and spacing */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-              {currentCourses.length > 0 ? (
+              {isLoading ? (
+                // Loading skeleton
+                Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="bg-white rounded-xl shadow-md p-4 flex flex-col h-full animate-pulse">
+                    <div className="h-48 bg-gray-200 rounded-t-xl mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3 mb-4"></div>
+                    <div className="mt-auto">
+                      <div className="h-10 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  </div>
+                ))
+              ) : courses.length === 0 ? (
+                // No courses in database
+                <div className="col-span-full py-12 text-center">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                  <h3 className="mt-2 text-lg font-medium text-gray-900">No Courses Available</h3>
+                  <p className="mt-1 text-sm text-gray-500">There are currently no courses in our database.</p>
+                </div>
+              ) : currentCourses.length > 0 ? (
                 currentCourses.map((course) => (
                   <div
                     key={course.id}
@@ -493,6 +576,10 @@ export default function Courses() {
                         alt={`${course.title} thumbnail`}
                         fill
                         className="object-cover rounded-t-xl"
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          e.target.src = "https://via.placeholder.com/800x400?text=Course+Image";
+                        }}
                       />
                       <div className="absolute top-4 right-4 flex space-x-2">
                         {course.bestseller && (
@@ -510,7 +597,7 @@ export default function Courses() {
                     <div className="p-4 md:p-5 flex-grow flex flex-col">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                          {course.skill_level || "All Levels"}
+                          {course.skill_level}
                         </span>
                         <div className="flex items-center">
                           <svg
@@ -521,7 +608,7 @@ export default function Courses() {
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
                           <span className="ml-1 text-xs text-gray-600">
-                            {course.rating || "4.5"} ({course.review_count || "125"})
+                            {course.rating.toFixed(1)} ({course.review_count})
                           </span>
                         </div>
                       </div>
@@ -530,33 +617,37 @@ export default function Courses() {
                           href={`/courses/${course.id}`}
                           className="hover:text-blue-600 transition-colors"
                         >
-                          {course.title || "Course Title"}
+                          {course.title}
                         </Link>
                       </h3>
                       <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-grow">
-                        {course.description || "Course description goes here. This is a placeholder for the actual course description."}
+                        {course.description}
                       </p>
                       <div className="flex items-center justify-between mb-4 mt-auto">
                         <div className="flex items-center">
                           <Image
-                            src={course.instructor_image || `https://picsum.photos/seed/instructor-${course.id || 1}/32/32`}
-                            alt={course.instructor_name || "Instructor"}
+                            src={course.instructor_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor_name)}&background=random`}
+                            alt={course.instructor_name}
                             width={24}
                             height={24}
                             className="rounded-full"
+                            onError={(e) => {
+                              // Fallback if image fails to load
+                              e.target.src = "https://via.placeholder.com/24x24?text=I";
+                            }}
                           />
                           <span className="ml-2 text-xs text-gray-600">
-                            {course.instructor_name || "Instructor Name"}
+                            {course.instructor_name}
                           </span>
                         </div>
                         <div className="text-right">
-                          {course.original_price && (
+                          {course.original_price > 0 && (
                             <span className="text-xs text-gray-500 line-through block">
-                              ₹{course.original_price}
+                              ₹{course.original_price.toLocaleString()}
                             </span>
                           )}
                           <span className="text-base font-bold text-gray-900">
-                            {course.price ? `₹${course.price}` : "Free"}
+                            {course.price > 0 ? `₹${course.price.toLocaleString()}` : "Free"}
                           </span>
                         </div>
                       </div>
@@ -596,61 +687,63 @@ export default function Courses() {
             </div>
 
             {/* Enhanced Pagination - Improved responsiveness */}
-            <div className="mt-8 md:mt-12 flex justify-center">
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px overflow-hidden">
-                <button
-                  onClick={goToPreviousPage}
-                  disabled={currentPage === 1}
-                  className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="sr-only">Previous</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  // Calculate page numbers to show (show current page in the middle if possible)
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => paginate(pageNum)}
-                      className={`relative inline-flex items-center px-3 py-2 md:px-4 md:py-2 border border-gray-300 bg-white text-sm font-medium ${
-                        pageNum === currentPage
-                          ? "text-blue-600 bg-blue-50 border-blue-500 z-10"
-                          : "text-gray-500 hover:bg-gray-50"
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={goToNextPage}
-                  disabled={currentPage === totalPages}
-                  className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="sr-only">Next</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </nav>
-            </div>
+            {!isLoading && courses.length > 0 && currentCourses.length > 0 && totalPages > 1 && (
+              <div className="mt-8 md:mt-12 flex justify-center">
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px overflow-hidden">
+                  <button
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 1}
+                    className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                      currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="sr-only">Previous</span>
+                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    // Calculate page numbers to show (show current page in the middle if possible)
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => paginate(pageNum)}
+                        className={`relative inline-flex items-center px-3 py-2 md:px-4 md:py-2 border border-gray-300 bg-white text-sm font-medium ${
+                          pageNum === currentPage
+                            ? "text-blue-600 bg-blue-50 border-blue-500 z-10"
+                            : "text-gray-500 hover:bg-gray-50"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages}
+                    className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                      currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="sr-only">Next</span>
+                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </nav>
+              </div>
+            )}
           </div>
         </div>
       </div>
