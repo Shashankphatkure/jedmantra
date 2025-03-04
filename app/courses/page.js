@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState, useEffect } from 'react';
+import React from 'react';
 
 export default function Courses() {
   // Initialize Supabase client
@@ -13,6 +14,10 @@ export default function Courses() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [error, setError] = useState(null);
+  const [sortOption, setSortOption] = useState('Most Popular');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [coursesPerPage] = useState(9);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const [filters, setFilters] = useState({
     categories: [],
     levels: [],
@@ -46,8 +51,8 @@ export default function Courses() {
     const filtered = courses.filter(course => {
       // Apply search term filter
       const matchesSearch = !searchTerm || 
-        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchTerm.toLowerCase());
+        course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Apply category filter
       const matchesCategory = filters.categories.length === 0 || 
@@ -57,12 +62,33 @@ export default function Courses() {
       const matchesLevel = filters.levels.length === 0 || 
         filters.levels.includes(course.skill_level);
 
+      // Apply duration filter
+      const matchesDuration = filters.duration.length === 0 || 
+        filters.duration.some(durationRange => {
+          if (durationRange === "0-2 Hours" && course.duration_hours <= 2) return true;
+          if (durationRange === "2-5 Hours" && course.duration_hours > 2 && course.duration_hours <= 5) return true;
+          if (durationRange === "5-10 Hours" && course.duration_hours > 5 && course.duration_hours <= 10) return true;
+          if (durationRange === "10+ Hours" && course.duration_hours > 10) return true;
+          return false;
+        });
+
+      // Apply price filter
+      const matchesPrice = filters.price.length === 0 || 
+        filters.price.some(priceRange => {
+          if (priceRange === "Free" && course.price === 0) return true;
+          if (priceRange === "Under ₹1,000" && course.price > 0 && course.price < 1000) return true;
+          if (priceRange === "₹1,000 - ₹5,000" && course.price >= 1000 && course.price <= 5000) return true;
+          if (priceRange === "₹5,000 - ₹10,000" && course.price > 5000 && course.price <= 10000) return true;
+          if (priceRange === "₹10,000+" && course.price > 10000) return true;
+          return false;
+        });
+
       // Apply rating filter
       const matchesRating = filters.rating.length === 0 || 
         filters.rating.some(minRating => course.rating >= minRating);
 
       // Return true only if all filters match
-      return matchesSearch && matchesCategory && matchesLevel && matchesRating;
+      return matchesSearch && matchesCategory && matchesLevel && matchesDuration && matchesPrice && matchesRating;
     });
 
     setFilteredCourses(filtered);
@@ -72,6 +98,7 @@ export default function Courses() {
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
+    setCurrentPage(1); // Reset to first page when search changes
   };
 
   // Add handler for filter changes
@@ -89,6 +116,7 @@ export default function Courses() {
       
       return updatedFilters;
     });
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
   // Add clear filters handler
@@ -101,7 +129,70 @@ export default function Courses() {
       rating: []
     });
     setSearchTerm('');
+    setCurrentPage(1); // Reset to first page when filters are cleared
   };
+
+  // Handle sort change
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
+  // Apply sorting to filtered courses
+  const sortedCourses = React.useMemo(() => {
+    if (!filteredCourses.length) return [];
+    
+    const sorted = [...filteredCourses];
+    
+    switch (sortOption) {
+      case 'Most Popular':
+        return sorted.sort((a, b) => (b.student_count || 0) - (a.student_count || 0));
+      case 'Highest Rated':
+        return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      case 'Newest':
+        return sorted.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      case 'Price: Low to High':
+        return sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+      case 'Price: High to Low':
+        return sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+      default:
+        return sorted;
+    }
+  }, [filteredCourses, sortOption]);
+
+  // Calculate pagination
+  const indexOfLastCourse = currentPage * coursesPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+  const currentCourses = sortedCourses.slice(indexOfFirstCourse, indexOfLastCourse);
+  const totalPages = Math.ceil(sortedCourses.length / coursesPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const goToNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const goToPreviousPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+
+  // Toggle show all categories
+  const toggleShowAllCategories = () => {
+    setShowAllCategories(prev => !prev);
+  };
+
+  // Category data with more options
+  const allCategories = [
+    { name: "Programming", count: 1234 },
+    { name: "Business & Management", count: 856 },
+    { name: "Design & Creative", count: 753 },
+    { name: "Marketing & Digital", count: 642 },
+    { name: "IT & Software", count: 524 },
+    { name: "Data Science", count: 412 },
+    { name: "Personal Development", count: 387 },
+    { name: "Health & Fitness", count: 298 },
+    { name: "Music", count: 245 },
+    { name: "Photography & Video", count: 213 },
+    { name: "Teaching & Academics", count: 187 },
+    { name: "Language Learning", count: 156 }
+  ];
+
+  // Display limited or all categories based on state
+  const displayedCategories = showAllCategories ? allCategories : allCategories.slice(0, 5);
 
   if (error) {
     return <div>Error loading courses</div>;
@@ -111,18 +202,18 @@ export default function Courses() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Search Section */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-10">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
             Discover Your Next Learning Journey
           </h1>
-          <p className="text-lg md:text-xl text-white/90 mb-8">
+          <p className="text-base md:text-lg lg:text-xl text-white/90 mb-6 md:mb-8 max-w-3xl">
             Choose from thousands of online courses with new additions every
             month
           </p>
 
-          {/* Updated Search Form */}
-          <div className="bg-white p-6 rounded-xl shadow-xl">
-            <div className="relative">
+          {/* Updated Search Form with better spacing and responsiveness */}
+          <div className="bg-white p-4 md:p-6 rounded-xl shadow-xl max-w-3xl">
+            <form onSubmit={(e) => { e.preventDefault(); }} className="relative flex items-center">
               <input
                 type="text"
                 value={searchTerm}
@@ -130,10 +221,13 @@ export default function Courses() {
                 placeholder="Search courses, skills, or topics"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <button className="absolute right-2 top-2 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+              <button 
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
                 Search
               </button>
-            </div>
+            </form>
           </div>
         </div>
 
@@ -142,11 +236,11 @@ export default function Courses() {
         <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
 
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:w-72 space-y-6">
-            <div className="bg-white p-6 rounded-xl shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
+          {/* Filters Sidebar - Improved spacing and consistency */}
+          <div className="w-full lg:w-72 space-y-6 lg:flex-shrink-0">
+            <div className="bg-white p-5 md:p-6 rounded-xl shadow-md sticky top-4">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                 <button 
@@ -157,20 +251,16 @@ export default function Courses() {
                 </button>
               </div>
 
-              {/* Category */}
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
+              {/* Category - Improved spacing */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
                   <h4 className="font-medium text-gray-900">Category</h4>
-                  <span className="text-sm text-gray-500">5 of 12</span>
+                  <span className="text-xs text-gray-500">
+                    {showAllCategories ? allCategories.length : 5} of {allCategories.length}
+                  </span>
                 </div>
-                <div className="space-y-3">
-                  {[
-                    { name: "Programming", count: 1234 },
-                    { name: "Business & Management", count: 856 },
-                    { name: "Design & Creative", count: 753 },
-                    { name: "Marketing & Digital", count: 642 },
-                    { name: "IT & Software", count: 524 },
-                  ].map((category) => (
+                <div className="space-y-2">
+                  {displayedCategories.map((category) => (
                     <label
                       key={category.name}
                       className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
@@ -186,16 +276,19 @@ export default function Courses() {
                           {category.name}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-gray-500">
                         {category.count}
                       </span>
                     </label>
                   ))}
                 </div>
-                <button className="mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center">
-                  Show More
+                <button 
+                  onClick={toggleShowAllCategories}
+                  className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center"
+                >
+                  {showAllCategories ? 'Show Less' : 'Show More'}
                   <svg
-                    className="w-4 h-4 ml-1"
+                    className={`w-4 h-4 ml-1 transition-transform ${showAllCategories ? 'rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -210,10 +303,10 @@ export default function Courses() {
                 </button>
               </div>
 
-              {/* Level */}
-              <div className="mb-8">
-                <h4 className="font-medium text-gray-900 mb-4">Level</h4>
-                <div className="space-y-3">
+              {/* Level - Improved spacing */}
+              <div className="mb-6">
+                <h4 className="font-medium text-gray-900 mb-3">Level</h4>
+                <div className="space-y-2">
                   {[
                     { name: "Beginner", count: 1423 },
                     { name: "Intermediate", count: 867 },
@@ -235,7 +328,7 @@ export default function Courses() {
                           {level.name}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-gray-500">
                         {level.count}
                       </span>
                     </label>
@@ -243,10 +336,10 @@ export default function Courses() {
                 </div>
               </div>
 
-              {/* Duration */}
-              <div className="mb-8">
-                <h4 className="font-medium text-gray-900 mb-4">Duration</h4>
-                <div className="space-y-3">
+              {/* Duration - Improved spacing */}
+              <div className="mb-6">
+                <h4 className="font-medium text-gray-900 mb-3">Duration</h4>
+                <div className="space-y-2">
                   {[
                     { name: "0-2 Hours", count: 645 },
                     { name: "2-5 Hours", count: 834 },
@@ -268,7 +361,7 @@ export default function Courses() {
                           {duration.name}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-gray-500">
                         {duration.count}
                       </span>
                     </label>
@@ -276,10 +369,10 @@ export default function Courses() {
                 </div>
               </div>
 
-              {/* Price */}
-              <div className="mb-8">
-                <h4 className="font-medium text-gray-900 mb-4">Price</h4>
-                <div className="space-y-3">
+              {/* Price - Improved spacing */}
+              <div className="mb-6">
+                <h4 className="font-medium text-gray-900 mb-3">Price</h4>
+                <div className="space-y-2">
                   {[
                     { name: "Free", count: 283 },
                     { name: "Under ₹1,000", count: 645 },
@@ -302,7 +395,7 @@ export default function Courses() {
                           {price.name}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-gray-500">
                         {price.count}
                       </span>
                     </label>
@@ -310,10 +403,10 @@ export default function Courses() {
                 </div>
               </div>
 
-              {/* Ratings */}
+              {/* Ratings - Improved spacing */}
               <div>
-                <h4 className="font-medium text-gray-900 mb-4">Ratings</h4>
-                <div className="space-y-3">
+                <h4 className="font-medium text-gray-900 mb-3">Ratings</h4>
+                <div className="space-y-2">
                   {[
                     { rating: 4.5, count: 752 },
                     { rating: 4.0, count: 409 },
@@ -356,7 +449,7 @@ export default function Courses() {
                           </span>
                         </div>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-gray-500">
                         {ratingOption.count}
                       </span>
                     </label>
@@ -366,14 +459,18 @@ export default function Courses() {
             </div>
           </div>
 
-          {/* Course Listings */}
+          {/* Course Listings - Improved spacing and responsiveness */}
           <div className="flex-1">
-            {/* Sort and Results Count */}
-            <div className="flex justify-between items-center mb-6">
+            {/* Sort and Results Count - Improved alignment */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm">
               <p className="text-gray-600">
                 Showing <span className="font-semibold">{filteredCourses.length}</span> courses
               </p>
-              <select className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select 
+                value={sortOption}
+                onChange={handleSortChange}
+                className="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option>Most Popular</option>
                 <option>Highest Rated</option>
                 <option>Newest</option>
@@ -382,135 +479,176 @@ export default function Courses() {
               </select>
             </div>
 
-            {/* Course Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
-                <div
-                  key={course.id}
-                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <div className="relative h-48">
-                    <Image
-                      src={course.course_image || `https://picsum.photos/seed/course-${course.id}/800/400`}
-                      alt={`${course.title} thumbnail`}
-                      fill
-                      className="object-cover rounded-t-xl"
-                    />
-                    <div className="absolute top-4 right-4 flex space-x-2">
-                      {course.bestseller && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Bestseller
-                        </span>
-                      )}
-                      {course.new_course && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          New
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-blue-600">
-                        {course.skill_level}
-                      </span>
-                      <div className="flex items-center">
-                        <svg
-                          className="h-5 w-5 text-yellow-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <span className="ml-1 text-sm text-gray-600">
-                          {course.rating} ({course.review_count})
-                        </span>
-                      </div>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      <Link
-                        href={`/courses/${course.id}`}
-                        className="hover:text-blue-600 transition-colors"
-                      >
-                        {course.title}
-                      </Link>
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-4">
-                      {course.description}
-                    </p>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center">
-                        <Image
-                          src={course.instructor_image || `https://picsum.photos/seed/instructor-${course.id}/32/32`}
-                          alt={course.instructor_name}
-                          width={32}
-                          height={32}
-                          className="rounded-full"
-                        />
-                        <span className="ml-2 text-sm text-gray-600">
-                          {course.instructor_name}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        {course.original_price && (
-                          <span className="text-sm text-gray-500 line-through">
-                            ₹{course.original_price}
+            {/* Course Cards - Improved grid and spacing */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+              {currentCourses.length > 0 ? (
+                currentCourses.map((course) => (
+                  <div
+                    key={course.id}
+                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full"
+                  >
+                    <div className="relative h-48">
+                      <Image
+                        src={course.course_image || `https://picsum.photos/seed/course-${course.id}/800/400`}
+                        alt={`${course.title} thumbnail`}
+                        fill
+                        className="object-cover rounded-t-xl"
+                      />
+                      <div className="absolute top-4 right-4 flex space-x-2">
+                        {course.bestseller && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Bestseller
                           </span>
                         )}
-                        <span className="ml-2 text-lg font-bold text-gray-900">
-                          ₹{course.price}
-                        </span>
+                        {course.new_course && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            New
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group">
-                      Enroll Now
-                      <svg
-                        className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
+                    <div className="p-4 md:p-5 flex-grow flex flex-col">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                          {course.skill_level || "All Levels"}
+                        </span>
+                        <div className="flex items-center">
+                          <svg
+                            className="h-4 w-4 text-yellow-400"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                          <span className="ml-1 text-xs text-gray-600">
+                            {course.rating || "4.5"} ({course.review_count || "125"})
+                          </span>
+                        </div>
+                      </div>
+                      <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                        <Link
+                          href={`/courses/${course.id}`}
+                          className="hover:text-blue-600 transition-colors"
+                        >
+                          {course.title || "Course Title"}
+                        </Link>
+                      </h3>
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-grow">
+                        {course.description || "Course description goes here. This is a placeholder for the actual course description."}
+                      </p>
+                      <div className="flex items-center justify-between mb-4 mt-auto">
+                        <div className="flex items-center">
+                          <Image
+                            src={course.instructor_image || `https://picsum.photos/seed/instructor-${course.id || 1}/32/32`}
+                            alt={course.instructor_name || "Instructor"}
+                            width={24}
+                            height={24}
+                            className="rounded-full"
+                          />
+                          <span className="ml-2 text-xs text-gray-600">
+                            {course.instructor_name || "Instructor Name"}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          {course.original_price && (
+                            <span className="text-xs text-gray-500 line-through block">
+                              ₹{course.original_price}
+                            </span>
+                          )}
+                          <span className="text-base font-bold text-gray-900">
+                            {course.price ? `₹${course.price}` : "Free"}
+                          </span>
+                        </div>
+                      </div>
+                      <button className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group">
+                        Enroll Now
+                        <svg
+                          className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="mt-2 text-lg font-medium text-gray-900">No courses found</h3>
+                  <p className="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+                  <div className="mt-6">
+                    <button onClick={clearFilters} className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                      Clear all filters
                     </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
 
-            {/* Enhanced Pagination */}
-            <div className="mt-12 flex justify-center">
-              <nav className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px">
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            {/* Enhanced Pagination - Improved responsiveness */}
+            <div className="mt-8 md:mt-12 flex justify-center">
+              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px overflow-hidden">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                  }`}
                 >
-                  Previous
-                </a>
-                {[1, 2, 3, 4, 5].map((page) => (
-                  <a
-                    key={page}
-                    href="#"
-                    className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
-                      page === 1
-                        ? "text-blue-600 bg-blue-50 border-blue-500"
-                        : "text-gray-500 hover:bg-gray-50"
-                    }`}
-                  >
-                    {page}
-                  </a>
-                ))}
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  <span className="sr-only">Previous</span>
+                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  // Calculate page numbers to show (show current page in the middle if possible)
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => paginate(pageNum)}
+                      className={`relative inline-flex items-center px-3 py-2 md:px-4 md:py-2 border border-gray-300 bg-white text-sm font-medium ${
+                        pageNum === currentPage
+                          ? "text-blue-600 bg-blue-50 border-blue-500 z-10"
+                          : "text-gray-500 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`relative inline-flex items-center px-2 py-2 md:px-4 md:py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                  }`}
                 >
-                  Next
-                </a>
+                  <span className="sr-only">Next</span>
+                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </nav>
             </div>
           </div>
