@@ -743,23 +743,10 @@ export default function Jobs() {
                     key={job.id}
                     className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 relative overflow-hidden"
                   >
-                    {/* Status indicator */}
-                    {job.status && (
-                      <div className="absolute top-0 right-0">
-                        <div className={`px-2 py-1 text-xs font-medium rounded-bl-lg ${
-                          job.status === 'Open' ? 'bg-green-100 text-green-800' : 
-                          job.status === 'Closed' ? 'bg-red-100 text-red-800' : 
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {job.status}
-                        </div>
-                      </div>
-                    )}
-                    
                     {/* Save/Favorite Button - Positioned at top right */}
                     <button 
                       onClick={() => handleSaveJob(job.id)}
-                      className={`absolute top-2 right-3 z-10 p-1.5 rounded-full ${
+                      className={`absolute top-2 right-2 z-10 p-1.5 rounded-full ${
                         savedJobIds.has(job.id) 
                           ? 'bg-blue-50 text-blue-600' 
                           : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
@@ -808,7 +795,7 @@ export default function Jobs() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="text-base font-semibold text-gray-900 hover:text-blue-600 truncate pr-8">
+                            <h3 className="text-base font-semibold text-gray-900 hover:text-blue-600 truncate pr-10">
                               <Link href={`/jobs/${job.id}`}>
                                 {job.title}
                               </Link>
@@ -975,11 +962,7 @@ export default function Jobs() {
         </div>
       </div>
 
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-sm text-gray-500">
-          Total Jobs: {jobs.length} | Filtered Jobs: {filteredJobs.length}
-        </p>
-      </div>
+      
     </div>
   );
 }
