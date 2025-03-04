@@ -314,16 +314,21 @@ export default function Courses() {
               <div>
                 <h4 className="font-medium text-gray-900 mb-4">Ratings</h4>
                 <div className="space-y-3">
-                  {[4.5, 4.0, 3.5, 3.0].map((rating) => (
+                  {[
+                    { rating: 4.5, count: 752 },
+                    { rating: 4.0, count: 409 },
+                    { rating: 3.5, count: 287 },
+                    { rating: 3.0, count: 164 }
+                  ].map((ratingOption) => (
                     <label
-                      key={rating}
+                      key={ratingOption.rating}
                       className="flex items-center justify-between group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
                     >
                       <div className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={filters.rating.includes(rating)}
-                          onChange={() => handleFilterChange('rating', rating)}
+                          checked={filters.rating.includes(ratingOption.rating)}
+                          onChange={() => handleFilterChange('rating', ratingOption.rating)}
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <div className="ml-3 flex items-center">
@@ -332,10 +337,10 @@ export default function Courses() {
                               <svg
                                 key={i}
                                 className={`w-4 h-4 ${
-                                  i < Math.floor(rating)
+                                  i < Math.floor(ratingOption.rating)
                                     ? "text-yellow-400"
-                                    : i === Math.floor(rating) &&
-                                      rating % 1 !== 0
+                                    : i === Math.floor(ratingOption.rating) &&
+                                      ratingOption.rating % 1 !== 0
                                     ? "text-yellow-400"
                                     : "text-gray-300"
                                 }`}
@@ -352,7 +357,7 @@ export default function Courses() {
                         </div>
                       </div>
                       <span className="text-sm text-gray-500">
-                        {Math.floor(Math.random() * 1000)}
+                        {ratingOption.count}
                       </span>
                     </label>
                   ))}
