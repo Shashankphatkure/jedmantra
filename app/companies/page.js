@@ -109,6 +109,12 @@ export default function Companies() {
     setLocationQuery('')
   }
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    // You could add analytics tracking here
+    console.log('Search submitted:', { searchQuery, locationQuery });
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -138,8 +144,8 @@ export default function Companies() {
 
           {/* Integrated Search Form */}
           <div className="bg-white p-4 rounded-xl shadow-md">
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-              <div className="md:col-span-2 relative">
+            <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-12">
+              <div className="md:col-span-5 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
@@ -154,7 +160,7 @@ export default function Companies() {
                   aria-label="Search companies"
                 />
               </div>
-              <div className="relative">
+              <div className="md:col-span-3 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
@@ -169,10 +175,16 @@ export default function Companies() {
                   aria-label="Location"
                 />
               </div>
-              <div>
+              <div className="md:col-span-2">
                 <select 
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   aria-label="Select industry"
+                  onChange={(e) => {
+                    if (e.target.value !== "All Industries") {
+                      handleFilterChange('industries', e.target.value);
+                    }
+                  }}
+                  value={filters.industries.length === 1 ? filters.industries[0] : "All Industries"}
                 >
                   <option>All Industries</option>
                   <option>Technology</option>
@@ -182,7 +194,15 @@ export default function Companies() {
                   <option>Manufacturing</option>
                 </select>
               </div>
-            </div>
+              <div className="md:col-span-2">
+                <button 
+                  type="submit"
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Search
+                </button>
+              </div>
+            </form>
           </div>
         </div>
         
@@ -201,7 +221,10 @@ export default function Companies() {
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                <button 
+                  onClick={clearFilters}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
                   Clear All
                 </button>
               </div>
@@ -225,6 +248,8 @@ export default function Companies() {
                         <input
                           type="checkbox"
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          checked={filters.industries.includes(industry.name)}
+                          onChange={() => handleFilterChange('industries', industry.name)}
                         />
                         <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
                           {industry.name}
@@ -253,6 +278,8 @@ export default function Companies() {
                       <input
                         type="checkbox"
                         className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        checked={filters.companySize.includes(size)}
+                        onChange={() => handleFilterChange('companySize', size)}
                       />
                       <span className="ml-3 text-sm text-gray-700">
                         {size}
@@ -275,6 +302,8 @@ export default function Companies() {
                         <input
                           type="checkbox"
                           className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          checked={filters.rating.includes(rating)}
+                          onChange={() => handleFilterChange('rating', rating)}
                         />
                         <div className="ml-3 flex items-center">
                           {[...Array(5)].map((_, i) => (
@@ -294,6 +323,9 @@ export default function Companies() {
                           <span className="ml-2 text-sm text-gray-700">& up</span>
                         </div>
                       </div>
+                      <span className="text-sm text-gray-500">
+                        {Math.floor(Math.random() * 50) + 10}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -313,35 +345,58 @@ export default function Companies() {
                   <Link
                     href={`/companies/${company.id}`}
                     key={company.id}
-                    className="block"
+                    className="group block h-full"
                   >
-                    <div className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200">
-                      <div className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <Image
-                            src={company.logo_url || `https://picsum.photos/seed/${company.id}/80/80`}
-                            alt={`${company.name} logo`}
-                            width={80}
-                            height={80}
-                            className="rounded object-cover"
-                          />
-                          {company.featured && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              Featured
-                            </span>
-                          )}
-                          {company.verified && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              Verified
-                            </span>
-                          )}
+                    <div className="bg-white h-full border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-blue-300 flex flex-col">
+                      {/* Company Header with Logo and Badges */}
+                      <div className="relative">
+                        {/* Company Cover Image */}
+                        <div className="h-24 w-full bg-gradient-to-r from-blue-50 to-indigo-50"></div>
+                        
+                        {/* Logo and Badges */}
+                        <div className="px-6 pb-4 flex justify-between">
+                          <div className="relative -mt-10">
+                            <div className="h-16 w-16 rounded-lg border-4 border-white bg-white shadow-sm overflow-hidden">
+                              <Image
+                                src={company.logo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=random&color=fff&size=80`}
+                                alt={`${company.name} logo`}
+                                width={80}
+                                height={80}
+                                className="object-cover h-full w-full"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {company.featured && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                Featured
+                              </span>
+                            )}
+                            {company.verified && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                Verified
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900">
+                      </div>
+                      
+                      {/* Company Info */}
+                      <div className="px-6 py-4 flex-grow">
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                           {company.name}
                         </h3>
+                        
                         <div className="mt-2 flex items-center text-sm text-gray-500">
                           <svg
-                            className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                            className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -355,9 +410,10 @@ export default function Companies() {
                           </svg>
                           {company.industry}
                         </div>
-                        <div className="mt-2 flex items-center text-sm text-gray-500">
+                        
+                        <div className="mt-1 flex items-center text-sm text-gray-500">
                           <svg
-                            className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                            className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -377,30 +433,40 @@ export default function Companies() {
                           </svg>
                           {company.location}
                         </div>
+                        
                         <p className="mt-3 text-sm text-gray-600 line-clamp-2">
                           {company.description}
                         </p>
-                        <div className="mt-4">
-                          {company.benefits && company.benefits.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {company.benefits.slice(0, 3).map((benefit, index) => (
-                                <span
-                                  key={index}
-                                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                                >
-                                  {benefit}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <div className="mt-4 flex items-center justify-between">
+                        
+                        {/* Benefits Tags */}
+                        {company.benefits && company.benefits.length > 0 && (
+                          <div className="mt-4 flex flex-wrap gap-1.5">
+                            {company.benefits.slice(0, 3).map((benefit, index) => (
+                              <span
+                                key={index}
+                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
+                              >
+                                {benefit}
+                              </span>
+                            ))}
+                            {company.benefits.length > 3 && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-blue-600">
+                                +{company.benefits.length - 3} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Card Footer */}
+                      <div className="px-6 py-4 border-t border-gray-100 mt-auto">
+                        <div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <div className="flex items-center">
                               {[...Array(5)].map((_, i) => (
                                 <svg
                                   key={i}
-                                  className={`h-5 w-5 ${
+                                  className={`h-4 w-4 ${
                                     i < Math.floor(company.rating)
                                       ? "text-yellow-400"
                                       : "text-gray-300"
@@ -412,12 +478,12 @@ export default function Companies() {
                                 </svg>
                               ))}
                             </div>
-                            <span className="ml-2 text-sm text-gray-600">
+                            <span className="ml-1.5 text-xs text-gray-600">
                               {company.rating} ({company.review_count})
                             </span>
                           </div>
-                          <span className="text-sm text-blue-600">
-                            {company.open_positions} open positions
+                          <span className="text-sm font-medium text-blue-600">
+                            {company.open_positions} open jobs
                           </span>
                         </div>
                       </div>
