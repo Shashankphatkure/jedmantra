@@ -23,6 +23,9 @@ export default function Jobs() {
   const supabase = createClientComponentClient()
   const router = useRouter()
   const [savedJobIds, setSavedJobIds] = useState(new Set())
+  const [showFiltersMobile, setShowFiltersMobile] = useState(false)
+  const [sortOption, setSortOption] = useState('relevance')
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -44,6 +47,7 @@ export default function Jobs() {
         
         if (error) {
           console.error('Error fetching jobs:', error)
+          setError('Failed to load jobs. Please try again later.')
           setLoading(false)
           return
         }
@@ -54,6 +58,7 @@ export default function Jobs() {
         setLoading(false)
       } catch (error) {
         console.error('Error:', error)
+        setError('An unexpected error occurred. Please try again later.')
         setLoading(false)
       }
     }
@@ -134,9 +139,19 @@ export default function Jobs() {
       console.log('Jobs after salary filter:', result.length)
     }
 
+    // Apply sorting
+    if (sortOption === 'newest') {
+      result.sort((a, b) => new Date(b.posted_at) - new Date(a.posted_at))
+    } else if (sortOption === 'salary-high') {
+      result.sort((a, b) => (b.salary_max || 0) - (a.salary_max || 0))
+    } else if (sortOption === 'salary-low') {
+      result.sort((a, b) => (a.salary_min || 0) - (b.salary_min || 0))
+    }
+    // 'relevance' is the default and doesn't need additional sorting
+
     console.log('Final filtered jobs:', result.length)
     setFilteredJobs(result)
-  }, [jobs, searchQuery, locationQuery, filters])
+  }, [jobs, searchQuery, locationQuery, filters, sortOption])
 
   useEffect(() => {
     console.log('Loading state:', loading)
@@ -242,6 +257,14 @@ export default function Jobs() {
     setLocationQuery('')
   }
 
+  const toggleFiltersMobile = () => {
+    setShowFiltersMobile(!showFiltersMobile)
+  }
+
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value)
+  }
+
   const searchFormJSX = (
     <div className="bg-white p-6 rounded-xl shadow-xl">
       <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
@@ -341,10 +364,88 @@ export default function Jobs() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading jobs...</p>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header skeleton */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+            <div className="h-8 w-64 bg-white/20 rounded-lg mb-4"></div>
+            <div className="flex gap-4 mb-6">
+              <div className="h-4 w-20 bg-white/20 rounded"></div>
+              <div className="h-4 w-20 bg-white/20 rounded"></div>
+              <div className="h-4 w-20 bg-white/20 rounded"></div>
+            </div>
+            <div className="bg-white/10 p-4 rounded-xl">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="h-10 bg-white/20 rounded-lg flex-1"></div>
+                <div className="h-10 bg-white/20 rounded-lg flex-1"></div>
+                <div className="h-10 w-24 bg-white/20 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* Sidebar skeleton */}
+            <div className="hidden md:block w-64 lg:w-72">
+              <div className="bg-white rounded-xl shadow-md p-6">
+                <div className="h-6 w-32 bg-gray-200 rounded mb-6"></div>
+                <div className="space-y-8">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="space-y-4">
+                      <div className="h-5 w-24 bg-gray-200 rounded"></div>
+                      <div className="space-y-3">
+                        {[1, 2, 3].map((j) => (
+                          <div key={j} className="flex items-center">
+                            <div className="h-4 w-4 bg-gray-200 rounded mr-2"></div>
+                            <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Content skeleton */}
+            <div className="flex-1">
+              <div className="flex justify-between items-center mb-6">
+                <div className="h-5 w-32 bg-gray-200 rounded"></div>
+                <div className="h-10 w-32 bg-gray-200 rounded"></div>
+              </div>
+              
+              <div className="space-y-6">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="bg-white p-6 rounded-xl shadow-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <div className="hidden sm:block w-12 h-12 bg-gray-200 rounded-lg"></div>
+                        <div>
+                          <div className="h-6 w-48 bg-gray-200 rounded mb-2"></div>
+                          <div className="h-4 w-32 bg-gray-200 rounded mb-3"></div>
+                          <div className="h-4 w-40 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+                      <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
+                    </div>
+                    <div className="mt-4">
+                      <div className="flex gap-2 mb-3">
+                        <div className="h-5 w-16 bg-gray-200 rounded-full"></div>
+                        <div className="h-5 w-16 bg-gray-200 rounded-full"></div>
+                      </div>
+                      <div className="h-4 w-full bg-gray-200 rounded mb-1"></div>
+                      <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                      <div className="h-10 w-24 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -356,47 +457,16 @@ export default function Jobs() {
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-            <div className="flex flex-col md:flex-row md:items-center gap-4">
-              <h1 className="text-2xl md:text-3xl font-bold text-white">
-                Find Your Dream Job
-              </h1>
-              <div className="flex gap-2">
-                <Link 
-                  href="/savedjobs"
-                  className="inline-flex items-center px-3 py-1 border border-white/30 text-xs font-medium rounded-md text-white hover:bg-white/10 transition-colors"
-                >
-                  <svg
-                    className="h-4 w-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-white">Find Your Dream Job</h1>
+              <div className="flex items-center mt-2 space-x-4">
+                <Link href="/jobs" className="text-white font-medium">
+                  All Jobs
+                </Link>
+                <Link href="/jobs/saved" className="text-white/80 hover:text-white transition-colors">
                   Saved Jobs
                 </Link>
-                <Link 
-                  href="/student/applications"
-                  className="inline-flex items-center px-3 py-1 border border-white/30 text-xs font-medium rounded-md text-white hover:bg-white/10 transition-colors"
-                >
-                  <svg
-                    className="h-4 w-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                    />
-                  </svg>
+                <Link href="/jobs/applied" className="text-white/80 hover:text-white transition-colors">
                   Applied Jobs
                 </Link>
               </div>
@@ -448,27 +518,80 @@ export default function Jobs() {
             </form>
           </div>
         </div>
-        
-        {/* Subtle wave decoration */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gray-50" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }}></div>
-        
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-64 h-64 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Updated Filters Sidebar */}
-          <div className="lg:w-72 space-y-6">
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                  Clear All
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="mt-2 text-sm font-medium text-red-700 hover:text-red-600"
+                >
+                  Try again
                 </button>
               </div>
+            </div>
+          </div>
+        )}
 
+        {/* Mobile Filter Toggle */}
+        <div className="md:hidden mb-4">
+          <button
+            onClick={toggleFiltersMobile}
+            className="w-full flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+          >
+            <span className="font-medium text-gray-700">Filters</span>
+            <div className="flex items-center">
+              {Object.values(filters).flat().filter(Boolean).length > 0 && (
+                <span className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">
+                  {Object.values(filters).flat().filter(Boolean).length}
+                </span>
+              )}
+              <svg
+                className={`h-5 w-5 text-gray-500 transform transition-transform ${showFiltersMobile ? 'rotate-180' : ''}`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          </button>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Filters Sidebar - Enhanced for mobile */}
+          <div 
+            className={`${
+              showFiltersMobile ? 'block' : 'hidden'
+            } md:block w-full md:w-64 lg:w-72 flex-shrink-0`}
+          >
+            <div className="bg-white rounded-xl shadow-md p-6 sticky top-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                {Object.values(filters).flat().filter(Boolean).length > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
               <div className="space-y-8">
                 <div className="mb-8">
                   <h4 className="font-medium text-gray-900 mb-4">
@@ -538,85 +661,155 @@ export default function Jobs() {
               <p className="text-gray-600">
                 Showing <span className="font-semibold">{filteredJobs.length}</span> jobs
               </p>
-              <select className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option>Most relevant</option>
-                <option>Newest first</option>
-                <option>Highest paid</option>
-                <option>Closest to you</option>
+              <select 
+                className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={sortOption}
+                onChange={handleSortChange}
+                aria-label="Sort jobs by"
+              >
+                <option value="relevance">Most relevant</option>
+                <option value="newest">Newest first</option>
+                <option value="salary-high">Highest salary</option>
+                <option value="salary-low">Lowest salary</option>
               </select>
             </div>
 
-            {/* Updated Job Cards */}
-            <div className="space-y-6">
-              {currentJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            {/* Empty State */}
+            {currentJobs.length === 0 && (
+              <div className="bg-white p-8 rounded-xl shadow-md text-center">
+                <div className="mx-auto w-24 h-24 mb-4">
+                  <svg className="w-full h-full text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+                <p className="text-gray-600 mb-6">
+                  We couldn't find any jobs matching your search criteria. Try adjusting your filters or search terms.
+                </p>
+                <button 
+                  onClick={clearFilters}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-blue-600 hover:text-blue-700">
-                        <Link href={`/jobs/${job.id}`}>
-                          {job.title}
-                        </Link>
-                      </h3>
-                      <p className="text-gray-600 mt-1">
-                        {job.company_name} • {job.location}
-                      </p>
-                      <div className="mt-2 space-y-2">
-                        {(job.salary_min || job.salary_max) && (
-                          <p className="text-gray-600">
-                            ₹{job.salary_min?.toLocaleString()} - ₹{job.salary_max?.toLocaleString()} a year
-                          </p>
-                        )}
-                        <div className="flex flex-wrap gap-2">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {job.job_type}
-                          </span>
-                          {job.is_remote && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              Remote
+                  Clear all filters
+                </button>
+              </div>
+            )}
+
+            {/* Updated Job Cards */}
+            {currentJobs.length > 0 && (
+              <div className="space-y-6">
+                {currentJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        {/* Company Logo */}
+                        <div className="hidden sm:block flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                          {job.company_logo ? (
+                            <Image 
+                              src={job.company_logo} 
+                              alt={`${job.company_name} logo`}
+                              width={48}
+                              height={48}
+                              className="object-contain"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/placeholder-logo.png";
+                              }}
+                            />
+                          ) : (
+                            <span className="text-xl font-bold text-gray-400">
+                              {job.company_name?.charAt(0) || "C"}
                             </span>
                           )}
                         </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-blue-600 hover:text-blue-700 group">
+                            <Link href={`/jobs/${job.id}`} className="group-hover:underline">
+                              {job.title}
+                            </Link>
+                          </h3>
+                          <p className="text-gray-600 mt-1 flex items-center">
+                            <span className="font-medium">{job.company_name}</span>
+                            <span className="mx-2">•</span>
+                            <span className="flex items-center">
+                              <svg className="h-4 w-4 text-gray-500 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                              </svg>
+                              {job.location}
+                            </span>
+                          </p>
+                          <div className="mt-2 space-y-2">
+                            {(job.salary_min || job.salary_max) && (
+                              <p className="text-gray-700 flex items-center">
+                                <svg className="h-4 w-4 text-green-500 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                                </svg>
+                                ₹{job.salary_min?.toLocaleString() || '—'} - ₹{job.salary_max?.toLocaleString() || '—'} a year
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <button 
-                      onClick={() => handleSaveJob(job.id)}
-                      className="text-blue-600 hover:text-blue-700 transition-colors"
-                      title={savedJobIds.has(job.id) ? "Remove from saved jobs" : "Save job"}
-                    >
-                      <svg
-                        className="h-6 w-6"
-                        fill={savedJobIds.has(job.id) ? "currentColor" : "none"}
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      <button 
+                        onClick={() => handleSaveJob(job.id)}
+                        className="text-blue-600 hover:text-blue-700 transition-colors"
+                        title={savedJobIds.has(job.id) ? "Remove from saved jobs" : "Save job"}
+                        aria-label={savedJobIds.has(job.id) ? "Remove from saved jobs" : "Save job"}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="mt-4">
-                    <p className="text-gray-600 line-clamp-2">
-                      {job.description}
-                    </p>
-                  </div>
-                  <div className="mt-4 flex justify-between items-center">
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <span>Posted {new Date(job.posted_at).toLocaleDateString()}</span>
+                        <svg
+                          className="h-6 w-6"
+                          fill={savedJobIds.has(job.id) ? "currentColor" : "none"}
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                          />
+                        </svg>
+                      </button>
                     </div>
-                    <button className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50">
-                      Apply Now
-                    </button>
+                    <div className="mt-4">
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {job.job_type}
+                        </span>
+                        {job.is_remote && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Remote
+                          </span>
+                        )}
+                        {job.experience_level && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            {job.experience_level}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 line-clamp-2 text-sm">
+                        {job.description}
+                      </p>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <div className="flex items-center space-x-2 text-sm text-gray-500">
+                        <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span>Posted {new Date(job.posted_at).toLocaleDateString()}</span>
+                      </div>
+                      <Link href={`/jobs/${job.id}`} className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                        Apply Now
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Enhanced Pagination */}
             <div className="mt-8 flex justify-center">
