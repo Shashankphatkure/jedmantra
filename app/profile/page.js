@@ -32,6 +32,7 @@ export default function Profile() {
     major: '',
     minor: '',
     graduation_year: '',
+    achievements: [],
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const supabase = createClientComponentClient();
@@ -130,6 +131,7 @@ export default function Profile() {
       major: '',
       minor: '',
       graduation_year: '',
+      achievements: [],
       ...initialData
     });
   };
@@ -152,6 +154,7 @@ export default function Profile() {
       major: '',
       minor: '',
       graduation_year: '',
+      achievements: [],
     });
   };
 
@@ -340,37 +343,110 @@ export default function Profile() {
       </div>
 
       {/* Quick Stats */}
-      <div className="bg-white shadow-lg transform -mt-10 relative z-20 rounded-xl max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-200">
-          {[
-            { 
-              label: "Profile Completion", 
-              value: (() => {
-                const fields = [
-                  user?.name,
-                  user?.headline,
-                  user?.bio,
-                  user?.major,
-                  user?.graduation_year,
-                  user?.phone_number,
-                  user?.website,
-                  user?.skills?.length > 0,
-                  user?.projects?.length > 0,
-                  user?.experience?.length > 0
-                ];
-                const completedFields = fields.filter(Boolean).length;
-                return `${Math.round((completedFields / fields.length) * 100)}%`;
-              })()
-            },
-            { label: "Courses", value: user?.courses_completed || 0 },
-            { label: "Projects", value: user?.projects?.length || 0 },
-            { label: "Achievements", value: user?.achievements?.length || 0 }
-          ].map((stat) => (
-            <div key={stat.label} className="p-6 text-center">
-              <p className="text-2xl font-bold text-indigo-600">{stat.value}</p>
-              <p className="text-sm text-gray-500">{stat.label}</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow-xl transform -mt-10 relative z-20 rounded-xl overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+            {/* Profile Completion with Progress Bar */}
+            <div className="p-6 border-b sm:last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 border-gray-200 hover:bg-gray-50 transition-colors group min-h-[140px]">
+              <div className="flex flex-col h-full justify-between">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Profile Completion</h3>
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                
+                {(() => {
+                  const fields = [
+                    user?.name,
+                    user?.headline,
+                    user?.bio,
+                    user?.major,
+                    user?.graduation_year,
+                    user?.phone_number,
+                    user?.website,
+                    user?.skills?.length > 0,
+                    user?.projects?.length > 0,
+                    user?.experience?.length > 0
+                  ];
+                  const completedFields = fields.filter(Boolean).length;
+                  const percentage = Math.round((completedFields / fields.length) * 100);
+                  
+                  return (
+                    <div>
+                      <div className="text-3xl font-bold text-indigo-600 mb-2">{percentage}%</div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                        <div 
+                          className="bg-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-out" 
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-500">{completedFields} of {fields.length} items completed</p>
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
-          ))}
+            
+            {/* Courses */}
+            <div className="p-6 border-b sm:last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 border-gray-200 hover:bg-gray-50 transition-colors group cursor-pointer min-h-[140px]" onClick={() => handleOpenEdit('courses', { courses: user.courses || [] })}>
+              <div className="flex flex-col h-full justify-between">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Courses</h3>
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-pink-600 mb-2">{user?.courses?.length || 0}</div>
+                  <p className="text-xs text-gray-500">Click to add courses</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Projects */}
+            <div className="p-6 border-b sm:last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 border-gray-200 hover:bg-gray-50 transition-colors group cursor-pointer min-h-[140px]" onClick={() => handleOpenEdit('projects', { projects: user.projects || [] })}>
+              <div className="flex flex-col h-full justify-between">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Projects</h3>
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-emerald-600 mb-2">{user?.projects?.length || 0}</div>
+                  <p className="text-xs text-gray-500">Click to add projects</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Achievements */}
+            <div className="p-6 border-b sm:last:border-b-0 md:border-b-0 md:last:border-r-0 border-gray-200 hover:bg-gray-50 transition-colors group cursor-pointer min-h-[140px]" onClick={() => handleOpenEdit('achievements', { achievements: user.achievements || [] })}>
+              <div className="flex flex-col h-full justify-between">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Achievements</h3>
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-amber-600 mb-2">{user?.achievements?.length || 0}</div>
+                  <div className="flex items-center">
+                    <p className="text-xs text-gray-500">Click to manage achievements</p>
+                    <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">New</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -721,6 +797,55 @@ export default function Profile() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Achievements Section */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Achievements
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">New</span>
+                </h3>
+                <button 
+                  onClick={() => handleOpenEdit('achievements', { 
+                    achievements: user.achievements || [] 
+                  })}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              </div>
+              
+              {user.achievements && user.achievements.length > 0 ? (
+                <div className="space-y-4">
+                  {user.achievements.map((achievement, index) => (
+                    <div key={index} className="p-4 border-l-4 border-amber-400 bg-amber-50 rounded-r-lg">
+                      <div className="flex justify-between">
+                        <h4 className="text-base font-medium text-gray-900">{achievement.title}</h4>
+                        {achievement.date && (
+                          <span className="text-sm text-amber-700">{achievement.date}</span>
+                        )}
+                      </div>
+                      {achievement.description && (
+                        <p className="mt-2 text-sm text-gray-600">{achievement.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-amber-300" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <p className="mt-4 text-gray-500">No achievements added yet</p>
+                  <button
+                    onClick={() => handleOpenEdit('achievements', { achievements: [] })}
+                    className="mt-4 px-4 py-2 text-sm font-medium text-amber-600 border border-amber-600 rounded-md hover:bg-amber-50"
+                  >
+                    Add Your First Achievement
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1303,6 +1428,82 @@ export default function Profile() {
             className="w-full px-4 py-2 text-sm font-medium text-pink-600 border border-pink-600 rounded-md hover:bg-pink-50"
           >
             Add Course
+          </button>
+        </div>
+      </EditModal>
+
+      {/* Achievements Modal */}
+      <EditModal
+        isOpen={isEditing && editSection === 'achievements'}
+        onClose={handleCloseEdit}
+        title="Your Achievements"
+      >
+        <div className="space-y-4">
+          {formData.achievements?.map((achievement, index) => (
+            <div key={index} className="p-4 border border-amber-100 bg-amber-50 rounded-lg space-y-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Achievement Title</label>
+                <input
+                  type="text"
+                  className={inputStyles}
+                  value={achievement.title || ''}
+                  onChange={(e) => {
+                    const newAchievements = [...(formData.achievements || [])];
+                    newAchievements[index] = { ...achievement, title: e.target.value };
+                    setFormData({ ...formData, achievements: newAchievements });
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  className={textareaStyles}
+                  rows={2}
+                  value={achievement.description || ''}
+                  onChange={(e) => {
+                    const newAchievements = [...(formData.achievements || [])];
+                    newAchievements[index] = { ...achievement, description: e.target.value };
+                    setFormData({ ...formData, achievements: newAchievements });
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Date Achieved</label>
+                <input
+                  type="text"
+                  className={inputStyles}
+                  value={achievement.date || ''}
+                  onChange={(e) => {
+                    const newAchievements = [...(formData.achievements || [])];
+                    newAchievements[index] = { ...achievement, date: e.target.value };
+                    setFormData({ ...formData, achievements: newAchievements });
+                  }}
+                  placeholder="e.g., May 2023"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const newAchievements = formData.achievements.filter((_, i) => i !== index);
+                  setFormData({ ...formData, achievements: newAchievements });
+                }}
+                className="text-red-600 hover:text-red-700 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              const newAchievements = [...(formData.achievements || []), {
+                title: '',
+                description: '',
+                date: ''
+              }];
+              setFormData({ ...formData, achievements: newAchievements });
+            }}
+            className="w-full px-4 py-2 text-sm font-medium text-amber-600 border border-amber-600 rounded-md hover:bg-amber-50"
+          >
+            Add Achievement
           </button>
         </div>
       </EditModal>
