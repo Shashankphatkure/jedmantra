@@ -4,14 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function Jobs() {
+  const searchParams = useSearchParams()
   const [jobs, setJobs] = useState([])
   const [filteredJobs, setFilteredJobs] = useState([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [locationQuery, setLocationQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
+  const [locationQuery, setLocationQuery] = useState(searchParams.get('location') || '')
   const [filters, setFilters] = useState({
     datePosted: '',
     jobType: [],
@@ -25,6 +26,22 @@ export default function Jobs() {
   const router = useRouter()
   const [savedJobIds, setSavedJobIds] = useState(new Set())
 
+  // Listen for URL parameter changes 
+  useEffect(() => {
+    // Get parameters from URL
+    const search = searchParams.get('search')
+    const location = searchParams.get('location')
+    
+    // Only update if different from current state to avoid loops
+    if (search !== searchQuery) {
+      setSearchQuery(search || '')
+    }
+    
+    if (location !== locationQuery) {
+      setLocationQuery(location || '')
+    }
+  }, [searchParams])
+
   // Format currency in Indian format (INR)
   const formatIndianCurrency = (amount) => {
     if (!amount) return '—';
@@ -37,6 +54,25 @@ export default function Jobs() {
     });
     
     return formatter.format(amount);
+  };
+
+  // Update URL with search parameters
+  const updateUrlParams = () => {
+    const params = new URLSearchParams();
+    
+    if (searchQuery) params.set('search', searchQuery);
+    if (locationQuery) params.set('location', locationQuery);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    
+    // Add filter parameters if needed
+    if (filters.datePosted) params.set('datePosted', filters.datePosted);
+    if (filters.jobType.length > 0) params.set('jobType', filters.jobType.join(','));
+    if (filters.salaryRange.length > 0) params.set('salaryRange', filters.salaryRange.join(','));
+    if (filters.experienceLevel.length > 0) params.set('experienceLevel', filters.experienceLevel.join(','));
+    if (filters.remote) params.set('remote', 'true');
+    
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.replaceState({}, '', newUrl);
   };
 
   useEffect(() => {
@@ -76,6 +112,7 @@ export default function Jobs() {
     fetchJobs()
   }, [])
 
+  // Update filtered jobs when search parameters change
   useEffect(() => {
     console.log('Current filters:', filters)
     console.log('Search query:', searchQuery)
@@ -156,7 +193,10 @@ export default function Jobs() {
 
     console.log('Final filtered jobs:', result.length)
     setFilteredJobs(result)
-  }, [jobs, searchQuery, locationQuery, filters])
+    
+    // Update URL parameters when filters change
+    updateUrlParams()
+  }, [jobs, searchQuery, locationQuery, filters, currentPage])
 
   useEffect(() => {
     console.log('Loading state:', loading)
@@ -235,6 +275,8 @@ export default function Jobs() {
 
   const handleSearch = (e) => {
     e.preventDefault()
+    setCurrentPage(1) // Reset to first page when performing a new search
+    updateUrlParams()
   }
 
   const handleFilterChange = (type, value) => {
@@ -265,6 +307,10 @@ export default function Jobs() {
     })
     setSearchQuery('')
     setLocationQuery('')
+    setCurrentPage(1) // Reset to first page when clearing filters
+    
+    // Clear URL parameters
+    window.history.replaceState({}, '', window.location.pathname)
   }
 
   const searchFormJSX = (

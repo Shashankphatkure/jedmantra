@@ -12,7 +12,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 
- export default async function Home() {
+export default async function Home() {
   const supabase = createServerComponentClient({ cookies })
   
   const { data: jobs } = await supabase
@@ -43,13 +43,14 @@ import Link from 'next/link'
 
             {/* Search Form */}
             <div className="bg-white p-6 rounded-xl shadow-xl">
-              <div className="grid md:grid-cols-2 gap-4">
+              <form action="/jobs" method="get" className="grid md:grid-cols-2 gap-4">
                 <div className="relative">
                   <label className="block text-gray-700 text-sm font-medium mb-2">
                     What
                   </label>
                   <input
                     type="text"
+                    name="search"
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     placeholder="Job title, skill or company"
                   />
@@ -60,6 +61,7 @@ import Link from 'next/link'
                   </label>
                   <input
                     type="text"
+                    name="location"
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     placeholder="City or postcode"
                   />
@@ -67,14 +69,16 @@ import Link from 'next/link'
                     <MapPinIcon className="w-5 h-5" />
                   </button>
                 </div>
-              </div>
-              <Link
-                href="/jobs"
-                className="w-full mt-4 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group"
-              >
-                Search Jobs
-                <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
+                <div className="md:col-span-2">
+                  <button
+                    type="submit"
+                    className="w-full mt-4 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group"
+                  >
+                    Search Jobs
+                    <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </form>
             </div>
 
             {/* Job Stats */}
