@@ -298,51 +298,56 @@ export default async function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {jobs?.map((job) => (
-              <div
+              <Link 
                 key={job.id}
-                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                href={`/jobs/${job.id}`}
+                className="block"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-semibold text-xl text-gray-900">
-                      {job.title}
-                    </h3>
-                    <p className="text-gray-600">{job.company_name}</p>
+                <div
+                  className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold text-xl text-gray-900">
+                        {job.title}
+                      </h3>
+                      <p className="text-gray-600">{job.company_name}</p>
+                    </div>
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                      {job.job_type}
+                    </span>
                   </div>
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    {job.job_type}
-                  </span>
-                </div>
-                <div className="space-y-3 mb-4">
-                  <p className="text-gray-600 flex items-center">
-                    <MapPinIcon className="h-5 w-5 mr-2 text-gray-400" />
-                    {job.location} {job.is_remote && '(Remote)'}
-                  </p>
-                  {(job.salary_min || job.salary_max) && (
+                  <div className="space-y-3 mb-4">
                     <p className="text-gray-600 flex items-center">
-                      <CurrencyPoundIcon className="h-5 w-5 mr-2 text-gray-400" />
-                      {job.salary_min && `${job.salary_min.toLocaleString()}`}
-                      {job.salary_min && job.salary_max && ' - '}
-                      {job.salary_max && `${job.salary_max.toLocaleString()}`}
-                      {' ' + job.salary_currency}
+                      <MapPinIcon className="h-5 w-5 mr-2 text-gray-400" />
+                      {job.location} {job.is_remote && '(Remote)'}
                     </p>
-                  )}
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {job.skills?.slice(0, 3).map((skill, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                    {(job.salary_min || job.salary_max) && (
+                      <p className="text-gray-600 flex items-center">
+                        <CurrencyPoundIcon className="h-5 w-5 mr-2 text-gray-400" />
+                        {job.salary_min && `${job.salary_min.toLocaleString()}`}
+                        {job.salary_min && job.salary_max && ' - '}
+                        {job.salary_max && `${job.salary_max.toLocaleString()}`}
+                        {' ' + job.salary_currency}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {job.skills?.slice(0, 3).map((skill, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+                  <button className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition-colors flex items-center justify-center group">
+                    View Details
+                    <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
-                <button className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition-colors flex items-center justify-center group">
-                  Apply Now
-                  <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
+              </Link>
             ))}
           </div>
           <div className="text-center mt-10">
@@ -370,68 +375,73 @@ export default async function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {courses?.map((course) => (
-              <div
+              <Link 
                 key={course.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                href={`/courses/${course.id}`}
+                className="block"
               >
-                <div className="relative">
-                  <img
-                    src={course.course_image || `https://picsum.photos/800/600`}
-                    alt={course.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute top-4 right-4 flex space-x-2">
-                    {course.skill_level && (
-                      <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                        {course.skill_level}
-                      </span>
-                    )}
-                    {course.video_hours && (
-                      <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                        {course.video_hours}h
-                      </span>
-                    )}
-                  </div>
-                  {course.bestseller && (
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                        Bestseller
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="font-semibold text-xl mb-2">{course.title}</h3>
-                  <p className="text-gray-600 mb-4 flex items-center">
-                    <UserCircleIcon className="h-5 w-5 mr-2" />
-                    {course.instructor_name}
-                    {course.instructor_title && ` - ${course.instructor_title}`}
-                  </p>
-                  <div className="flex items-center mb-4">
-                    <div className="flex items-center text-yellow-400">
-                      <StarIcon className="h-5 w-5" />
-                      <span className="ml-1 font-medium">{course.rating}</span>
-                    </div>
-                    <span className="text-gray-500 ml-2">
-                      ({course.review_count?.toLocaleString() || 0} reviews)
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-bold text-2xl">₹{course.price}</span>
-                      {course.original_price && (
-                        <span className="text-gray-500 line-through ml-2">
-                          ₹{course.original_price}
+                <div
+                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <div className="relative">
+                    <img
+                      src={course.course_image || `https://picsum.photos/800/600`}
+                      alt={course.title}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="absolute top-4 right-4 flex space-x-2">
+                      {course.skill_level && (
+                        <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                          {course.skill_level}
+                        </span>
+                      )}
+                      {course.video_hours && (
+                        <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                          {course.video_hours}h
                         </span>
                       )}
                     </div>
-                    <button className="flex items-center text-blue-600 font-medium hover:text-blue-800 group">
-                      Learn More
-                      <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    {course.bestseller && (
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                          Bestseller
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <h3 className="font-semibold text-xl mb-2">{course.title}</h3>
+                    <p className="text-gray-600 mb-4 flex items-center">
+                      <UserCircleIcon className="h-5 w-5 mr-2" />
+                      {course.instructor_name}
+                      {course.instructor_title && ` - ${course.instructor_title}`}
+                    </p>
+                    <div className="flex items-center mb-4">
+                      <div className="flex items-center text-yellow-400">
+                        <StarIcon className="h-5 w-5" />
+                        <span className="ml-1 font-medium">{course.rating}</span>
+                      </div>
+                      <span className="text-gray-500 ml-2">
+                        ({course.review_count?.toLocaleString() || 0} reviews)
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="font-bold text-2xl">₹{course.price}</span>
+                        {course.original_price && (
+                          <span className="text-gray-500 line-through ml-2">
+                            ₹{course.original_price}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center text-blue-600 font-medium hover:text-blue-800 group">
+                        View Course
+                        <ArrowRightIcon className="h-4 w-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           <div className="text-center mt-10">
