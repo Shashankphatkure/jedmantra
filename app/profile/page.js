@@ -342,8 +342,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Quick Stats */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Quick Stats */}
         <div className="bg-white shadow-xl transform -mt-10 relative z-20 rounded-xl overflow-hidden">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
             {/* Profile Completion with Progress Bar */}
@@ -448,404 +448,404 @@ export default function Profile() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Sidebar */}
-          <div className="space-y-8">
-            {/* Academic Information */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Academic Info</h2>
-                <button 
-                  onClick={() => handleOpenEdit('academic', {
-                    major: user.major,
-                    minor: user.minor,
-                    graduation_year: user.graduation_year
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-500">Major</label>
-                  <p className="text-gray-900">{user?.major || 'Not specified'}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-500">Minor</label>
-                  <p className="text-gray-900">{user?.minor || 'Not specified'}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-500">Expected Graduation</label>
-                  <p className="text-gray-900">{user?.graduation_year || 'Not specified'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Skills */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Skills</h2>
-                <button 
-                  onClick={() => handleOpenEdit('skills')}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {user?.skills?.map((skill) => (
-                  <span
-                    key={skill}
-                    className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm"
+        {/* Main Content */}
+        <div className="py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Sidebar */}
+            <div className="space-y-8">
+              {/* Academic Information */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Academic Info</h2>
+                  <button 
+                    onClick={() => handleOpenEdit('academic', {
+                      major: user.major,
+                      minor: user.minor,
+                      graduation_year: user.graduation_year
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
                   >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
-                <button 
-                  onClick={() => handleOpenEdit('contact', {
-                    phone_number: user.phone_number,
-                    website: user.website,
-                    linkedin_url: user.linkedin_url,
-                    github_url: user.github_url
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-4">
-                {[
-                  { icon: EnvelopeIcon, value: user.email },
-                  { icon: PhoneIcon, value: user.phone_number },
-                  { icon: GlobeAltIcon, value: user.website },
-                ].filter(item => item.value).map((contact, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                  >
-                    <contact.icon className="h-5 w-5 text-gray-400 group-hover:text-blue-500" />
-                    <span className="ml-3 text-gray-600 group-hover:text-gray-900">
-                      {contact.value}
-                    </span>
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-500">Major</label>
+                    <p className="text-gray-900">{user?.major || 'Not specified'}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Basic Information */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
-                <button 
-                  onClick={() => handleOpenEdit('basic', {
-                    name: user.name,
-                    headline: user.headline,
-                    location: user.location
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-500">Name</label>
-                  <p className="text-gray-900">{user?.name}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-500">Headline</label>
-                  <p className="text-gray-900">{user?.headline || 'Not specified'}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-500">Location</label>
-                  <p className="text-gray-900">{user?.location || 'Not specified'}</p>
+                  <div>
+                    <label className="text-sm text-gray-500">Minor</label>
+                    <p className="text-gray-900">{user?.minor || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Expected Graduation</label>
+                    <p className="text-gray-900">{user?.graduation_year || 'Not specified'}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Main Content Area */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* About */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">About</h2>
-                <button 
-                  onClick={() => handleOpenEdit('bio')}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <p className="text-gray-600 whitespace-pre-wrap">{user?.bio || 'No bio provided yet.'}</p>
-            </div>
-
-            {/* Projects */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
-                <button 
-                  onClick={() => handleOpenEdit('projects', { 
-                    projects: user.projects || [] 
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-6">
-                {user?.projects?.map((project, index) => (
-                  <div 
-                    key={index} 
-                    className="p-6 border border-gray-200 rounded-xl space-y-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+              {/* Skills */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Skills</h2>
+                  <button 
+                    onClick={() => handleOpenEdit('skills')}
+                    className="text-gray-400 hover:text-gray-500"
                   >
-                    <div className="flex justify-between items-center">
-                      <h4 className="text-lg font-medium text-gray-900">Project #{index + 1}</h4>
-                      <button
-                        onClick={() => {
-                          const newProjects = user.projects.filter((_, i) => i !== index);
-                          setFormData({ ...formData, projects: newProjects });
-                        }}
-                        className="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded-full transition-colors"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                      </button>
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {user?.skills?.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
+                  <button 
+                    onClick={() => handleOpenEdit('contact', {
+                      phone_number: user.phone_number,
+                      website: user.website,
+                      linkedin_url: user.linkedin_url,
+                      github_url: user.github_url
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { icon: EnvelopeIcon, value: user.email },
+                    { icon: PhoneIcon, value: user.phone_number },
+                    { icon: GlobeAltIcon, value: user.website },
+                  ].filter(item => item.value).map((contact, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+                    >
+                      <contact.icon className="h-5 w-5 text-gray-400 group-hover:text-blue-500" />
+                      <span className="ml-3 text-gray-600 group-hover:text-gray-900">
+                        {contact.value}
+                      </span>
                     </div>
-                    
-                    {/* Project fields */}
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Project Name
-                        </label>
-                        <input
-                          type="text"
-                          className={inputStyles}
-                          value={project.name || ''}
-                          onChange={(e) => {
-                            const newProjects = [...user.projects];
-                            newProjects[index] = { ...project, name: e.target.value };
+                  ))}
+                </div>
+              </div>
+
+              {/* Basic Information */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
+                  <button 
+                    onClick={() => handleOpenEdit('basic', {
+                      name: user.name,
+                      headline: user.headline,
+                      location: user.location
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-500">Name</label>
+                    <p className="text-gray-900">{user?.name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Headline</label>
+                    <p className="text-gray-900">{user?.headline || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Location</label>
+                    <p className="text-gray-900">{user?.location || 'Not specified'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* About */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">About</h2>
+                  <button 
+                    onClick={() => handleOpenEdit('bio')}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <p className="text-gray-600 whitespace-pre-wrap">{user?.bio || 'No bio provided yet.'}</p>
+              </div>
+
+              {/* Projects */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
+                  <button 
+                    onClick={() => handleOpenEdit('projects', { 
+                      projects: user.projects || [] 
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="space-y-6">
+                  {user?.projects?.map((project, index) => (
+                    <div 
+                      key={index} 
+                      className="p-6 border border-gray-200 rounded-xl space-y-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-lg font-medium text-gray-900">Project #{index + 1}</h4>
+                        <button
+                          onClick={() => {
+                            const newProjects = user.projects.filter((_, i) => i !== index);
                             setFormData({ ...formData, projects: newProjects });
                           }}
-                          placeholder="Enter project name"
-                        />
+                          className="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded-full transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
                       </div>
                       
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Description
-                        </label>
-                        <textarea
-                          className={textareaStyles}
-                          value={project.description || ''}
-                          onChange={(e) => {
-                            const newProjects = [...user.projects];
-                            newProjects[index] = { ...project, description: e.target.value };
-                            setFormData({ ...formData, projects: newProjects });
-                          }}
-                          placeholder="Describe your project..."
-                        />
+                      {/* Project fields */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Project Name
+                          </label>
+                          <input
+                            type="text"
+                            className={inputStyles}
+                            value={project.name || ''}
+                            onChange={(e) => {
+                              const newProjects = [...user.projects];
+                              newProjects[index] = { ...project, name: e.target.value };
+                              setFormData({ ...formData, projects: newProjects });
+                            }}
+                            placeholder="Enter project name"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Description
+                          </label>
+                          <textarea
+                            className={textareaStyles}
+                            value={project.description || ''}
+                            onChange={(e) => {
+                              const newProjects = [...user.projects];
+                              newProjects[index] = { ...project, description: e.target.value };
+                              setFormData({ ...formData, projects: newProjects });
+                            }}
+                            placeholder="Describe your project..."
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                
-                <button
-                  onClick={() => {
-                    const newProjects = [...(user.projects || []), { name: '', description: '', url: '' }];
-                    setFormData({ ...formData, projects: newProjects });
-                  }}
-                  className="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:text-gray-900 hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                  </svg>
-                  Add New Project
-                </button>
+                  ))}
+                  
+                  <button
+                    onClick={() => {
+                      const newProjects = [...(user.projects || []), { name: '', description: '', url: '' }];
+                      setFormData({ ...formData, projects: newProjects });
+                    }}
+                    className="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:text-gray-900 hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                    Add New Project
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Coursework */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Relevant Coursework</h2>
-                <button 
-                  onClick={() => handleOpenEdit('courses', { 
-                    courses: user.courses || [] 
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {user?.courses?.map((course, index) => (
-                  <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                    <h3 className="font-medium text-gray-900">{course.name}</h3>
-                    <p className="text-sm text-gray-500">{course.code}</p>
-                    {course.grade && (
-                      <p className="text-sm text-indigo-600 mt-1">Grade: {course.grade}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Experience - update with hover effects */}
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Experience
-                </h3>
-                <button 
-                  onClick={() => handleOpenEdit('experience', { 
-                    experience: user.experience || [] 
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-6">
-                {user.experience?.map((exp, index) => (
-                  <div key={index} className="border-b pb-6 last:border-0 last:pb-0">
-                    <div className="flex justify-between">
-                      <div>
-                        <h4 className="text-base font-medium text-gray-900">{exp.title}</h4>
-                        <p className="text-sm text-gray-600">{exp.company}</p>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {exp.start_date} - {exp.end_date || 'Present'}
-                      </div>
-                    </div>
-                    <p className="mt-2 text-gray-600">{exp.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Education - update with hover effects */}
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Education
-                </h3>
-                <button 
-                  onClick={() => handleOpenEdit('education', { 
-                    education: user.education || [] 
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-6">
-                {user.education?.map((edu, index) => (
-                  <div key={index} className="border-b pb-6 last:border-0 last:pb-0">
-                    <div className="flex justify-between">
-                      <div>
-                        <h4 className="text-base font-medium text-gray-900">{edu.degree}</h4>
-                        <p className="text-sm text-gray-600">{edu.institution}</p>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {edu.start_date} - {edu.end_date}
-                      </div>
-                    </div>
-                    {edu.grade && <p className="mt-2 text-gray-600">{edu.grade}</p>}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Certifications - update with hover effects */}
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Certifications
-                </h3>
-                <button 
-                  onClick={() => handleOpenEdit('certifications', { 
-                    certifications: user.certifications || [] 
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-4">
-                {user.certifications?.map((cert, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <div>
-                      <h4 className="text-base font-medium text-gray-900">{cert.name}</h4>
-                      <p className="text-sm text-gray-600">{cert.issuer}</p>
-                    </div>
-                    <div className="text-sm text-gray-500">{cert.date}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Achievements Section */}
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Achievements
-                  <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">New</span>
-                </h3>
-                <button 
-                  onClick={() => handleOpenEdit('achievements', { 
-                    achievements: user.achievements || [] 
-                  })}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-              
-              {user.achievements && user.achievements.length > 0 ? (
-                <div className="space-y-4">
-                  {user.achievements.map((achievement, index) => (
-                    <div key={index} className="p-4 border-l-4 border-amber-400 bg-amber-50 rounded-r-lg">
-                      <div className="flex justify-between">
-                        <h4 className="text-base font-medium text-gray-900">{achievement.title}</h4>
-                        {achievement.date && (
-                          <span className="text-sm text-amber-700">{achievement.date}</span>
-                        )}
-                      </div>
-                      {achievement.description && (
-                        <p className="mt-2 text-sm text-gray-600">{achievement.description}</p>
+              {/* Coursework */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Relevant Coursework</h2>
+                  <button 
+                    onClick={() => handleOpenEdit('courses', { 
+                      courses: user.courses || [] 
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {user?.courses?.map((course, index) => (
+                    <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                      <h3 className="font-medium text-gray-900">{course.name}</h3>
+                      <p className="text-sm text-gray-500">{course.code}</p>
+                      {course.grade && (
+                        <p className="text-sm text-indigo-600 mt-1">Grade: {course.grade}</p>
                       )}
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-8">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-amber-300" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <p className="mt-4 text-gray-500">No achievements added yet</p>
-                  <button
-                    onClick={() => handleOpenEdit('achievements', { achievements: [] })}
-                    className="mt-4 px-4 py-2 text-sm font-medium text-amber-600 border border-amber-600 rounded-md hover:bg-amber-50"
+              </div>
+
+              {/* Experience - update with hover effects */}
+              <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Experience
+                  </h3>
+                  <button 
+                    onClick={() => handleOpenEdit('experience', { 
+                      experience: user.experience || [] 
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
                   >
-                    Add Your First Achievement
+                    <PencilSquareIcon className="h-5 w-5" />
                   </button>
                 </div>
-              )}
+                <div className="space-y-6">
+                  {user.experience?.map((exp, index) => (
+                    <div key={index} className="border-b pb-6 last:border-0 last:pb-0">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="text-base font-medium text-gray-900">{exp.title}</h4>
+                          <p className="text-sm text-gray-600">{exp.company}</p>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {exp.start_date} - {exp.end_date || 'Present'}
+                        </div>
+                      </div>
+                      <p className="mt-2 text-gray-600">{exp.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Education - update with hover effects */}
+              <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Education
+                  </h3>
+                  <button 
+                    onClick={() => handleOpenEdit('education', { 
+                      education: user.education || [] 
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="space-y-6">
+                  {user.education?.map((edu, index) => (
+                    <div key={index} className="border-b pb-6 last:border-0 last:pb-0">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="text-base font-medium text-gray-900">{edu.degree}</h4>
+                          <p className="text-sm text-gray-600">{edu.institution}</p>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {edu.start_date} - {edu.end_date}
+                        </div>
+                      </div>
+                      {edu.grade && <p className="mt-2 text-gray-600">{edu.grade}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Certifications - update with hover effects */}
+              <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Certifications
+                  </h3>
+                  <button 
+                    onClick={() => handleOpenEdit('certifications', { 
+                      certifications: user.certifications || [] 
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {user.certifications?.map((cert, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <div>
+                        <h4 className="text-base font-medium text-gray-900">{cert.name}</h4>
+                        <p className="text-sm text-gray-600">{cert.issuer}</p>
+                      </div>
+                      <div className="text-sm text-gray-500">{cert.date}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Achievements Section */}
+              <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Achievements
+                    <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">New</span>
+                  </h3>
+                  <button 
+                    onClick={() => handleOpenEdit('achievements', { 
+                      achievements: user.achievements || [] 
+                    })}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                </div>
+                
+                {user.achievements && user.achievements.length > 0 ? (
+                  <div className="space-y-4">
+                    {user.achievements.map((achievement, index) => (
+                      <div key={index} className="p-4 border-l-4 border-amber-400 bg-amber-50 rounded-r-lg">
+                        <div className="flex justify-between">
+                          <h4 className="text-base font-medium text-gray-900">{achievement.title}</h4>
+                          {achievement.date && (
+                            <span className="text-sm text-amber-700">{achievement.date}</span>
+                          )}
+                        </div>
+                        {achievement.description && (
+                          <p className="mt-2 text-sm text-gray-600">{achievement.description}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-amber-300" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <p className="mt-4 text-gray-500">No achievements added yet</p>
+                    <button
+                      onClick={() => handleOpenEdit('achievements', { achievements: [] })}
+                      className="mt-4 px-4 py-2 text-sm font-medium text-amber-600 border border-amber-600 rounded-md hover:bg-amber-50"
+                    >
+                      Add Your First Achievement
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
