@@ -109,7 +109,7 @@ export default function CompanyProfile() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Cover Section */}
-      <div className="relative h-64 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 overflow-hidden">
+      <div className="relative h-36 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <svg className="h-full w-full" viewBox="0 0 800 800">
@@ -131,27 +131,27 @@ export default function CompanyProfile() {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Logo */}
             <div className="relative h-24 w-24 md:h-28 md:w-28 rounded-xl bg-white p-2 shadow-md border-2 border-gray-100 self-center md:self-start flex-shrink-0">
-              <Image
+                <Image
                 src={company.logo_url || "https://via.placeholder.com/150"}
-                alt={company.name}
-                fill
-                className="rounded-lg object-contain"
-              />
-            </div>
+                  alt={company.name}
+                  fill
+                  className="rounded-lg object-contain"
+                />
+              </div>
             
             {/* Company Details */}
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  {company.name}
-                </h1>
-                {company.verified && (
+                    {company.name}
+                  </h1>
+                  {company.verified && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                     <CheckCircleIcon className="h-4 w-4 mr-1" />
-                    Verified
-                  </span>
-                )}
-              </div>
+                      Verified
+                    </span>
+                  )}
+                </div>
               
               <div className="mt-2 flex flex-wrap items-center text-gray-600 gap-3">
                 <div className="flex items-center">
@@ -274,8 +274,8 @@ export default function CompanyProfile() {
                   </h2>
                   <div className="prose prose-blue max-w-none text-gray-600">
                     <p className="whitespace-pre-wrap">
-                      {company.description}
-                    </p>
+                    {company.description}
+                  </p>
                   </div>
                   
                   <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -289,15 +289,15 @@ export default function CompanyProfile() {
                           <h4 className="text-sm font-medium text-gray-500">Founded</h4>
                           <p className="mt-1 text-base text-gray-900">{company.founded_year || 'Not specified'}</p>
                         </div>
-                        <div>
+                    <div>
                           <h4 className="text-sm font-medium text-gray-500">Industry</h4>
                           <p className="mt-1 text-base text-gray-900">{company.industry}</p>
-                        </div>
-                        <div>
+                    </div>
+                    <div>
                           <h4 className="text-sm font-medium text-gray-500">Company size</h4>
                           <p className="mt-1 text-base text-gray-900">{company.company_size}</p>
-                        </div>
-                        <div>
+                    </div>
+                    <div>
                           <h4 className="text-sm font-medium text-gray-500">Headquarters</h4>
                           <p className="mt-1 text-base text-gray-900">{company.location}</p>
                         </div>
@@ -310,15 +310,15 @@ export default function CompanyProfile() {
                         Connect with {company.name}
                       </h3>
                       <div className="space-y-4">
-                        <div>
+                    <div>
                           <h4 className="text-sm font-medium text-gray-500">Website</h4>
-                          <a
-                            href={company.website_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                      <a
+                        href={company.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                             className="mt-1 text-base text-blue-600 hover:text-blue-500 flex items-center"
-                          >
-                            {company.website_url}
+                      >
+                        {company.website_url}
                             <svg className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                             </svg>
@@ -743,16 +743,16 @@ export default function CompanyProfile() {
                     <div className="mt-8 bg-gray-50 rounded-lg p-6">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Perks</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {company.benefits.map((benefit, index) => (
-                          <div
-                            key={index}
+                  {company.benefits.map((benefit, index) => (
+                    <div
+                      key={index}
                             className="flex items-center p-3 bg-white rounded-lg border border-gray-200"
                           >
                             <CheckIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                             <span className="text-gray-700">{benefit}</span>
-                          </div>
-                        ))}
-                      </div>
+                    </div>
+                  ))}
+                </div>
                     </div>
                   </>
                 ) : (
@@ -837,8 +837,8 @@ export default function CompanyProfile() {
               <div className="space-y-4">
                 <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center">
                   <BookmarkIcon className="h-5 w-5 mr-2" />
-                  Follow Company
-                </button>
+                Follow Company
+              </button>
                 <button className="w-full bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center">
                   <EnvelopeIcon className="h-5 w-5 mr-2" />
                   Contact Company
@@ -847,39 +847,39 @@ export default function CompanyProfile() {
               
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <h3 className="text-sm font-medium text-gray-500 mb-4">Connect with {company.name}</h3>
-                <div className="flex justify-center space-x-4">
-                  <a
-                    href={company.linkedin_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+              <div className="flex justify-center space-x-4">
+                <a
+                  href={company.linkedin_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                     className="text-gray-400 hover:text-blue-500 transition-colors"
-                  >
-                    <span className="sr-only">LinkedIn</span>
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                    </svg>
-                  </a>
-                  <a
-                    href={company.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                >
+                  <span className="sr-only">LinkedIn</span>
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                  </svg>
+                </a>
+                <a
+                  href={company.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                     className="text-gray-400 hover:text-blue-500 transition-colors"
+                >
+                  <span className="sr-only">Website</span>
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    <span className="sr-only">Website</span>
-                    <svg
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                      />
-                    </svg>
-                  </a>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                    />
+                  </svg>
+                </a>
                   {company.twitter_url && (
                     <a
                       href={company.twitter_url}
