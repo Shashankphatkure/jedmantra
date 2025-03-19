@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
@@ -152,12 +154,12 @@ export default function Footer() {
               </h3>
               <ul className="mt-6 space-y-3">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/about"
                     className="hover:text-white transition-colors duration-300"
                   >
                     About us
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
@@ -192,28 +194,28 @@ export default function Footer() {
         <div className="mt-8 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm">
-              &copy; {new Date().getFullYear()} Your Company. All rights
+              &copy; {new Date().getFullYear()} Jedmantra Private Limited. All rights
               reserved.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a
-                href="#"
+              <Link
+                href="/policies/privacy"
                 className="hover:text-white transition-colors duration-300"
               >
                 Privacy Policy
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/policies/terms"
                 className="hover:text-white transition-colors duration-300"
               >
                 Terms of Service
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/policies/cookies"
                 className="hover:text-white transition-colors duration-300"
               >
                 Cookie Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
