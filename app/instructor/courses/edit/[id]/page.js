@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from 'uuid';
-import { createClient } from "../../../utils/supabase";
+import Image from "next/image";
+import { use } from 'react';
+import { createClient } from "../../../../utils/supabase";
+import { getCourseById, updateCourse } from "../../../../utils/instructor";
 import {
   DocumentTextIcon,
   PhotoIcon,
@@ -14,16 +17,23 @@ import {
   TagIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
+  ArrowLeftIcon,
 } from "@heroicons/react/24/outline";
 
-export default function CreateCourse() {
+export default function EditCourse({ params }) {
+  // Unwrap params using React.use()
+  const unwrappedParams = use(params);
+  const courseId = unwrappedParams.id;
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [currentThumbnail, setCurrentThumbnail] = useState(null);
+  const [currentVideo, setCurrentVideo] = useState(null);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -37,37 +47,70 @@ export default function CreateCourse() {
     long_description: "",
   });
 
-  // Fetch current user on component mount
+  // Fetch current user and course data on component mount
   useEffect(() => {
-    async function getUser() {
+    async function fetchData() {
+      setIsLoading(true);
       const supabase = createClient();
-      const { data: { user }, error } = await supabase.auth.getUser();
       
-      if (error || !user) {
+      // Check authentication
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
         router.push('/login');
         return;
       }
       
       setUser(user);
       
-      // Get user profile to set instructor name
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('name, id')
-        .eq('id', user.id)
-        .single();
+      // Fetch course data
+      const course = await getCourseById(courseId);
       
-      if (!userError && userData) {
-        setFormData(prev => ({
-          ...prev,
-          instructor_name: userData.name,
-          instructor_id: user.id
-        }));
+      if (!course) {
+        setNotification({
+          type: 'error',
+          message: 'Course not found or you do not have permission to edit it'
+        });
+        return;
       }
+      
+      // Check if user is the course owner
+      if (course.instructor_id && course.instructor_id !== user.id) {
+        setNotification({
+          type: 'error',
+          message: 'You do not have permission to edit this course'
+        });
+        return;
+      }
+      
+      // Set form data from course
+      setFormData({
+        title: course.title || "",
+        description: course.description || "",
+        price: course.price?.toString() || "",
+        original_price: course.original_price?.toString() || "",
+        video_hours: course.video_hours?.toString() || "",
+        skill_level: course.skill_level || "beginner",
+        category: course.category || "",
+        instructor_name: course.instructor_name || "",
+        long_description: course.long_description || course.description || "",
+      });
+      
+      // Set media previews if they exist
+      if (course.course_image) {
+        setCurrentThumbnail(course.course_image);
+        setThumbnailPreview(course.course_image);
+      }
+      
+      if (course.preview_video_url) {
+        setCurrentVideo(course.preview_video_url);
+      }
+      
+      setIsLoading(false);
     }
     
-    getUser();
-  }, [router]);
+    fetchData();
+  }, [courseId, router]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -128,6 +171,8 @@ export default function CreateCourse() {
       }
 
       setVideoFile(file);
+      // Clear current video reference since we're uploading a new one
+      setCurrentVideo(null);
     }
   };
 
@@ -137,7 +182,7 @@ export default function CreateCourse() {
     if (!user) {
       setNotification({
         type: 'error',
-        message: 'You must be logged in to create a course'
+        message: 'You must be logged in to update a course'
       });
       return;
     }
@@ -151,14 +196,14 @@ export default function CreateCourse() {
       return;
     }
 
-    setIsLoading(true);
+    setIsSaving(true);
     setNotification(null);
     
     try {
       const supabase = createClient();
       
-      // Upload thumbnail if provided
-      let thumbnailUrl = null;
+      // Upload thumbnail if a new one is provided
+      let thumbnailUrl = currentThumbnail;
       if (thumbnailFile) {
         const fileExt = thumbnailFile.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
@@ -180,8 +225,8 @@ export default function CreateCourse() {
         thumbnailUrl = publicUrl;
       }
       
-      // Upload video if provided
-      let videoUrl = null;
+      // Upload video if a new one is provided
+      let videoUrl = currentVideo;
       if (videoFile) {
         const fileExt = videoFile.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
@@ -203,7 +248,7 @@ export default function CreateCourse() {
         videoUrl = publicUrl;
       }
       
-      // Prepare course data
+      // Prepare course data for update
       const courseData = {
         title: formData.title,
         description: formData.description,
@@ -211,32 +256,31 @@ export default function CreateCourse() {
         original_price: formData.original_price ? parseFloat(formData.original_price) : parseFloat(formData.price),
         video_hours: formData.video_hours ? parseFloat(formData.video_hours) : null,
         skill_level: formData.skill_level,
-        course_image: thumbnailUrl,
-        preview_video_url: videoUrl,
+        category: formData.category,
         long_description: formData.long_description || formData.description,
-        instructor_name: formData.instructor_name,
-        instructor_id: user.id,
-        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        total_students: 0,
-        rating: 0,
-        review_count: 0
       };
       
-      // Insert course into Supabase
-      const { data, error } = await supabase
-        .from('courses')
-        .insert([courseData])
-        .select();
+      // Only update image and video URLs if they changed
+      if (thumbnailUrl) {
+        courseData.course_image = thumbnailUrl;
+      }
+      
+      if (videoUrl) {
+        courseData.preview_video_url = videoUrl;
+      }
+      
+      // Update course in Supabase
+      const updatedCourse = await updateCourse(courseId, courseData, user.id);
         
-      if (error) {
-        throw new Error('Error creating course: ' + error.message);
+      if (!updatedCourse) {
+        throw new Error('Error updating course. You may not have permission or there was a server error.');
       }
       
       // Success notification and redirect
       setNotification({
         type: 'success',
-        message: 'Course created successfully!'
+        message: 'Course updated successfully!'
       });
       
       setTimeout(() => {
@@ -244,13 +288,13 @@ export default function CreateCourse() {
       }, 1500);
       
     } catch (error) {
-      console.error('Error creating course:', error);
+      console.error('Error updating course:', error);
       setNotification({
         type: 'error',
-        message: error.message || 'Failed to create course'
+        message: error.message || 'Failed to update course'
       });
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -266,15 +310,34 @@ export default function CreateCourse() {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="spinner w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading course data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-          
-          <h1 className="text-4xl font-bold text-white mb-4">Create New Course</h1>
+          <div className="flex items-center mb-4">
+            <button 
+              onClick={() => router.push('/instructor/courses')}
+              className="inline-flex items-center mr-4 text-white hover:text-white/80 transition-colors"
+            >
+              <ArrowLeftIcon className="h-5 w-5 mr-1" />
+              Back to Courses
+            </button>
+          </div>
+          <h1 className="text-4xl font-bold text-white mb-4">Edit Course</h1>
           <p className="text-xl text-white/90">
-            Share your knowledge and expertise with the world
+            Update your course details and content
           </p>
         </div>
 
@@ -370,11 +433,18 @@ export default function CreateCourse() {
                           type="button"
                           onClick={() => {
                             setThumbnailFile(null);
-                            setThumbnailPreview(null);
+                            // If we're removing a new upload, go back to the original
+                            // If there's no original, clear everything
+                            if (thumbnailFile && currentThumbnail) {
+                              setThumbnailPreview(currentThumbnail);
+                            } else {
+                              setThumbnailPreview(null);
+                              setCurrentThumbnail(null);
+                            }
                           }}
                           className="text-sm text-red-600 hover:text-red-800"
                         >
-                          Remove image
+                          {thumbnailFile ? 'Cancel upload' : 'Remove image'}
                         </button>
                       </div>
                     ) : (
@@ -404,17 +474,34 @@ export default function CreateCourse() {
                     Introduction Video
                   </label>
                   <div className={`flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg hover:border-blue-500 transition-colors ${
-                    videoFile ? 'border-green-500' : 'border-gray-300'
+                    videoFile || currentVideo ? 'border-green-500' : 'border-gray-300'
                   }`}>
                     <div className="space-y-2 text-center">
-                      <VideoCameraIcon className={`mx-auto h-12 w-12 ${videoFile ? 'text-green-500' : 'text-gray-400'}`} />
+                      <VideoCameraIcon className={`mx-auto h-12 w-12 ${videoFile || currentVideo ? 'text-green-500' : 'text-gray-400'}`} />
                       <div className="text-sm text-gray-600">
                         {videoFile ? (
                           <div>
                             <p className="text-green-600">{videoFile.name}</p>
                             <button
                               type="button"
-                              onClick={() => setVideoFile(null)}
+                              onClick={() => {
+                                setVideoFile(null);
+                                // If there was a previous video, restore it
+                                if (currentVideo) {
+                                  setCurrentVideo(currentVideo);
+                                }
+                              }}
+                              className="text-sm text-red-600 hover:text-red-800 mt-2"
+                            >
+                              Cancel upload
+                            </button>
+                          </div>
+                        ) : currentVideo ? (
+                          <div>
+                            <p className="text-green-600">Current video</p>
+                            <button
+                              type="button"
+                              onClick={() => setCurrentVideo(null)}
                               className="text-sm text-red-600 hover:text-red-800 mt-2"
                             >
                               Remove video
@@ -434,7 +521,7 @@ export default function CreateCourse() {
                           </label>
                         )}
                       </div>
-                      {!videoFile && <p className="text-xs text-gray-500">MP4, WebM up to 100MB</p>}
+                      {!videoFile && !currentVideo && <p className="text-xs text-gray-500">MP4, WebM up to 100MB</p>}
                     </div>
                   </div>
                 </div>
@@ -549,25 +636,25 @@ export default function CreateCourse() {
               type="button"
               onClick={() => router.push('/instructor/courses')}
               className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-              disabled={isLoading}
+              disabled={isSaving}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className={`px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-              disabled={isLoading}
+              className={`px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center ${isSaving ? 'opacity-70 cursor-not-allowed' : ''}`}
+              disabled={isSaving}
             >
-              {isLoading ? (
+              {isSaving ? (
                 <>
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Creating...
+                  Saving...
                 </>
               ) : (
-                'Create Course'
+                'Save Changes'
               )}
             </button>
           </div>
@@ -575,4 +662,4 @@ export default function CreateCourse() {
       </div>
     </div>
   );
-}
+} 

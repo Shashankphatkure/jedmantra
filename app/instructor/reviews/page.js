@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from "react";
 import {
   StarIcon,
   ChatBubbleLeftIcon,
@@ -11,84 +14,179 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import Image from "next/image";
+import { createClient } from "../../utils/supabase";
+import { getAllReviews } from "../../utils/instructor";
 
 export default function InstructorReviews() {
-  const stats = [
+  const [reviews, setReviews] = useState([]);
+  const [filteredReviews, setFilteredReviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [courseFilter, setCourseFilter] = useState("");
+  const [stats, setStats] = useState([
     {
       name: "Total Reviews",
-      stat: "1,234",
-      change: "+12%",
+      stat: "0",
+      change: "0%",
       changeType: "increase",
       icon: ChatBubbleLeftIcon,
       color: "blue",
     },
     {
       name: "Average Rating",
-      stat: "4.8/5.0",
-      change: "+0.3",
+      stat: "0/5.0",
+      change: "0",
       changeType: "increase",
       icon: StarIcon,
       color: "yellow",
     },
     {
       name: "Response Rate",
-      stat: "95%",
-      change: "+2.3%",
+      stat: "0%",
+      change: "0%",
       changeType: "increase",
       icon: CheckCircleIcon,
       color: "green",
     },
     {
       name: "Pending Reviews",
-      stat: "12",
-      change: "-3",
+      stat: "0",
+      change: "0",
       changeType: "decrease",
       icon: ClockIcon,
       color: "purple",
     },
-  ];
+  ]);
+  
+  const [courses, setCourses] = useState([]);
 
-  const reviews = [
-    {
-      id: 1,
-      author: "Sarah Johnson",
-      avatar: "https://via.placeholder.com/40",
-      course: "React Fundamentals",
-      rating: 5,
-      date: "2 days ago",
-      content:
-        "This course is amazing! The instructor explains complex concepts in a very clear and understandable way. The practical examples are very helpful.",
-      status: "pending",
-      helpful: 24,
-    },
-    {
-      id: 2,
-      author: "Mike Chen",
-      avatar: "https://via.placeholder.com/40",
-      course: "Advanced JavaScript",
-      rating: 4,
-      date: "3 days ago",
-      content:
-        "Great course overall. Would love to see more advanced topics covered in future updates.",
-      status: "responded",
-      helpful: 18,
-      response:
-        "Thank you for your feedback! We are planning to add more advanced topics in the next update.",
-    },
-    {
-      id: 3,
-      author: "Emma Wilson",
-      avatar: "https://via.placeholder.com/40",
-      course: "Web Development Bootcamp",
-      rating: 5,
-      date: "1 week ago",
-      content:
-        "Comprehensive course that covers everything you need to know. The projects are challenging but very rewarding.",
-      status: "responded",
-      helpful: 32,
-      response: "Glad you found the projects helpful! Keep up the great work!",
-    },
-  ];
+  useEffect(() => {
+    async function fetchReviews() {
+      setIsLoading(true);
+      const supabase = createClient();
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Get all reviews for the instructor's courses
+        const reviewsData = await getAllReviews(user.id);
+        
+        // Transform the data
+        const transformedReviews = reviewsData.map(review => ({
+          id: review.id,
+          author: review.student_name || "Anonymous Student",
+          avatar: review.student_image || "https://via.placeholder.com/40",
+          course: review.courses?.title || "Unknown Course",
+          courseId: review.course_id,
+          rating: review.rating || 0,
+          date: new Date(review.created_at).toLocaleDateString(),
+          content: review.review_text || "",
+          status: "pending", // We'll assume all are pending for now
+          helpful: 0,
+        }));
+        
+        setReviews(transformedReviews);
+        setFilteredReviews(transformedReviews);
+        
+        // Extract unique courses
+        const uniqueCourses = Array.from(
+          new Set(reviewsData.map(review => review.courses?.title))
+        ).filter(Boolean);
+        setCourses(uniqueCourses);
+        
+        // Calculate stats
+        if (transformedReviews.length > 0) {
+          const totalReviews = transformedReviews.length;
+          const avgRating = transformedReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews;
+          const pendingReviews = transformedReviews.filter(review => review.status === "pending").length;
+          const responseRate = ((totalReviews - pendingReviews) / totalReviews) * 100;
+          
+          setStats([
+            {
+              name: "Total Reviews",
+              stat: totalReviews.toString(),
+              change: "+0%",
+              changeType: "increase",
+              icon: ChatBubbleLeftIcon,
+              color: "blue",
+            },
+            {
+              name: "Average Rating",
+              stat: `${avgRating.toFixed(1)}/5.0`,
+              change: "+0",
+              changeType: "increase",
+              icon: StarIcon,
+              color: "yellow",
+            },
+            {
+              name: "Response Rate",
+              stat: `${responseRate.toFixed(0)}%`,
+              change: "0%",
+              changeType: "increase",
+              icon: CheckCircleIcon,
+              color: "green",
+            },
+            {
+              name: "Pending Reviews",
+              stat: pendingReviews.toString(),
+              change: "0",
+              changeType: "decrease",
+              icon: ClockIcon,
+              color: "purple",
+            },
+          ]);
+        }
+      }
+      
+      setIsLoading(false);
+    }
+    
+    fetchReviews();
+  }, []);
+  
+  // Apply filters when search term or course filter changes
+  useEffect(() => {
+    let result = [...reviews];
+    
+    // Apply search filter
+    if (searchTerm) {
+      result = result.filter(review => 
+        review.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        review.author.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply course filter
+    if (courseFilter) {
+      result = result.filter(review => review.course === courseFilter);
+    }
+    
+    setFilteredReviews(result);
+  }, [searchTerm, courseFilter, reviews]);
+  
+  const handleReplySubmit = async (reviewId, responseText) => {
+    // In a real application, you would save the response to the database
+    // For now, we'll just update the local state
+    setReviews(prevReviews => 
+      prevReviews.map(review => 
+        review.id === reviewId 
+          ? { ...review, status: "responded", response: responseText } 
+          : review
+      )
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="spinner w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading reviews...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,14 +206,20 @@ export default function InstructorReviews() {
                   type="text"
                   placeholder="Search reviews..."
                   className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 w-64 hover:bg-white/5 transition-colors"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <MagnifyingGlassIcon className="h-5 w-5 text-white/60 absolute left-3 top-1/2 -translate-y-1/2" />
               </div>
-              <select className="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50 hover:bg-white/5 transition-colors cursor-pointer">
+              <select 
+                className="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50 hover:bg-white/5 transition-colors cursor-pointer"
+                value={courseFilter}
+                onChange={(e) => setCourseFilter(e.target.value)}
+              >
                 <option value="">All Courses</option>
-                <option value="react">React Fundamentals</option>
-                <option value="javascript">Advanced JavaScript</option>
-                <option value="webdev">Web Development</option>
+                {courses.map((course, index) => (
+                  <option key={index} value={course}>{course}</option>
+                ))}
               </select>
               <button className="inline-flex items-center px-4 py-2 bg-white text-orange-600 rounded-lg font-medium hover:bg-white/90 transition-all duration-200 active:scale-95">
                 <FunnelIcon className="h-5 w-5 mr-2" />
@@ -155,93 +259,116 @@ export default function InstructorReviews() {
           ))}
         </div>
 
+        {/* Empty state when no reviews */}
+        {filteredReviews.length === 0 && (
+          <div className="bg-white rounded-xl shadow-sm p-10 text-center">
+            <div className="mx-auto w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mb-6">
+              <ChatBubbleLeftIcon className="h-10 w-10 text-yellow-500" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Reviews Found</h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              {reviews.length === 0 
+                ? "You haven't received any reviews yet. Reviews will appear here when students rate your courses."
+                : "No reviews match your current filters. Try adjusting your search criteria."
+              }
+            </p>
+          </div>
+        )}
+
         {/* Reviews List - improved card and interaction styling */}
-        <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 divide-y divide-gray-200">
-          {reviews.map((review) => (
-            <div key={review.id} className="p-6 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <Image
-                    src={review.avatar}
-                    alt={review.author}
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                  />
-                  <div className="ml-4">
-                    <h3 className="font-medium text-gray-900">{review.author}</h3>
-                    <div className="flex items-center mt-1 text-sm text-gray-500 space-x-2">
-                      <span>{review.course}</span>
-                      <span className="text-gray-300">•</span>
-                      <span>{review.date}</span>
+        {filteredReviews.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 divide-y divide-gray-200">
+            {filteredReviews.map((review) => (
+              <div key={review.id} className="p-6 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <Image
+                      src={review.avatar}
+                      alt={review.author}
+                      width={48}
+                      height={48}
+                      className="rounded-full"
+                    />
+                    <div className="ml-4">
+                      <h3 className="font-medium text-gray-900">{review.author}</h3>
+                      <div className="flex items-center mt-1 text-sm text-gray-500 space-x-2">
+                        <span>{review.course}</span>
+                        <span className="text-gray-300">•</span>
+                        <span>{review.date}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    review.status === "pending"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-green-100 text-green-800"
-                  }`}
-                >
-                  {review.status === "pending" ? "Pending Response" : "Responded"}
-                </span>
-              </div>
-
-              <div className="flex items-center mb-4 space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <StarIconSolid
-                    key={i}
-                    className={`h-5 w-5 ${
-                      i < review.rating ? "text-yellow-400" : "text-gray-200"
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      review.status === "pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-green-100 text-green-800"
                     }`}
-                  />
-                ))}
-              </div>
-
-              <p className="text-gray-600 mb-4">{review.content}</p>
-
-              {review.response && (
-                <div className="bg-gray-50 rounded-lg p-4 mb-4 hover:bg-gray-100 transition-colors">
-                  <div className="flex items-center mb-2">
-                    <UserCircleIcon className="h-5 w-5 text-gray-400 mr-2" />
-                    <p className="font-medium text-gray-900">Your Response</p>
-                  </div>
-                  <p className="text-gray-600">{review.response}</p>
+                  >
+                    {review.status === "pending" ? "Pending Response" : "Responded"}
+                  </span>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between">
-                <button className="flex items-center text-gray-500 hover:text-gray-700 transition-colors">
-                  <HandThumbUpIcon className="h-5 w-5 mr-1" />
-                  <span>{review.helpful} helpful</span>
-                </button>
-                {review.status === "pending" && (
-                  <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 active:scale-95">
-                    Reply to Review
-                  </button>
+                <div className="flex items-center mb-4 space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <StarIconSolid
+                      key={i}
+                      className={`h-5 w-5 ${
+                        i < review.rating ? "text-yellow-400" : "text-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <p className="text-gray-600 mb-4">{review.content}</p>
+
+                {review.response && (
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4 hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center mb-2">
+                      <UserCircleIcon className="h-5 w-5 text-gray-400 mr-2" />
+                      <p className="font-medium text-gray-900">Your Response</p>
+                    </div>
+                    <p className="text-gray-600">{review.response}</p>
+                  </div>
                 )}
+
+                <div className="flex items-center justify-between">
+                  <button className="flex items-center text-gray-500 hover:text-gray-700 transition-colors">
+                    <HandThumbUpIcon className="h-5 w-5 mr-1" />
+                    <span>{review.helpful} helpful</span>
+                  </button>
+                  {review.status === "pending" && (
+                    <button 
+                      onClick={() => handleReplySubmit(review.id, 'Thank you for your feedback!')}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 active:scale-95"
+                    >
+                      Reply to Review
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Pagination - improved button styling */}
-        <div className="mt-8 flex items-center justify-between">
-          <p className="text-sm text-gray-700">
-            Showing <span className="font-medium">1</span> to{" "}
-            <span className="font-medium">10</span> of{" "}
-            <span className="font-medium">97</span> reviews
-          </p>
-          <div className="flex items-center space-x-3">
-            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 active:scale-95">
-              Previous
-            </button>
-            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 active:scale-95">
-              Next
-            </button>
+        {filteredReviews.length > 0 && (
+          <div className="mt-8 flex items-center justify-between">
+            <p className="text-sm text-gray-700">
+              Showing <span className="font-medium">1</span> to{" "}
+              <span className="font-medium">{filteredReviews.length}</span> of{" "}
+              <span className="font-medium">{reviews.length}</span> reviews
+            </p>
+            <div className="flex items-center space-x-3">
+              <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 active:scale-95">
+                Previous
+              </button>
+              <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 active:scale-95">
+                Next
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
