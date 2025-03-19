@@ -162,12 +162,12 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/contact"
                     className="hover:text-white transition-colors duration-300"
                   >
                     Contact us
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
