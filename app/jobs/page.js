@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function Jobs() {
+// Create a client component that uses searchParams
+function JobsContent() {
   const searchParams = useSearchParams()
   const [jobs, setJobs] = useState([])
   const [filteredJobs, setFilteredJobs] = useState([])
@@ -1050,8 +1051,27 @@ export default function Jobs() {
           </div>
         </div>
       </div>
-
-      
     </div>
+  );
+}
+
+// Loading fallback component
+function JobsContentLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading jobs...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component that wraps the JobsContent with Suspense
+export default function Jobs() {
+  return (
+    <Suspense fallback={<JobsContentLoading />}>
+      <JobsContent />
+    </Suspense>
   );
 }
