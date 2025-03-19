@@ -99,6 +99,9 @@ export default function EditCourse({ params }) {
     type: 'video',
     content: '',
     duration: 0,
+    videoUrl: '',
+    textContent: '',
+    quizQuestions: [],
   });
 
   // Fetch current user and course data on component mount
@@ -425,11 +428,19 @@ export default function EditCourse({ params }) {
       return;
     }
 
+    // Prepare the content based on lesson type
+    let finalContent = newLessonData.content;
+    if (newLessonData.type === 'video' && newLessonData.videoUrl) {
+      finalContent = newLessonData.videoUrl;
+    } else if (newLessonData.type === 'text' && newLessonData.textContent) {
+      finalContent = newLessonData.textContent;
+    }
+
     const newLesson = {
       id: uuidv4(),
       title: newLessonData.title,
       type: newLessonData.type,
-      content: newLessonData.content,
+      content: finalContent,
       duration: parseFloat(newLessonData.duration) || 0,
       preview: false
     };
@@ -447,7 +458,10 @@ export default function EditCourse({ params }) {
       title: '',
       type: 'video',
       content: '',
-      duration: 0
+      duration: 0,
+      videoUrl: '',
+      textContent: '',
+      quizQuestions: [],
     });
     
     setEditingSection(null);
@@ -494,7 +508,10 @@ export default function EditCourse({ params }) {
       title: '',
       type: 'video',
       content: '',
-      duration: 0
+      duration: 0,
+      videoUrl: '',
+      textContent: '',
+      quizQuestions: [],
     });
     
     setNotification({
@@ -556,11 +573,25 @@ export default function EditCourse({ params }) {
   const startEditingLesson = (sectionId, lesson) => {
     setEditingSection(sectionId);
     setEditingLesson(lesson.id);
+    
+    // Set appropriate content fields based on lesson type
+    let videoUrl = '';
+    let textContent = '';
+    
+    if (lesson.type === 'video') {
+      videoUrl = lesson.content || '';
+    } else if (lesson.type === 'text') {
+      textContent = lesson.content || '';
+    }
+    
     setNewLessonData({
       title: lesson.title,
       type: lesson.type || 'video',
       content: lesson.content || '',
-      duration: lesson.duration || 0
+      duration: lesson.duration || 0,
+      videoUrl: videoUrl,
+      textContent: textContent,
+      quizQuestions: [],
     });
   };
 
@@ -1155,6 +1186,70 @@ export default function EditCourse({ params }) {
                                     <option value="assignment">Assignment</option>
                                   </select>
                                 </div>
+                                
+                                {/* Conditional fields based on lesson type */}
+                                {newLessonData.type === 'video' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Video URL
+                                    </label>
+                                    <input
+                                      type="url"
+                                      value={newLessonData.videoUrl}
+                                      onChange={(e) => setNewLessonData({...newLessonData, videoUrl: e.target.value, content: e.target.value})}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="https://www.youtube.com/watch?v=example"
+                                    />
+                                    <p className="mt-1 text-sm text-gray-500">YouTube, Vimeo, or direct video URL</p>
+                                  </div>
+                                )}
+                                
+                                {newLessonData.type === 'text' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Lesson Content
+                                    </label>
+                                    <textarea
+                                      value={newLessonData.textContent}
+                                      onChange={(e) => setNewLessonData({...newLessonData, textContent: e.target.value, content: e.target.value})}
+                                      rows={6}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Enter the lesson content or paste HTML..."
+                                    ></textarea>
+                                  </div>
+                                )}
+                                
+                                {newLessonData.type === 'quiz' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Quiz Info
+                                    </label>
+                                    <textarea
+                                      value={newLessonData.content}
+                                      onChange={(e) => setNewLessonData({...newLessonData, content: e.target.value})}
+                                      rows={6}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Enter quiz questions and answers in JSON format or describe the quiz"
+                                    ></textarea>
+                                    <p className="mt-1 text-sm text-gray-500">You'll be able to build the quiz in detail after creating the lesson</p>
+                                  </div>
+                                )}
+                                
+                                {newLessonData.type === 'assignment' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Assignment Details
+                                    </label>
+                                    <textarea
+                                      value={newLessonData.content}
+                                      onChange={(e) => setNewLessonData({...newLessonData, content: e.target.value})}
+                                      rows={6}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Describe the assignment, requirements, and submission details..."
+                                    ></textarea>
+                                  </div>
+                                )}
+                                
                                 <div>
                                   <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Duration (minutes)
@@ -1177,7 +1272,10 @@ export default function EditCourse({ params }) {
                                         title: '',
                                         type: 'video',
                                         content: '',
-                                        duration: 0
+                                        duration: 0,
+                                        videoUrl: '',
+                                        textContent: '',
+                                        quizQuestions: [],
                                       });
                                     }}
                                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
@@ -1227,6 +1325,70 @@ export default function EditCourse({ params }) {
                                     <option value="assignment">Assignment</option>
                                   </select>
                                 </div>
+                                
+                                {/* Conditional fields based on lesson type */}
+                                {newLessonData.type === 'video' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Video URL
+                                    </label>
+                                    <input
+                                      type="url"
+                                      value={newLessonData.content}
+                                      onChange={(e) => setNewLessonData({...newLessonData, content: e.target.value})}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="https://www.youtube.com/watch?v=example"
+                                    />
+                                    <p className="mt-1 text-sm text-gray-500">YouTube, Vimeo, or direct video URL</p>
+                                  </div>
+                                )}
+                                
+                                {newLessonData.type === 'text' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Lesson Content
+                                    </label>
+                                    <textarea
+                                      value={newLessonData.content}
+                                      onChange={(e) => setNewLessonData({...newLessonData, content: e.target.value})}
+                                      rows={6}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Enter the lesson content or paste HTML..."
+                                    ></textarea>
+                                  </div>
+                                )}
+                                
+                                {newLessonData.type === 'quiz' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Quiz Info
+                                    </label>
+                                    <textarea
+                                      value={newLessonData.content}
+                                      onChange={(e) => setNewLessonData({...newLessonData, content: e.target.value})}
+                                      rows={6}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Enter quiz questions and answers in JSON format or describe the quiz"
+                                    ></textarea>
+                                    <p className="mt-1 text-sm text-gray-500">You'll be able to build the quiz in detail after creating the lesson</p>
+                                  </div>
+                                )}
+                                
+                                {newLessonData.type === 'assignment' && (
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Assignment Details
+                                    </label>
+                                    <textarea
+                                      value={newLessonData.content}
+                                      onChange={(e) => setNewLessonData({...newLessonData, content: e.target.value})}
+                                      rows={6}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Describe the assignment, requirements, and submission details..."
+                                    ></textarea>
+                                  </div>
+                                )}
+                                
                                 <div>
                                   <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Duration (minutes)
@@ -1250,7 +1412,10 @@ export default function EditCourse({ params }) {
                                         title: '',
                                         type: 'video',
                                         content: '',
-                                        duration: 0
+                                        duration: 0,
+                                        videoUrl: '',
+                                        textContent: '',
+                                        quizQuestions: [],
                                       });
                                     }}
                                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
