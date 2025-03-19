@@ -2,11 +2,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function Courses() {
+// Create a client component that uses searchParams
+function CourseContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -913,5 +914,26 @@ export default function Courses() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function CourseContentLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading courses...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component that wraps the CourseContent with Suspense
+export default function Courses() {
+  return (
+    <Suspense fallback={<CourseContentLoading />}>
+      <CourseContent />
+    </Suspense>
   );
 }
