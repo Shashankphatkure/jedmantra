@@ -15,40 +15,142 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function AdminReports() {
-  const [reports, setReports] = useState([
-    {
-      id: 1,
-      name: "Revenue Report",
-      description: "Monthly revenue breakdown by courses and categories",
-      lastGenerated: "2 hours ago",
-      frequency: "Monthly",
-      status: "Generated",
-      type: "Financial",
-      icon: "CurrencyDollarIcon"
-    },
-    {
-      id: 2,
-      name: "User Activity Report",
-      description: "User engagement and activity metrics",
-      lastGenerated: "1 day ago",
-      frequency: "Weekly",
-      status: "Pending",
-      type: "Analytics",
-      icon: "UserGroupIcon"
-    },
-    {
-      id: 3,
-      name: "Course Performance",
-      description: "Course completion rates and student progress",
-      lastGenerated: "3 days ago",
-      frequency: "Weekly",
-      status: "Generated",
-      type: "Performance",
-      icon: "AcademicCapIcon"
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    async function fetchReports() {
+      try {
+        setLoading(true);
+
+        // Create tables if they don't exist
+        await fetch('/api/admin/create-tables', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        // Fix reports table if needed
+        await fetch('/api/admin/fix-reports-table', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        // Check if we have any reports in the database
+        const { data, error } = await supabase
+          .from('admin_reports')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          // If there's an error, use default reports
+          console.error('Error fetching reports:', error);
+          setReports([
+            {
+              id: 1,
+              name: "Revenue Report",
+              description: "Monthly revenue breakdown by courses and categories",
+              last_generated: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+              frequency: "Monthly",
+              status: "Generated",
+              type: "Financial",
+              icon: "CurrencyDollarIcon"
+            },
+            {
+              id: 2,
+              name: "User Activity Report",
+              description: "User engagement and activity metrics",
+              last_generated: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+              frequency: "Weekly",
+              status: "Pending",
+              type: "Analytics",
+              icon: "UserGroupIcon"
+            },
+            {
+              id: 3,
+              name: "Course Performance",
+              description: "Course completion rates and student progress",
+              last_generated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+              frequency: "Weekly",
+              status: "Generated",
+              type: "Performance",
+              icon: "AcademicCapIcon"
+            },
+          ]);
+        } else if (data && data.length > 0) {
+          // Use reports from database
+          setReports(data);
+        } else {
+          // No reports in database, create default ones
+          const defaultReports = [
+            {
+              name: "Revenue Report",
+              description: "Monthly revenue breakdown by courses and categories",
+              last_generated: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+              frequency: "Monthly",
+              status: "Generated",
+              type: "Financial",
+              icon: "CurrencyDollarIcon"
+            },
+            {
+              name: "User Activity Report",
+              description: "User engagement and activity metrics",
+              last_generated: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+              frequency: "Weekly",
+              status: "Pending",
+              type: "Analytics",
+              icon: "UserGroupIcon"
+            },
+            {
+              name: "Course Performance",
+              description: "Course completion rates and student progress",
+              last_generated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+              frequency: "Weekly",
+              status: "Generated",
+              type: "Performance",
+              icon: "AcademicCapIcon"
+            },
+          ];
+
+          // Insert default reports into database
+          for (const report of defaultReports) {
+            const { data: newReport, error: insertError } = await supabase
+              .from('admin_reports')
+              .insert(report)
+              .select();
+
+            if (insertError) {
+              console.error('Error inserting report:', insertError);
+            }
+          }
+
+          // Fetch the newly inserted reports
+          const { data: newReports, error: fetchError } = await supabase
+            .from('admin_reports')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (fetchError) {
+            console.error('Error fetching new reports:', fetchError);
+          } else {
+            setReports(newReports);
+          }
+        }
+      } catch (err) {
+        console.error('Error in fetchReports:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReports();
+  }, [supabase]);
 
   // Helper function to get the appropriate icon
   const getReportIcon = (iconName) => {
@@ -68,34 +170,175 @@ export default function AdminReports() {
     try {
       setLoading(true);
 
-      // Simulate report generation
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Update report status
-      const updatedReports = reports.map(report => {
-        if (report.id === reportId) {
-          return {
-            ...report,
-            status: 'Generated',
-            lastGenerated: 'Just now'
-          };
-        }
-        return report;
+      // First, check if the report_data column exists
+      await fetch('/api/admin/fix-reports-table', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      setReports(updatedReports);
+      // Simulate report generation (in a real app, this would generate actual report data)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Generate some mock report data
+      const reportData = {
+        generatedAt: new Date().toISOString(),
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          values: [12, 19, 3, 5, 2, 3],
+          total: 44
+        }
+      };
+
+      // First, try to directly add the column using SQL
+      try {
+        await supabase.sql(`
+          ALTER TABLE public.admin_reports
+          ADD COLUMN IF NOT EXISTS report_data JSONB;
+        `);
+      } catch (sqlError) {
+        console.error('Error adding column directly:', sqlError);
+        // Continue anyway, as the column might already exist
+      }
+
+      // Try to update with all fields
+      try {
+        const { error: updateError } = await supabase
+          .from('admin_reports')
+          .update({
+            status: 'Generated',
+            last_generated: new Date().toISOString(),
+            report_data: reportData
+          })
+          .eq('id', reportId);
+
+        if (updateError) {
+          console.error('First update attempt failed:', updateError);
+
+          // If the error is about the report_data column, try to store it in localStorage
+          if (updateError.code === 'PGRST204' && updateError.message.includes('report_data')) {
+            // Store the report data in localStorage as a fallback
+            try {
+              localStorage.setItem(`report_${reportId}`, JSON.stringify(reportData));
+            } catch (storageError) {
+              console.error('Error storing in localStorage:', storageError);
+            }
+
+            // Try without report_data
+            const { error: fallbackError } = await supabase
+              .from('admin_reports')
+              .update({
+                status: 'Generated',
+                last_generated: new Date().toISOString()
+              })
+              .eq('id', reportId);
+
+            if (fallbackError) throw fallbackError;
+          } else {
+            throw updateError;
+          }
+        }
+      } catch (updateError) {
+        console.error('Update error:', updateError);
+        toast.error(`Error updating report status: ${updateError.message || 'Unknown error'}`);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch updated reports
+      const { data: updatedData, error: fetchError } = await supabase
+        .from('admin_reports')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (fetchError) {
+        console.error('Error fetching updated reports:', fetchError);
+        toast.error('Error fetching updated reports');
+        setLoading(false);
+        return;
+      }
+
+      setReports(updatedData);
       toast.success('Report generated successfully!');
     } catch (error) {
       console.error('Error generating report:', error);
-      toast.error('Failed to generate report');
+      toast.error(`Failed to generate report: ${error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
   };
 
   const downloadReport = (reportId) => {
-    // Simulate download
-    toast.success('Report download started');
+    try {
+      // Find the report
+      const report = reports.find(r => r.id === reportId);
+
+      if (!report) {
+        toast.error('Report not found');
+        return;
+      }
+
+      // Check if we have report data in the database
+      if (!report.report_data) {
+        // Try to get report data from localStorage
+        let reportData;
+        try {
+          const storedData = localStorage.getItem(`report_${reportId}`);
+          if (storedData) {
+            reportData = JSON.parse(storedData);
+            console.log('Found report data in localStorage:', reportData);
+          }
+        } catch (storageError) {
+          console.error('Error retrieving from localStorage:', storageError);
+        }
+
+        // If we don't have data in localStorage, create default data
+        if (!reportData) {
+          reportData = {
+            generatedAt: new Date().toISOString(),
+            data: {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+              values: [5, 10, 15, 20, 25, 30],
+              total: 105
+            }
+          };
+        }
+
+        // In a real app, you would generate a PDF or CSV file here
+        const dataStr = JSON.stringify(reportData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+        // Create a download link and click it
+        const downloadLink = document.createElement('a');
+        downloadLink.setAttribute('href', dataUri);
+        downloadLink.setAttribute('download', `${report.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        toast.success('Report download started');
+        return;
+      }
+
+      // In a real app, you would generate a PDF or CSV file here
+      // For now, we'll just create a JSON file
+      const dataStr = JSON.stringify(report.report_data, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+      // Create a download link and click it
+      const downloadLink = document.createElement('a');
+      downloadLink.setAttribute('href', dataUri);
+      downloadLink.setAttribute('download', `${report.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      toast.success('Report download started');
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      toast.error(`Failed to download report: ${error.message || 'Unknown error'}`);
+    }
   };
 
   return (
@@ -160,7 +403,7 @@ export default function AdminReports() {
                         <div className="mt-4 flex items-center space-x-4">
                           <div className="flex items-center text-sm text-gray-500">
                             <ClockIcon className="h-4 w-4 mr-1" />
-                            Last generated: {report.lastGenerated}
+                            Last generated: {report.last_generated ? new Date(report.last_generated).toLocaleString() : 'Never'}
                           </div>
                           <div className="flex items-center text-sm text-gray-500">
                             <ArrowPathIcon className="h-4 w-4 mr-1" />

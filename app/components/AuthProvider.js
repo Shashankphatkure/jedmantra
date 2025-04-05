@@ -13,33 +13,51 @@ export function AuthProvider({ children }) {
   const supabase = createClientComponentClient();
 
   useEffect(() => {
+    let authListener = null;
+
     const getUser = async () => {
       try {
         // Check if we have a user
-        const { data: { user: authUser }, error } = await supabase.auth.getUser();
-        
+        const { data, error } = await supabase.auth.getUser();
+
         if (error) {
-          console.error('Error fetching user:', error);
+          if (error.name === 'AuthSessionMissingError') {
+            // This is expected when not logged in, don't log as an error
+            console.log('No active session found');
+          } else {
+            console.error('Error fetching user:', error);
+          }
           setUser(null);
           setProfile(null);
           setLoading(false);
           return;
         }
-        
+
+        const authUser = data?.user;
         if (authUser) {
           setUser(authUser);
-          
+
           // Fetch user profile
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', authUser.id)
-            .single();
-            
-          if (profileError) {
-            console.error('Error fetching profile:', profileError);
-          } else {
-            setProfile(profileData);
+          try {
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', authUser.id)
+              .single();
+
+            if (profileError) {
+              if (profileError.code === 'PGRST116') {
+                // Profile not found, might need to create one
+                console.log('Profile not found for user:', authUser.id);
+                // You could create a profile here if needed
+              } else {
+                console.error('Error fetching profile:', profileError);
+              }
+            } else {
+              setProfile(profileData);
+            }
+          } catch (profileFetchError) {
+            console.error('Exception fetching profile:', profileFetchError);
           }
         } else {
           setUser(null);
@@ -47,6 +65,8 @@ export function AuthProvider({ children }) {
         }
       } catch (error) {
         console.error('Error in auth provider:', error);
+        setUser(null);
+        setProfile(null);
       } finally {
         setLoading(false);
       }
@@ -55,38 +75,53 @@ export function AuthProvider({ children }) {
     getUser();
 
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session);
-      
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (session?.user) {
-          setUser(session.user);
-          
-          try {
-            const { data: profileData, error: profileError } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-              
-            if (profileError) {
-              console.error('Error fetching profile:', profileError);
-            } else {
-              setProfile(profileData);
-            }
-          } catch (error) {
-            console.error('Error fetching profile:', error);
-          }
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setProfile(null);
-      }
-      
-      setLoading(false);
-    });
+    try {
+      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log('Auth state changed:', event, session);
 
-    return () => subscription?.unsubscribe();
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            setUser(session.user);
+
+            try {
+              const { data: profileData, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+              if (profileError) {
+                console.error('Error fetching profile:', profileError);
+              } else {
+                setProfile(profileData);
+              }
+            } catch (error) {
+              console.error('Error fetching profile:', error);
+            }
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setProfile(null);
+        }
+
+        setLoading(false);
+      });
+
+      authListener = data.subscription;
+    } catch (listenerError) {
+      console.error('Error setting up auth listener:', listenerError);
+      setLoading(false);
+    }
+
+    return () => {
+      if (authListener) {
+        try {
+          authListener.unsubscribe();
+        } catch (error) {
+          console.error('Error unsubscribing from auth listener:', error);
+        }
+      }
+    };
   }, [supabase]);
 
   const value = {

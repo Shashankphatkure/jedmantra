@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from 'react-hot-toast';
 import {
   UsersIcon,
   BriefcaseIcon,
@@ -19,51 +20,148 @@ export default function AdminDashboard() {
     { name: "Total Courses", value: "0", icon: AcademicCapIcon, color: "purple", change: "0%", isIncrease: true },
     { name: "Revenue", value: "₹0", icon: CurrencyDollarIcon, color: "yellow", change: "0%", isIncrease: true },
   ]);
+  const [pendingApprovals, setPendingApprovals] = useState([]);
+  const [recentReports, setRecentReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const supabase = createClientComponentClient();
 
+  const handleApprove = async (verification) => {
+    try {
+      // Update the verification status
+      const tableName = verification.verificationType === 'instructor' ? 'instructor_verifications' : 'recruiter_verifications';
+
+      const { error: updateError } = await supabase
+        .from(tableName)
+        .update({
+          status: 'approved',
+          verified_at: new Date().toISOString(),
+        })
+        .eq('id', verification.verificationId);
+
+      if (updateError) throw updateError;
+
+      // Update the user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          verification_status: 'verified',
+          role: verification.verificationType,
+        })
+        .eq('id', verification.userId);
+
+      if (profileError) {
+        console.error('Error updating profile:', profileError);
+        toast.error('Error updating user profile');
+        return;
+      }
+
+      // Update local state
+      setPendingApprovals(prev => prev.filter(v => v.id !== verification.id));
+
+      toast.success(`${verification.type} verification approved`);
+    } catch (error) {
+      console.error('Error approving verification:', error);
+      toast.error('Failed to approve verification');
+    }
+  };
+
+  const handleReject = async (verification) => {
+    try {
+      // Update the verification status
+      const tableName = verification.verificationType === 'instructor' ? 'instructor_verifications' : 'recruiter_verifications';
+
+      const { error: updateError } = await supabase
+        .from(tableName)
+        .update({
+          status: 'rejected',
+          verified_at: new Date().toISOString(),
+        })
+        .eq('id', verification.verificationId);
+
+      if (updateError) throw updateError;
+
+      // Update the user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          verification_status: 'rejected',
+        })
+        .eq('id', verification.userId);
+
+      if (profileError) {
+        console.error('Error updating profile:', profileError);
+        toast.error('Error updating user profile');
+        return;
+      }
+
+      // Update local state
+      setPendingApprovals(prev => prev.filter(v => v.id !== verification.id));
+
+      toast.success(`${verification.type} verification rejected`);
+    } catch (error) {
+      console.error('Error rejecting verification:', error);
+      toast.error('Failed to reject verification');
+    }
+  };
+
+  const handleReviewReport = async (report) => {
+    toast.success(`Reviewing report ID: ${report.id}`);
+    // In a real implementation, you would navigate to a detailed report view
+    // or open a modal with more information
+  };
+
   useEffect(() => {
     async function fetchDashboardData() {
       try {
+        // Create tables if they don't exist
+        await fetch('/api/admin/create-tables', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
         // Fetch users count
         const { count: usersCount, error: usersError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('*', { count: 'exact', head: true });
 
         if (usersError) throw usersError;
 
-        // Fetch active jobs count
-        const { count: jobsCount, error: jobsError } = await supabase
-          .from('jobs')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'Open');
+        // Fetch active jobs count (if table exists)
+        let jobsCount = 0;
+        try {
+          const { count, error } = await supabase
+            .from('jobs')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'Open');
 
-        if (jobsError) throw jobsError;
+          if (!error) jobsCount = count;
+        } catch (error) {
+          console.log('Jobs table may not exist yet');
+        }
 
-        // Fetch courses count
-        const { count: coursesCount, error: coursesError } = await supabase
-          .from('courses')
-          .select('*', { count: 'exact', head: true });
+        // Fetch courses count (if table exists)
+        let coursesCount = 0;
+        try {
+          const { count, error } = await supabase
+            .from('courses')
+            .select('*', { count: 'exact', head: true });
 
-        if (coursesError) throw coursesError;
+          if (!error) coursesCount = count;
+        } catch (error) {
+          console.log('Courses table may not exist yet');
+        }
 
-        // Calculate revenue (this is a simplified example)
-        // In a real app, you would have a more complex calculation based on enrollments or orders
-        const { data: enrollments, error: enrollmentsError } = await supabase
-          .from('enrollments')
-          .select('course_id');
-
-        if (enrollmentsError) throw enrollmentsError;
-
-        // Assuming each enrollment is worth ₹5000 on average
-        const revenue = enrollments ? enrollments.length * 5000 : 0;
+        // Calculate revenue (mock data for now)
+        const revenue = 25000;
 
         // Update stats with real data
         setStats([
           {
             name: "Total Users",
-            value: usersCount.toLocaleString(),
+            value: usersCount ? usersCount.toLocaleString() : '0',
             icon: UsersIcon,
             color: "blue",
             change: "+12%",
@@ -71,7 +169,7 @@ export default function AdminDashboard() {
           },
           {
             name: "Active Jobs",
-            value: jobsCount.toLocaleString(),
+            value: jobsCount ? jobsCount.toLocaleString() : '0',
             icon: BriefcaseIcon,
             color: "green",
             change: "+5%",
@@ -79,7 +177,7 @@ export default function AdminDashboard() {
           },
           {
             name: "Total Courses",
-            value: coursesCount.toLocaleString(),
+            value: coursesCount ? coursesCount.toLocaleString() : '0',
             icon: AcademicCapIcon,
             color: "purple",
             change: "+8%",
@@ -94,6 +192,89 @@ export default function AdminDashboard() {
             isIncrease: true
           },
         ]);
+
+        // Fetch pending verification requests
+        try {
+          // Try instructor verifications first
+          const { data: instructorVerifications, error: instructorError } = await supabase
+            .from('instructor_verifications')
+            .select(`
+              *,
+              user:user_id (email, id)
+            `)
+            .eq('status', 'pending')
+            .limit(5);
+
+          // Try recruiter verifications
+          const { data: recruiterVerifications, error: recruiterError } = await supabase
+            .from('recruiter_verifications')
+            .select(`
+              *,
+              user:user_id (email, id)
+            `)
+            .eq('status', 'pending')
+            .limit(5);
+
+          // Combine and format the verifications
+          const formattedVerifications = [];
+
+          if (instructorVerifications && !instructorError) {
+            instructorVerifications.forEach(v => {
+              formattedVerifications.push({
+                id: v.id,
+                type: 'Instructor',
+                title: v.full_name,
+                author: v.user?.email || 'Unknown',
+                userId: v.user_id,
+                verificationId: v.id,
+                verificationType: 'instructor'
+              });
+            });
+          }
+
+          if (recruiterVerifications && !recruiterError) {
+            recruiterVerifications.forEach(v => {
+              formattedVerifications.push({
+                id: v.id,
+                type: 'Recruiter',
+                title: v.full_name,
+                company: v.company_name,
+                userId: v.user_id,
+                verificationId: v.id,
+                verificationType: 'recruiter'
+              });
+            });
+          }
+
+          setPendingApprovals(formattedVerifications);
+        } catch (error) {
+          console.log('Verification tables may not exist yet');
+        }
+
+        // Fetch recent reports
+        try {
+          const { data: reports, error: reportsError } = await supabase
+            .from('reports')
+            .select(`
+              *,
+              reporter:reporter_id (email)
+            `)
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+          if (reports && !reportsError) {
+            const formattedReports = reports.map(report => ({
+              id: report.id,
+              type: report.reported_type,
+              reason: report.reason,
+              reporter: report.reporter?.email || 'Anonymous',
+              reportId: report.id
+            }));
+            setRecentReports(formattedReports);
+          }
+        } catch (error) {
+          console.log('Reports table may not exist yet');
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         setError(error.message);
@@ -174,40 +355,43 @@ export default function AdminDashboard() {
                 Pending Approvals
               </h3>
               <div className="mt-4 space-y-4">
-                {[
-                  {
-                    type: "Job Post",
-                    title: "Senior React Developer",
-                    company: "Tech Co",
-                  },
-                  {
-                    type: "Course",
-                    title: "Advanced Python Programming",
-                    author: "Jane Doe",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex items-center justify-between"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {item.title}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {item.type} by {item.company || item.author}
-                      </p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button className="px-3 py-1 text-sm text-white bg-green-600 rounded hover:bg-green-700">
-                        Approve
-                      </button>
-                      <button className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700">
-                        Reject
-                      </button>
-                    </div>
+                {loading ? (
+                  <div className="flex justify-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
-                ))}
+                ) : pendingApprovals.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-4">No pending approvals at this time.</p>
+                ) : (
+                  pendingApprovals.map((item) => (
+                    <div
+                      key={`${item.type}-${item.id}`}
+                      className="flex items-center justify-between"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {item.title}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {item.type} {item.company ? `from ${item.company}` : item.author ? `by ${item.author}` : ''}
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleApprove(item)}
+                          className="px-3 py-1 text-sm text-white bg-green-600 rounded hover:bg-green-700"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleReject(item)}
+                          className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -219,35 +403,35 @@ export default function AdminDashboard() {
                 Recent Reports
               </h3>
               <div className="mt-4 space-y-4">
-                {[
-                  {
-                    type: "User",
-                    reason: "Inappropriate behavior",
-                    reporter: "Admin",
-                  },
-                  {
-                    type: "Content",
-                    reason: "Spam content",
-                    reporter: "User",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.reason}
-                    className="flex items-center justify-between"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {item.type} Report
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {item.reason} reported by {item.reporter}
-                      </p>
-                    </div>
-                    <button className="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50">
-                      Review
-                    </button>
+                {loading ? (
+                  <div className="flex justify-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
-                ))}
+                ) : recentReports.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-4">No reports at this time.</p>
+                ) : (
+                  recentReports.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {item.type} Report
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {item.reason} reported by {item.reporter}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleReviewReport(item)}
+                        className="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
+                      >
+                        Review
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

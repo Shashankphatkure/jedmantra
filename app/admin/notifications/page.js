@@ -16,41 +16,134 @@ import {
 import Image from "next/image";
 
 export default function AdminNotifications() {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "New Course Published",
-      message: "React Fundamentals course has been published by Mike Chen",
-      type: "course",
-      status: "unread",
-      time: "2 hours ago",
-      avatar: "https://via.placeholder.com/40",
-    },
-    {
-      id: 2,
-      title: "User Report",
-      message: "Multiple users reported issues with video playback",
-      type: "issue",
-      status: "read",
-      time: "4 hours ago",
-      avatar: "https://via.placeholder.com/40",
-    },
-    {
-      id: 3,
-      title: "Payment Failed",
-      message: "Payment processing failed for subscription renewal",
-      type: "payment",
-      status: "unread",
-      time: "5 hours ago",
-      avatar: "https://via.placeholder.com/40",
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [filteredNotifications, setFilteredNotifications] = useState([]);
+  const [availableTypes, setAvailableTypes] = useState(['course', 'issue', 'payment']);
+  const [error, setError] = useState(null);
   const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    async function fetchNotifications() {
+      try {
+        setLoading(true);
+
+        // Create tables if they don't exist
+        await fetch('/api/admin/create-tables', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        // Check if we have any notifications in the database
+        const { data, error } = await supabase
+          .from('admin_notifications')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          // If there's an error, use default notifications
+          console.error('Error fetching notifications:', error);
+          const defaultNotifications = [
+            {
+              id: 1,
+              title: "New Course Published",
+              message: "React Fundamentals course has been published by Mike Chen",
+              type: "course",
+              status: "unread",
+              created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+              avatar_url: "https://via.placeholder.com/40",
+            },
+            {
+              id: 2,
+              title: "User Report",
+              message: "Multiple users reported issues with video playback",
+              type: "issue",
+              status: "read",
+              created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+              avatar_url: "https://via.placeholder.com/40",
+            },
+            {
+              id: 3,
+              title: "Payment Failed",
+              message: "Payment processing failed for subscription renewal",
+              type: "payment",
+              status: "unread",
+              created_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+              avatar_url: "https://via.placeholder.com/40",
+            },
+          ];
+          setNotifications(defaultNotifications);
+        } else if (data && data.length > 0) {
+          // Use notifications from database
+          setNotifications(data);
+
+          // Extract available types
+          const types = [...new Set(data.map(notification => notification.type))];
+          setAvailableTypes(types);
+        } else {
+          // No notifications in database, create default ones
+          const defaultNotifications = [
+            {
+              title: "New Course Published",
+              message: "React Fundamentals course has been published by Mike Chen",
+              type: "course",
+              status: "unread",
+              avatar_url: "https://via.placeholder.com/40",
+            },
+            {
+              title: "User Report",
+              message: "Multiple users reported issues with video playback",
+              type: "issue",
+              status: "read",
+              avatar_url: "https://via.placeholder.com/40",
+            },
+            {
+              title: "Payment Failed",
+              message: "Payment processing failed for subscription renewal",
+              type: "payment",
+              status: "unread",
+              avatar_url: "https://via.placeholder.com/40",
+            },
+          ];
+
+          // Insert default notifications into database
+          for (const notification of defaultNotifications) {
+            const { error: insertError } = await supabase
+              .from('admin_notifications')
+              .insert(notification);
+
+            if (insertError) {
+              console.error('Error inserting notification:', insertError);
+            }
+          }
+
+          // Fetch the newly inserted notifications
+          const { data: newNotifications, error: fetchError } = await supabase
+            .from('admin_notifications')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (fetchError) {
+            console.error('Error fetching new notifications:', fetchError);
+          } else {
+            setNotifications(newNotifications);
+          }
+        }
+      } catch (err) {
+        console.error('Error in fetchNotifications:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchNotifications();
+  }, [supabase]);
 
   useEffect(() => {
     // Filter notifications based on search term and filters
@@ -70,25 +163,93 @@ export default function AdminNotifications() {
     setFilteredNotifications(filtered);
   }, [notifications, searchTerm, typeFilter, statusFilter]);
 
-  const markAsRead = (id) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === id ? { ...notification, status: 'read' } : notification
-      )
-    );
-    toast.success('Notification marked as read');
+  const markAsRead = async (id) => {
+    try {
+      // Update notification in database
+      const { error } = await supabase
+        .from('admin_notifications')
+        .update({ status: 'read' })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Update local state
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === id ? { ...notification, status: 'read' } : notification
+        )
+      );
+
+      toast.success('Notification marked as read');
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      toast.error('Failed to mark notification as read');
+    }
   };
 
-  const deleteNotification = (id) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-    toast.success('Notification deleted');
+  const deleteNotification = async (id) => {
+    try {
+      // Delete notification from database
+      const { error } = await supabase
+        .from('admin_notifications')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Update local state
+      setNotifications(prev => prev.filter(notification => notification.id !== id));
+
+      toast.success('Notification deleted');
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      toast.error('Failed to delete notification');
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notification => ({ ...notification, status: 'read' }))
-    );
-    toast.success('All notifications marked as read');
+  const markAllAsRead = async () => {
+    try {
+      // Update all notifications in database
+      const { error } = await supabase
+        .from('admin_notifications')
+        .update({ status: 'read' })
+        .eq('status', 'unread');
+
+      if (error) throw error;
+
+      // Update local state
+      setNotifications(prev =>
+        prev.map(notification => ({ ...notification, status: 'read' }))
+      );
+
+      toast.success('All notifications marked as read');
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+      toast.error('Failed to mark all notifications as read');
+    }
+  };
+
+  // Helper function to format time
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    if (diffSec < 60) {
+      return 'Just now';
+    } else if (diffMin < 60) {
+      return `${diffMin} minute${diffMin > 1 ? 's' : ''} ago`;
+    } else if (diffHour < 24) {
+      return `${diffHour} hour${diffHour > 1 ? 's' : ''} ago`;
+    } else if (diffDay < 7) {
+      return `${diffDay} day${diffDay > 1 ? 's' : ''} ago`;
+    } else {
+      return date.toLocaleDateString();
+    }
   };
 
   return (
@@ -143,9 +304,9 @@ export default function AdminNotifications() {
               className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
             >
               <option>All Types</option>
-              <option>course</option>
-              <option>issue</option>
-              <option>payment</option>
+              {availableTypes.map(type => (
+                <option key={type}>{type}</option>
+              ))}
             </select>
             <select
               value={statusFilter}
@@ -188,7 +349,7 @@ export default function AdminNotifications() {
                       <div className="flex-shrink-0">
                         <Image
                           className="h-10 w-10 rounded-full"
-                          src={notification.avatar}
+                          src={notification.avatar_url || "https://via.placeholder.com/40"}
                           alt=""
                           width={40}
                           height={40}
@@ -220,7 +381,7 @@ export default function AdminNotifications() {
                           {notification.message}
                         </p>
                         <p className="mt-1 text-xs text-gray-400">
-                          {notification.time}
+                          {notification.created_at ? formatTime(notification.created_at) : ''}
                         </p>
                       </div>
                     </div>

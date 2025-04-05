@@ -62,10 +62,12 @@ BEGIN
     description TEXT,
     last_generated TIMESTAMP WITH TIME ZONE,
     frequency VARCHAR(50),
-    status VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'pending',
     type VARCHAR(50),
     icon VARCHAR(100),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    report_data JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID REFERENCES auth.users(id)
   );
 
   -- Add RLS policies
@@ -113,7 +115,9 @@ BEGIN
     type VARCHAR(50) DEFAULT 'info',
     status VARCHAR(50) DEFAULT 'unread',
     target VARCHAR(50) DEFAULT 'all',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    avatar_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID REFERENCES auth.users(id)
   );
 
   -- Add RLS policies

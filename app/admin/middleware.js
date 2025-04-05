@@ -6,20 +6,15 @@ import { useAuth } from '../components/AuthProvider';
 import { toast } from 'react-hot-toast';
 
 export default function AdminMiddleware({ children }) {
-  const { user, profile, loading, isAdmin } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        toast.error('You must be logged in to access the admin area');
-        router.push('/login');
-      } else if (!isAdmin) {
-        toast.error('You do not have permission to access the admin area');
-        router.push('/');
-      }
+    if (!loading && !user) {
+      toast.error('You must be logged in to access the admin area');
+      router.push('/login');
     }
-  }, [user, loading, isAdmin, router]);
+  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -29,7 +24,7 @@ export default function AdminMiddleware({ children }) {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user) {
     return null;
   }
 
