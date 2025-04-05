@@ -73,8 +73,24 @@ export async function POST(request) {
         }
       ];
 
+      // Insert default reports, but only once
       for (const report of defaultReports) {
-        await supabase.from('admin_reports').insert(report);
+        // Check if a report with this name already exists
+        const { data: existingReport, error: checkError } = await supabase
+          .from('admin_reports')
+          .select('id')
+          .eq('name', report.name)
+          .limit(1);
+
+        if (checkError) {
+          console.error('Error checking for existing report:', checkError);
+          continue;
+        }
+
+        // Only insert if the report doesn't already exist
+        if (!existingReport || existingReport.length === 0) {
+          await supabase.from('admin_reports').insert(report);
+        }
       }
 
       return NextResponse.json({ message: 'Table created and populated' });

@@ -17,7 +17,6 @@ import {
 export default function AdminReports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
@@ -35,6 +34,14 @@ export default function AdminReports() {
 
         // Fix reports table if needed
         await fetch('/api/admin/fix-reports-table', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        // Clean up any duplicate reports
+        await fetch('/api/admin/cleanup-duplicate-reports', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -84,7 +91,24 @@ export default function AdminReports() {
           ]);
         } else if (data && data.length > 0) {
           // Use reports from database
-          setReports(data);
+          // Remove duplicates by name (keeping the most recent one)
+          const uniqueReports = [];
+          const reportNames = new Set();
+
+          // Sort by created_at in descending order to keep the most recent
+          const sortedData = [...data].sort((a, b) => {
+            return new Date(b.created_at) - new Date(a.created_at);
+          });
+
+          // Keep only the first occurrence of each report name
+          for (const report of sortedData) {
+            if (!reportNames.has(report.name)) {
+              reportNames.add(report.name);
+              uniqueReports.push(report);
+            }
+          }
+
+          setReports(uniqueReports);
         } else {
           // No reports in database, create default ones
           const defaultReports = [
@@ -117,19 +141,33 @@ export default function AdminReports() {
             },
           ];
 
-          // Insert default reports into database
+          // Check if reports with these names already exist
           for (const report of defaultReports) {
-            const { data: newReport, error: insertError } = await supabase
+            const { data: existingReport, error: checkError } = await supabase
               .from('admin_reports')
-              .insert(report)
-              .select();
+              .select('id')
+              .eq('name', report.name)
+              .limit(1);
 
-            if (insertError) {
-              console.error('Error inserting report:', insertError);
+            if (checkError) {
+              console.error('Error checking for existing report:', checkError);
+              continue;
+            }
+
+            // Only insert if the report doesn't already exist
+            if (!existingReport || existingReport.length === 0) {
+              const { error: insertError } = await supabase
+                .from('admin_reports')
+                .insert(report)
+                .select();
+
+              if (insertError) {
+                console.error('Error inserting report:', insertError);
+              }
             }
           }
 
-          // Fetch the newly inserted reports
+          // Fetch the reports after insertion
           const { data: newReports, error: fetchError } = await supabase
             .from('admin_reports')
             .select('*')
@@ -259,7 +297,24 @@ export default function AdminReports() {
         return;
       }
 
-      setReports(updatedData);
+      // Remove duplicates by name (keeping the most recent one)
+      const uniqueReports = [];
+      const reportNames = new Set();
+
+      // Sort by created_at in descending order to keep the most recent
+      const sortedData = [...updatedData].sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+
+      // Keep only the first occurrence of each report name
+      for (const report of sortedData) {
+        if (!reportNames.has(report.name)) {
+          reportNames.add(report.name);
+          uniqueReports.push(report);
+        }
+      }
+
+      setReports(uniqueReports);
       toast.success('Report generated successfully!');
     } catch (error) {
       console.error('Error generating report:', error);
