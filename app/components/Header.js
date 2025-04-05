@@ -5,65 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
+import { useAuth } from "./AuthProvider";
 
 export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, profile, loading, isAuthenticated } = useAuth();
   const router = useRouter();
   const supabase = createClientComponentClient();
-
-  // Fetch user on mount
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (authUser) {
-          const { data: profile } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', authUser.id)
-            .single();
-          setUser(profile);
-        }
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getUser();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session);
-
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (session?.user) {
-          try {
-            const { data: profile, error } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-
-            if (error) throw error;
-            setUser(profile);
-            setLoading(false);
-          } catch (error) {
-            console.error('Error fetching user profile:', error);
-          }
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setLoading(false);
-      }
-    });
-
-    return () => subscription?.unsubscribe();
-  }, [supabase]);
 
   // Add click outside handler
   useEffect(() => {
@@ -81,7 +30,7 @@ export default function Header() {
     try {
       await supabase.auth.signOut();
       // Force a hard navigation to ensure the page fully reloads
-      window.location.href = '/login';
+      window.location.href = '/';
     } catch (error) {
       console.error('Error signing out:', error);
     }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AdminMiddleware from './middleware';
 import {
   HomeIcon,
   UsersIcon,
@@ -10,6 +11,8 @@ import {
   ChartBarIcon,
   Cog6ToothIcon,
   BellIcon,
+  TagIcon,
+  CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
@@ -17,6 +20,8 @@ const navigation = [
   { name: "Users", href: "/admin/users", icon: UsersIcon },
   { name: "Jobs", href: "/admin/jobs", icon: BriefcaseIcon },
   { name: "Courses", href: "/admin/courses", icon: AcademicCapIcon },
+  { name: "Categories", href: "/admin/categories", icon: TagIcon },
+  { name: "Verifications", href: "/admin/verifications", icon: CheckBadgeIcon },
   { name: "Reports", href: "/admin/reports", icon: ChartBarIcon },
   { name: "Notifications", href: "/admin/notifications", icon: BellIcon },
   { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
@@ -26,6 +31,7 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname();
 
   return (
+    <AdminMiddleware>
     <div className="min-h-screen bg-gray-100">
       {/* Admin Navigation Bar */}
       <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 relative overflow-hidden">
@@ -95,5 +101,6 @@ export default function AdminLayout({ children }) {
         {children}
       </main>
     </div>
+    </AdminMiddleware>
   );
 }

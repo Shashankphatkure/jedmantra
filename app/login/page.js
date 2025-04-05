@@ -27,6 +27,18 @@ export default function Login() {
       if (error) throw error;
 
       if (data?.user) {
+        // Create profile if it doesn't exist
+        try {
+          await fetch('/api/create-profile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        } catch (error) {
+          console.error('Error creating profile:', error);
+        }
+
         // Force a hard navigation to ensure the page fully reloads
         window.location.href = "/profile";
       }
