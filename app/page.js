@@ -14,7 +14,7 @@ import Link from 'next/link'
 
 export default async function Home() {
   const supabase = createServerComponentClient({ cookies })
-  
+
   const { data: jobs } = await supabase
     .from('jobs')
     .select('*')
@@ -30,86 +30,86 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-pink-500 to-pink-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
+      <div className="bg-gradient-to-r from-blue-300 to-blue-400 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
               Find Your Dream Job Today
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-12">
+            <p className="text-lg md:text-xl text-white/90 mb-6">
               Search through thousands of job listings and courses to advance
               your career
             </p>
 
             {/* Search Form */}
-            <div className="bg-white p-6 rounded-xl shadow-xl">
-              <form action="/jobs" method="get" className="grid md:grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-xl shadow-xl">
+              <form action="/jobs" method="get" className="grid md:grid-cols-2 gap-3">
                 <div className="relative">
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 text-xs font-medium mb-1">
                     What
                   </label>
                   <input
                     type="text"
                     name="search"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Job title, skill or company"
                   />
                 </div>
                 <div className="relative">
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 text-xs font-medium mb-1">
                     Where
                   </label>
                   <input
                     type="text"
                     name="location"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="City or postcode"
                   />
-                  <button className="absolute right-3 top-9 text-gray-400 hover:text-pink-500">
-                    <MapPinIcon className="w-5 h-5" />
+                  <button className="absolute right-3 top-7 text-gray-400 hover:text-blue-500">
+                    <MapPinIcon className="w-4 h-4" />
                   </button>
                 </div>
                 <div className="md:col-span-2">
                   <button
                     type="submit"
-                    className="w-full mt-4 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors flex items-center justify-center group"
+                    className="w-full mt-2 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group"
                   >
                     Search Jobs
-                    <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRightIcon className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
               </form>
             </div>
 
             {/* Job Stats */}
-            <div className="mt-8 text-white/90">
-              <p className="text-lg mb-4">
+            <div className="mt-4 text-white/90">
+              <p className="text-sm mb-2">
                 <span className="font-semibold">139,056</span> new jobs -
                 <span className="font-semibold"> 1,598</span> added today
               </p>
-              <button className="inline-flex items-center text-white font-medium hover:text-white/80 group">
+              <button className="inline-flex items-center text-white text-sm font-medium hover:text-white/80 group">
                 Browse All Jobs
-                <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRightIcon className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
         </div>
 
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
 
       {/* Course Banner */}
-      <div className="bg-gray-100 py-4 text-center">
+      <div className="bg-gray-100 py-3 text-center">
         <div className="max-w-7xl mx-auto px-4">
           <a
             href="/courses"
-            className="text-lg text-gray-900 hover:text-pink-600 flex items-center justify-center gap-2 group"
+            className="text-sm text-gray-900 hover:text-blue-600 flex items-center justify-center gap-2 group"
           >
             Your next skill, from just ₹999. Browse thousands of courses now
             <svg
-              className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+              className="w-4 h-4 group-hover:translate-x-1 transition-transform"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -262,25 +262,26 @@ export default async function Home() {
         <h2 className="text-3xl font-bold text-center mb-8">Trending jobs</h2>
         <div className="flex flex-wrap justify-center gap-4">
           {[
-            "Work from home jobs",
-            "Immediate start jobs",
-            "Manager jobs",
-            "Finance jobs",
-            "Warehouse jobs",
-            "Accountant jobs",
-            "Administrator jobs",
-            "Part time jobs",
-            "Receptionist jobs",
-            "Customer service jobs",
-            "Data entry jobs",
-            "Graduate jobs",
+            { name: "Work from home jobs", query: "remote" },
+            { name: "Immediate start jobs", query: "immediate" },
+            { name: "Manager jobs", query: "manager" },
+            { name: "Finance jobs", query: "finance" },
+            { name: "Warehouse jobs", query: "warehouse" },
+            { name: "Accountant jobs", query: "accountant" },
+            { name: "Administrator jobs", query: "administrator" },
+            { name: "Part time jobs", query: "part-time" },
+            { name: "Receptionist jobs", query: "receptionist" },
+            { name: "Customer service jobs", query: "customer-service" },
+            { name: "Data entry jobs", query: "data-entry" },
+            { name: "Graduate jobs", query: "graduate" },
           ].map((job, index) => (
-            <button
+            <Link
               key={index}
+              href={`/jobs?search=${job.query}`}
               className="px-6 py-2 rounded-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors font-medium"
             >
-              {job}
-            </button>
+              {job.name}
+            </Link>
           ))}
         </div>
       </div>
@@ -298,7 +299,7 @@ export default async function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {jobs?.map((job) => (
-              <Link 
+              <Link
                 key={job.id}
                 href={`/jobs/${job.id}`}
                 className="block"
@@ -325,10 +326,10 @@ export default async function Home() {
                     {(job.salary_min || job.salary_max) && (
                       <p className="text-gray-600 flex items-center">
                         <CurrencyPoundIcon className="h-5 w-5 mr-2 text-gray-400" />
-                        {job.salary_min && `${job.salary_min.toLocaleString()}`}
+                        {job.salary_min && `₹${Math.round(job.salary_min * 105).toLocaleString('en-IN')}`}
                         {job.salary_min && job.salary_max && ' - '}
-                        {job.salary_max && `${job.salary_max.toLocaleString()}`}
-                        {' ' + job.salary_currency}
+                        {job.salary_max && `₹${Math.round(job.salary_max * 105).toLocaleString('en-IN')}`}
+                        {' INR'}
                       </p>
                     )}
                     <div className="flex flex-wrap gap-2 mt-3">
@@ -375,7 +376,7 @@ export default async function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {courses?.map((course) => (
-              <Link 
+              <Link
                 key={course.id}
                 href={`/courses/${course.id}`}
                 className="block"

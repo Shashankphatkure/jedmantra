@@ -12,7 +12,7 @@ export async function GET(request) {
     if (code) {
       const cookieStore = cookies()
       const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
-      
+
       // Exchange the code for a session
       const { data: { session }, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
       if (sessionError) throw sessionError
@@ -67,7 +67,10 @@ export async function GET(request) {
     }
 
     // URL to redirect to after sign in process completes
-    return NextResponse.redirect(new URL('/', requestUrl.origin))
+    // Add a timestamp parameter to force a full page reload
+    const redirectUrl = new URL('/', requestUrl.origin)
+    redirectUrl.searchParams.set('reload', Date.now().toString())
+    return NextResponse.redirect(redirectUrl)
   } catch (error) {
     console.error('Auth callback error:', error)
     return NextResponse.redirect(

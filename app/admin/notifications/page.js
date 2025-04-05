@@ -1,14 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from 'react-hot-toast';
 import {
   BellIcon,
+  BellSlashIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+  TrashIcon,
+  PlusIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 export default function AdminNotifications() {
-  const [notifications] = useState([
+  const [notifications, setNotifications] = useState([
     {
       id: 1,
       title: "New Course Published",
@@ -37,22 +45,70 @@ export default function AdminNotifications() {
       avatar: "https://via.placeholder.com/40",
     },
   ]);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState('All Types');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [filteredNotifications, setFilteredNotifications] = useState([]);
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    // Filter notifications based on search term and filters
+    const filtered = notifications.filter(notification => {
+      const matchesSearch = notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           notification.message.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesType = typeFilter === 'All Types' ||
+                         notification.type.toLowerCase() === typeFilter.toLowerCase();
+
+      const matchesStatus = statusFilter === 'All Status' ||
+                           notification.status.toLowerCase() === statusFilter.toLowerCase();
+
+      return matchesSearch && matchesType && matchesStatus;
+    });
+
+    setFilteredNotifications(filtered);
+  }, [notifications, searchTerm, typeFilter, statusFilter]);
+
+  const markAsRead = (id) => {
+    setNotifications(prev =>
+      prev.map(notification =>
+        notification.id === id ? { ...notification, status: 'read' } : notification
+      )
+    );
+    toast.success('Notification marked as read');
+  };
+
+  const deleteNotification = (id) => {
+    setNotifications(prev => prev.filter(notification => notification.id !== id));
+    toast.success('Notification deleted');
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev =>
+      prev.map(notification => ({ ...notification, status: 'read' }))
+    );
+    toast.success('All notifications marked as read');
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-purple-700 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-white">Notifications</h1>
-              <p className="mt-2 text-purple-100">
+              <p className="mt-2 text-blue-100">
                 Manage and monitor all system notifications
               </p>
             </div>
             <div className="flex space-x-4">
-              <button className="inline-flex items-center px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors">
-                <BellIcon className="w-5 h-5 mr-2" />
+              <button
+                onClick={markAllAsRead}
+                className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors"
+              >
+                <CheckCircleIcon className="w-5 h-5 mr-2" />
                 Mark All as Read
               </button>
             </div>
@@ -60,7 +116,7 @@ export default function AdminNotifications() {
         </div>
 
         {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
         <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
 
@@ -73,120 +129,124 @@ export default function AdminNotifications() {
               <input
                 type="text"
                 placeholder="Search notifications..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
               </div>
             </div>
-            <select className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+            >
               <option>All Types</option>
-              <option>Course</option>
-              <option>Issue</option>
-              <option>Payment</option>
+              <option>course</option>
+              <option>issue</option>
+              <option>payment</option>
             </select>
-            <select className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+            >
               <option>All Status</option>
-              <option>Read</option>
-              <option>Unread</option>
+              <option>read</option>
+              <option>unread</option>
             </select>
           </div>
         </div>
 
         {/* Notifications List */}
         <div className="mt-8 bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
-            {notifications.map((notification) => (
-              <li
-                key={notification.id}
-                className={`p-6 hover:bg-gray-50 ${
-                  notification.status === "unread" ? "bg-blue-50" : ""
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <Image
-                        className="h-10 w-10 rounded-full"
-                        src={notification.avatar}
-                        alt=""
-                        width={40}
-                        height={40}
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="flex items-center">
-                        <h2 className="text-sm font-medium text-gray-900">
-                          {notification.title}
-                        </h2>
-                        <span
-                          className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            notification.type === "course"
-                              ? "bg-green-100 text-green-800"
-                              : notification.type === "issue"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
-                          {notification.type}
-                        </span>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          ) : filteredNotifications.length === 0 ? (
+            <div className="px-4 py-12 text-center">
+              <BellSlashIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No notifications found</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {searchTerm || typeFilter !== 'All Types' || statusFilter !== 'All Status' ?
+                  'Try adjusting your filters' : 'You don\'t have any notifications at the moment.'}
+              </p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-200">
+              {filteredNotifications.map((notification) => (
+                <li
+                  key={notification.id}
+                  className={`p-6 hover:bg-gray-50 ${
+                    notification.status === "unread" ? "bg-blue-50" : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0">
+                        <Image
+                          className="h-10 w-10 rounded-full"
+                          src={notification.avatar}
+                          alt=""
+                          width={40}
+                          height={40}
+                        />
                       </div>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {notification.message}
-                      </p>
-                      <p className="mt-1 text-xs text-gray-400">
-                        {notification.time}
-                      </p>
+                      <div className="ml-4">
+                        <div className="flex items-center">
+                          <h2 className="text-sm font-medium text-gray-900">
+                            {notification.title}
+                            {notification.status === "unread" && (
+                              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                New
+                              </span>
+                            )}
+                          </h2>
+                          <span
+                            className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              notification.type === "course"
+                                ? "bg-green-100 text-green-800"
+                                : notification.type === "issue"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
+                          >
+                            {notification.type}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {notification.message}
+                        </p>
+                        <p className="mt-1 text-xs text-gray-400">
+                          {notification.time}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      {notification.status === "unread" && (
+                        <button
+                          onClick={() => markAsRead(notification.id)}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Mark as read"
+                        >
+                          <CheckCircleIcon className="h-5 w-5" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => deleteNotification(notification.id)}
+                        className="text-red-600 hover:text-red-800"
+                        title="Delete notification"
+                      >
+                        <TrashIcon className="h-5 w-5" />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <button className="text-gray-400 hover:text-gray-500">
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </button>
-                    <button className="text-gray-400 hover:text-gray-500">
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Pagination */}

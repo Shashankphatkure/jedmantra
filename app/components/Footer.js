@@ -13,47 +13,47 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/jobs"
                   className="hover:text-white transition-colors duration-300 flex items-center gap-2"
                 >
                   <span>Job search</span>
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/jobs?search=remote"
                   className="hover:text-white transition-colors duration-300 flex items-center gap-2"
                 >
                   <span className="bg-blue-500 text-xs px-2 py-1 rounded-full">
                     Remote
                   </span>
                   <span>Work from home</span>
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/jobs"
                   className="hover:text-white transition-colors duration-300"
                 >
                   Browse jobs
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/career-advice"
                   className="hover:text-white transition-colors duration-300"
                 >
                   Career advice
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/jobs"
                   className="hover:text-white transition-colors duration-300"
                 >
                   Browse locations
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -65,39 +65,39 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/recruiter"
                   className="hover:text-white transition-colors duration-300"
                 >
                   Recruiter site
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/recruiter/jobs/create"
                   className="hover:text-white transition-colors duration-300 flex items-center gap-2"
                 >
                   <span className="bg-green-500 text-xs px-2 py-1 rounded-full">
                     New
                   </span>
                   <span>Post a job</span>
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/recruiter/candidates"
                   className="hover:text-white transition-colors duration-300"
                 >
                   CV Search
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/companies"
                   className="hover:text-white transition-colors duration-300"
                 >
-                  Recruitment agencies
-                </a>
+                  Companies
+                </Link>
               </li>
             </ul>
           </div>
@@ -109,39 +109,39 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="hover:text-white transition-colors duration-300"
                 >
                   Find a course
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="hover:text-white transition-colors duration-300"
                 >
                   Online courses
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses?price=free"
                   className="hover:text-white transition-colors duration-300 flex items-center gap-2"
                 >
                   <span className="bg-yellow-500 text-xs px-2 py-1 rounded-full">
                     Popular
                   </span>
                   <span>Free courses</span>
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/career-advice"
                   className="hover:text-white transition-colors duration-300"
                 >
                   Career guides
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -170,20 +170,20 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/about"
                     className="hover:text-white transition-colors duration-300"
                   >
                     Press office
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/help"
                     className="hover:text-white transition-colors duration-300"
                   >
                     Help
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

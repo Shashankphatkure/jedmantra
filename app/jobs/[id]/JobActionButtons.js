@@ -44,10 +44,10 @@ const SaveJobButton = ({ jobId }) => {
 
   const handleSaveJob = async () => {
     setIsSaving(true);
-    
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         window.location.href = `/login?redirect=/jobs/${jobId}`;
         return;
@@ -85,7 +85,7 @@ const SaveJobButton = ({ jobId }) => {
 
   if (isLoading) {
     return (
-      <button className="w-full bg-white text-blue-600 px-6 py-4 rounded-xl font-medium border-2 border-blue-600 opacity-50">
+      <button className="w-full bg-white text-blue-500 px-6 py-4 rounded-xl font-medium border-2 border-blue-500 opacity-50">
         Loading...
       </button>
     );
@@ -95,7 +95,7 @@ const SaveJobButton = ({ jobId }) => {
     <button
       onClick={handleSaveJob}
       disabled={isSaving}
-      className="w-full bg-white text-blue-600 px-6 py-4 rounded-xl font-medium border-2 border-blue-600 hover:bg-blue-50 transition-colors flex items-center justify-center"
+      className="w-full bg-white text-blue-500 px-6 py-4 rounded-xl font-medium border-2 border-blue-500 hover:bg-blue-50 transition-colors flex items-center justify-center"
     >
       {isSaved ? (
         <BookmarkSolidIcon className="h-5 w-5 mr-2" />
@@ -113,10 +113,10 @@ const ApplyButton = ({ jobId }) => {
 
   const handleApply = async () => {
     setIsApplying(true);
-    
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         window.location.href = `/login?redirect=/jobs/${jobId}`;
         return;
@@ -132,7 +132,7 @@ const ApplyButton = ({ jobId }) => {
 
       if (error) throw error;
       alert('Application submitted successfully!');
-      
+
     } catch (error) {
       console.error('Error applying:', error);
       alert('Failed to submit application. Please try again.');
@@ -145,7 +145,7 @@ const ApplyButton = ({ jobId }) => {
     <button
       onClick={handleApply}
       disabled={isApplying}
-      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center"
+      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center"
     >
       {isApplying ? (
         <span>Submitting...</span>
@@ -166,4 +166,4 @@ export default function JobActionButtons({ jobId }) {
       <SaveJobButton jobId={jobId} />
     </div>
   );
-} 
+}

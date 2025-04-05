@@ -38,15 +38,27 @@ export default function Header() {
 
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        setUser(profile);
-      } else {
+      console.log('Auth state changed:', event, session);
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (session?.user) {
+          try {
+            const { data: profile, error } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+
+            if (error) throw error;
+            setUser(profile);
+            setLoading(false);
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+          }
+        }
+      } else if (event === 'SIGNED_OUT') {
         setUser(null);
+        setLoading(false);
       }
     });
 
@@ -68,16 +80,16 @@ export default function Header() {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
-      router.push('/login');
-      router.refresh();
+      // Force a hard navigation to ensure the page fully reloads
+      window.location.href = '/login';
     } catch (error) {
       console.error('Error signing out:', error);
     }
   };
 
   const navigation = [
-    { 
-      name: "Home", 
+    {
+      name: "Home",
       href: "/",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,8 +97,8 @@ export default function Header() {
         </svg>
       )
     },
-    { 
-      name: "Courses", 
+    {
+      name: "Courses",
       href: "/courses",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,8 +106,8 @@ export default function Header() {
         </svg>
       )
     },
-    { 
-      name: "Jobs", 
+    {
+      name: "Jobs",
       href: "/jobs",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,8 +115,8 @@ export default function Header() {
         </svg>
       )
     },
-    { 
-      name: "Companies", 
+    {
+      name: "Companies",
       href: "/companies",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,8 +124,8 @@ export default function Header() {
         </svg>
       )
     },
-    { 
-      name: "Career Advice", 
+    {
+      name: "Career Advice",
       href: "/career-advice",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

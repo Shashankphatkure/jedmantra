@@ -21,6 +21,19 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // Add client-side script to handle reload parameter
+  const reloadScript = `
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('reload')) {
+        // Remove the reload parameter to avoid infinite reloads
+        urlParams.delete('reload');
+        const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    })();
+  `;
+
   return (
     <html lang="en">
       <body
@@ -30,6 +43,7 @@ export default function RootLayout({ children }) {
         {children}
         <Footer />
         <Toaster position="top-center" />
+        <script dangerouslySetInnerHTML={{ __html: reloadScript }} />
       </body>
     </html>
   );

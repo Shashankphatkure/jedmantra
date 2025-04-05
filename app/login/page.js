@@ -17,22 +17,21 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
+
       if (error) throw error;
-      
+
       if (data?.user) {
-        router.push("/profile");
-        router.refresh();
+        // Force a hard navigation to ensure the page fully reloads
+        window.location.href = "/profile";
       }
     } catch (error) {
       setError(error.message);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -40,7 +39,7 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',

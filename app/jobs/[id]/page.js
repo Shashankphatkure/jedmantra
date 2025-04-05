@@ -43,7 +43,7 @@ async function getJobDetails(jobId) {
       `)
       .eq('id', jobId)
       .single(),
-    
+
     supabase
       .from('courses')
       .select(`
@@ -86,7 +86,7 @@ export default async function JobDetail({ params }) {
   // Format salary for display in Indian format (INR)
   const formatSalary = (amount) => {
     if (!amount) return '—';
-    
+
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
@@ -103,8 +103,8 @@ export default async function JobDetail({ params }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+      <div className="bg-gradient-to-r from-blue-300 to-blue-400 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Main Content */}
             <div className="lg:col-span-2">
@@ -183,7 +183,7 @@ export default async function JobDetail({ params }) {
                         </span>
                       </div>
                       <p className="text-white/70 text-sm">{recruiter.title} at {recruiter.company}</p>
-                      
+
                       <div className="mt-4 grid grid-cols-2 gap-4">
                         <div className="bg-white/5 rounded-lg p-3">
                           <div className="text-white/60 text-xs mb-1">Response Rate</div>
@@ -263,8 +263,8 @@ export default async function JobDetail({ params }) {
         </div>
 
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -390,7 +390,7 @@ export default async function JobDetail({ params }) {
                   View All Courses →
                 </Link>
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 {courses.map((course) => (
                   <div key={course.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
@@ -449,7 +449,7 @@ export default async function JobDetail({ params }) {
                         </div>
                         <span className="text-sm text-gray-500">{course.rating.toFixed(1)}</span>
                       </div>
-                      <Link 
+                      <Link
                         href={`/courses/${course.id}`}
                         className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block text-center"
                       >

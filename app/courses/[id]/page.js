@@ -145,14 +145,14 @@ export default function CourseDetail({ params }) {
     reviews
   });
 
-  const discountPercentage = course.discount_percentage || 
-    (course.original_price ? 
-      Math.round(((course.original_price - course.price) / course.original_price) * 100) 
+  const discountPercentage = course.discount_percentage ||
+    (course.original_price ?
+      Math.round(((course.original_price - course.price) / course.original_price) * 100)
       : 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
+      <div className="bg-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
@@ -168,40 +168,40 @@ export default function CourseDetail({ params }) {
                   </span>
                 )}
               </div>
-              
-              <h1 className="text-4xl font-bold text-white mb-4">
+
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 {course.title}
               </h1>
-              <p className="text-xl text-white/90 mb-8">
+              <p className="text-xl text-gray-700 mb-8">
                 {course.description}
               </p>
 
-              <div className="flex items-center space-x-4 text-white/90 mb-6">
+              <div className="flex items-center space-x-4 text-gray-600 mb-6">
                 <div className="flex items-center">
                   <StarIconSolid className="h-5 w-5 text-yellow-400" />
                   <span className="ml-1">{course.rating} ({course.review_count} reviews)</span>
                 </div>
                 <span>•</span>
                 <span>{course.total_students?.toLocaleString()} students enrolled</span>
-                
+
               </div>
 
-              <div className="mt-8 bg-white/10 rounded-xl p-6 backdrop-blur-sm">
-                <h3 className="text-xl font-semibold text-white mb-4">About This Course</h3>
-                <div className="space-y-4 text-white/90">
+              <div className="mt-8 bg-gray-50 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">About This Course</h3>
+                <div className="space-y-4 text-gray-700">
                   <p>{course.long_description}</p>
-                  
+
                   <p>Through hands-on projects and real-world examples, you'll build a strong foundation in modern web development. Perfect for:</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     {targetAudience.map((audience) => (
-                      <div key={audience.title} className="bg-white/5 rounded-lg p-4">
+                      <div key={audience.title} className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
                         <div className="flex items-center space-x-2 mb-2">
-                          <svg className="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
-                          <span className="font-medium">{audience.title}</span>
+                          <span className="font-medium text-gray-900">{audience.title}</span>
                         </div>
-                        <p className="text-sm">{audience.description}</p>
+                        <p className="text-sm text-gray-600">{audience.description}</p>
                       </div>
                     ))}
                   </div>
@@ -247,7 +247,7 @@ export default function CourseDetail({ params }) {
                 </div>
 
                 <div className="space-y-4 mb-8">
-                  <button 
+                  <button
                     onClick={() => {
                       router.push(`/cart?courseId=${courseId}&title=${encodeURIComponent(course.title)}&price=${course.price}&original_price=${course.original_price}&image=${encodeURIComponent(course.course_image)}&instructor=${encodeURIComponent(course.instructor_name)}`);
                     }}
@@ -263,7 +263,7 @@ export default function CourseDetail({ params }) {
                     This course includes:
                   </h3>
                   <ul className="space-y-4">
-                    
+
                     <li className="flex items-center gap-3 text-gray-600">
                       <AcademicCapIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
                       <span>Certificate of completion</span>
@@ -392,7 +392,7 @@ export default function CourseDetail({ params }) {
         </div>
       </div>
 
-      
+
 
       {/* Add Last Updated Info */}
       {course.last_updated && (
