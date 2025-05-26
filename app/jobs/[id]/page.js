@@ -103,123 +103,129 @@ export default async function JobDetail({ params }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-300 to-blue-400 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+      <div className="bg-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Main Content */}
             <div className="lg:col-span-2">
-              {/* Job Title and Tags */}
-              <h1 className="text-4xl font-bold text-white mb-6">
-                {job.title}
+              <div className="flex items-center space-x-3 mb-6">
                 {job.status !== 'Open' && (
-                  <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                  <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">
                     {job.status}
-                  </div>
+                  </span>
                 )}
-              </h1>
-
-              <div className="flex flex-wrap items-center gap-4 mb-8">
-                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
-                  <BriefcaseIcon className="h-5 w-5 text-white/90 mr-2" />
-                  <span className="text-white/90">{job.job_type}</span>
-                </div>
                 {job.is_remote && (
-                  <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
-                    <GlobeAltIcon className="h-5 w-5 text-white/90 mr-2" />
-                    <span className="text-white/90">Remote Available</span>
+                  <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                    Remote Available
+                  </span>
+                )}
+                <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+                  {job.job_type}
+                </span>
+              </div>
+
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                {job.title}
+              </h1>
+              <p className="text-xl text-gray-700 mb-8">
+                {job.short_description}
+              </p>
+
+              <div className="flex items-center space-x-4 text-gray-600 mb-6">
+                <div className="flex items-center">
+                  <BriefcaseIcon className="h-5 w-5 text-gray-400" />
+                  <span className="ml-1">{job.experience_level} Level</span>
+                </div>
+                <span>•</span>
+                <div className="flex items-center">
+                  <ClockIcon className="h-5 w-5 text-gray-400" />
+                  <span className="ml-1">{getTimeAgo(job.posted_at)}</span>
+                </div>
+                <span>•</span>
+                <span>{job.application_count?.toLocaleString() || 0} applications</span>
+              </div>
+
+              <div className="mt-8 bg-gray-50 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Quick Overview</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div className="text-gray-500 text-sm mb-1">Experience</div>
+                    <div className="text-gray-900 font-semibold">{job.required_experience_years}+ years</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div className="text-gray-500 text-sm mb-1">Salary Range</div>
+                    <div className="text-gray-900 font-semibold">
+                      {formatSalary(job.salary_min)} - {formatSalary(job.salary_max)}
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div className="text-gray-500 text-sm mb-1">Department</div>
+                    <div className="text-gray-900 font-semibold">{job.department}</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div className="text-gray-500 text-sm mb-1">Team Size</div>
+                    <div className="text-gray-900 font-semibold">{job.team_size}</div>
+                  </div>
+                </div>
+
+                {recruiter && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h4 className="font-semibold text-gray-900 mb-4">Your Recruiter</h4>
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">
+                        <img
+                          src={recruiter.avatar_url || "https://randomuser.me/api/portraits/women/45.jpg"}
+                          alt={`${recruiter.first_name} ${recruiter.last_name}`}
+                          className="h-12 w-12 rounded-full border-2 border-gray-100"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="text-gray-900 font-medium">
+                            {recruiter.first_name} {recruiter.last_name}
+                          </h4>
+                          <span className={`${recruiter.is_online ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} text-xs px-2 py-0.5 rounded-full`}>
+                            {recruiter.is_online ? 'Online' : 'Offline'}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm">{recruiter.title} at {recruiter.company}</p>
+
+                        <div className="mt-4 grid grid-cols-2 gap-4">
+                          <div className="bg-gray-50 rounded-lg p-3">
+                            <div className="text-gray-500 text-xs mb-1">Response Rate</div>
+                            <div className="text-gray-900 font-medium">{recruiter.response_rate}%</div>
+                          </div>
+                          <div className="bg-gray-50 rounded-lg p-3">
+                            <div className="text-gray-500 text-xs mb-1">Avg. Response</div>
+                            <div className="text-gray-900 font-medium">{recruiter.avg_response_time} hours</div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex items-center space-x-4">
+                          <button className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg px-4 py-2 text-gray-800">
+                            <EnvelopeIcon className="h-4 w-4" />
+                            <span className="text-sm">Message</span>
+                          </button>
+                          <button className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg px-4 py-2 text-gray-800">
+                            <CalendarIcon className="h-4 w-4" />
+                            <span className="text-sm">Schedule Call</span>
+                          </button>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <div className="flex items-center space-x-2 text-gray-600 text-sm">
+                            <UserGroupIcon className="h-4 w-4" />
+                            <span>Currently hiring for {recruiter.current_hiring_count} positions</span>
+                          </div>
+                          <div className="flex items-center space-x-2 text-gray-600 text-sm mt-2">
+                            <BuildingOfficeIcon className="h-4 w-4" />
+                            <span>Based in {recruiter.office_location}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
-                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
-                  <AcademicCapIcon className="h-5 w-5 text-white/90 mr-2" />
-                  <span className="text-white/90">{job.experience_level} Level</span>
-                </div>
-                <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
-                  <ClockIcon className="h-5 w-5 text-white/90 mr-2" />
-                  <span className="text-white/90">{getTimeAgo(job.posted_at)}</span>
-                </div>
               </div>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="text-white/70 text-sm mb-1">Experience</div>
-                  <div className="text-white font-semibold">{job.required_experience_years}+ years</div>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="text-white/70 text-sm mb-1">Salary Range</div>
-                  <div className="text-white font-semibold">
-                    {formatSalary(job.salary_min)} - {formatSalary(job.salary_max)}
-                  </div>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="text-white/70 text-sm mb-1">Department</div>
-                  <div className="text-white font-semibold">{job.department}</div>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="text-white/70 text-sm mb-1">Team Size</div>
-                  <div className="text-white font-semibold">{job.team_size}</div>
-                </div>
-              </div>
-
-              {/* Recruiter Details */}
-              {recruiter && (
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Your Recruiter</h3>
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
-                      <img
-                        src={recruiter.avatar_url || "https://randomuser.me/api/portraits/women/45.jpg"}
-                        alt={`${recruiter.first_name} ${recruiter.last_name}`}
-                        className="h-12 w-12 rounded-full border-2 border-white/20"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h4 className="text-white font-medium">
-                          {recruiter.first_name} {recruiter.last_name}
-                        </h4>
-                        <span className={`${recruiter.is_online ? 'bg-green-500/20 text-green-100' : 'bg-gray-500/20 text-gray-100'} text-xs px-2 py-0.5 rounded-full`}>
-                          {recruiter.is_online ? 'Online' : 'Offline'}
-                        </span>
-                      </div>
-                      <p className="text-white/70 text-sm">{recruiter.title} at {recruiter.company}</p>
-
-                      <div className="mt-4 grid grid-cols-2 gap-4">
-                        <div className="bg-white/5 rounded-lg p-3">
-                          <div className="text-white/60 text-xs mb-1">Response Rate</div>
-                          <div className="text-white font-medium">{recruiter.response_rate}%</div>
-                        </div>
-                        <div className="bg-white/5 rounded-lg p-3">
-                          <div className="text-white/60 text-xs mb-1">Avg. Response</div>
-                          <div className="text-white font-medium">{recruiter.avg_response_time} hours</div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 flex items-center space-x-4">
-                        <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
-                          <EnvelopeIcon className="h-4 w-4" />
-                          <span className="text-sm">Message</span>
-                        </button>
-                        <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-4 py-2 text-white">
-                          <CalendarIcon className="h-4 w-4" />
-                          <span className="text-sm">Schedule Call</span>
-                        </button>
-                      </div>
-
-                      <div className="mt-4 pt-4 border-t border-white/10">
-                        <div className="flex items-center space-x-2 text-white/70 text-sm">
-                          <UserGroupIcon className="h-4 w-4" />
-                          <span>Currently hiring for {recruiter.current_hiring_count} positions</span>
-                        </div>
-                        <div className="flex items-center space-x-2 text-white/70 text-sm mt-2">
-                          <BuildingOfficeIcon className="h-4 w-4" />
-                          <span>Based in {recruiter.office_location}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Application Card */}
