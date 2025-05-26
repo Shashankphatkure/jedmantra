@@ -1,16 +1,52 @@
 import Link from 'next/link';
+import { 
+  BriefcaseIcon,
+  UserGroupIcon,
+  AcademicCapIcon,
+  BuildingOfficeIcon,
+  EnvelopeIcon,
+  PhoneIcon
+} from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-white/80 backdrop-blur-sm text-gray-600 shadow-lg">
+      {/* Newsletter Section */}
+      <div className="bg-[#2563eb] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1 max-w-2xl">
+              <h2 className="text-3xl font-bold mb-2">Stay Updated</h2>
+              <p className="text-blue-100">Get the latest jobs, courses, and career advice right in your inbox.</p>
+            </div>
+            <div className="flex-1 w-full md:w-auto">
+              <form className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-600 outline-none"
+                />
+                <button className="px-6 py-3 bg-white text-[#2563eb] font-bold rounded-lg hover:bg-blue-50 transition-colors">
+                  Subscribe
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Footer Content */}
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Jobs Column */}
           <div className="space-y-6">
-            <h3 className="font-bold text-xl text-white tracking-wider">
-              JOBS
-            </h3>
+            <div className="flex items-center gap-2">
+              <BriefcaseIcon className="h-6 w-6 text-[#2563eb]" />
+              <h3 className="font-bold text-xl text-gray-900">
+                Jobs
+              </h3>
+            </div>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -34,7 +70,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/jobs"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Browse jobs
                 </Link>
@@ -42,7 +78,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/career-advice"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Career advice
                 </Link>
@@ -50,7 +86,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/jobs"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Browse locations
                 </Link>
@@ -60,14 +96,17 @@ export default function Footer() {
 
           {/* Recruiter Column */}
           <div className="space-y-6">
-            <h3 className="font-bold text-xl text-white tracking-wider">
-              RECRUITER
-            </h3>
+            <div className="flex items-center gap-2">
+              <UserGroupIcon className="h-6 w-6 text-[#2563eb]" />
+              <h3 className="font-bold text-xl text-gray-900">
+                Recruiter
+              </h3>
+            </div>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/recruiter"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Recruiter site
                 </Link>
@@ -86,7 +125,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/recruiter/candidates"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   CV Search
                 </Link>
@@ -94,9 +133,20 @@ export default function Footer() {
               <li>
                 <Link
                   href="/companies"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Companies
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/recruiter/become"
+                  className="hover:text-white transition-colors duration-300 flex items-center gap-2"
+                >
+                  <span className="bg-blue-500 text-xs px-2 py-1 rounded-full">
+                    Join Us
+                  </span>
+                  <span>Become a recruiter</span>
                 </Link>
               </li>
             </ul>
@@ -104,14 +154,17 @@ export default function Footer() {
 
           {/* Courses Column */}
           <div className="space-y-6">
-            <h3 className="font-bold text-xl text-white tracking-wider">
-              COURSES
-            </h3>
+            <div className="flex items-center gap-2">
+              <AcademicCapIcon className="h-6 w-6 text-[#2563eb]" />
+              <h3 className="font-bold text-xl text-gray-900">
+                Courses
+              </h3>
+            </div>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/courses"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Find a course
                 </Link>
@@ -119,7 +172,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/courses"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Online courses
                 </Link>
@@ -138,9 +191,20 @@ export default function Footer() {
               <li>
                 <Link
                   href="/career-advice"
-                  className="hover:text-white transition-colors duration-300"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
                 >
                   Career guides
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/instructor/become"
+                  className="hover:text-white transition-colors duration-300 flex items-center gap-2"
+                >
+                  <span className="bg-blue-500 text-xs px-2 py-1 rounded-full">
+                    Join Us
+                  </span>
+                  <span>Become an instructor</span>
                 </Link>
               </li>
             </ul>
@@ -149,14 +213,17 @@ export default function Footer() {
           {/* Company & Social Column */}
           <div className="space-y-6">
             <div>
-              <h3 className="font-bold text-xl text-white tracking-wider">
-                COMPANY
-              </h3>
+              <div className="flex items-center gap-2">
+                <BuildingOfficeIcon className="h-6 w-6 text-[#2563eb]" />
+                <h3 className="font-bold text-xl text-gray-900">
+                  Company
+                </h3>
+              </div>
               <ul className="mt-6 space-y-3">
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-white transition-colors duration-300"
+                    className="hover:text-[#2563eb] transition-colors duration-300"
                   >
                     About us
                   </Link>
@@ -164,7 +231,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/contact"
-                    className="hover:text-white transition-colors duration-300"
+                    className="hover:text-[#2563eb] transition-colors duration-300"
                   >
                     Contact us
                   </Link>
@@ -172,7 +239,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-white transition-colors duration-300"
+                    className="hover:text-[#2563eb] transition-colors duration-300"
                   >
                     Press office
                   </Link>
@@ -180,7 +247,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/help"
-                    className="hover:text-white transition-colors duration-300"
+                    className="hover:text-[#2563eb] transition-colors duration-300"
                   >
                     Help
                   </Link>
@@ -189,43 +256,13 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
-        {/* Copyright Section */}
-        <div className="mt-8 pt-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm">
-              &copy; {new Date().getFullYear()} Jedmantra Private Limited. All rights
-              reserved.
-            </p>
-            <div className="flex space-x-6 text-sm">
-              <Link
-                href="/policies/privacy"
-                className="hover:text-white transition-colors duration-300"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                href="/policies/terms"
-                className="hover:text-white transition-colors duration-300"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                href="/policies/cookies"
-                className="hover:text-white transition-colors duration-300"
-              >
-                Cookie Policy
-              </Link>
-              <Link
-                href="/policies/refund"
-                className="hover:text-white transition-colors duration-300"
-              >
-                Refund Policy
-              </Link>
-            </div>
-          </div>
-        </div>
       </div>
+       {/* Footer Copyright */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-gray-600 text-sm">
+            © {new Date().getFullYear()} JedMantra. All rights reserved.
+          </p>
+        </div>
     </footer>
   );
 }

@@ -7,10 +7,12 @@ import {
   UserCircleIcon,
   StarIcon,
   ArrowRightIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function Home() {
   const supabase = createServerComponentClient({ cookies })
@@ -30,68 +32,87 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-300 to-blue-400 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-          <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-              Find Your Dream Job Today
+      <div className="min-h-[50vh] sm:min-h-[200px] bg-gray-50 relative overflow-hidden flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10 flex flex-col md:flex-row items-center justify-between w-full">
+          <div className="max-w-xl">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Join us & Explore Thousands of Jobs
             </h1>
-            <p className="text-lg md:text-xl text-white/90 mb-6">
-              Search through thousands of job listings and courses to advance
-              your career
+            <p className="text-lg text-gray-600 mb-8">
+              Find Jobs, Employment & Career Opportunities
             </p>
 
             {/* Search Form */}
-            <div className="bg-white p-4 rounded-xl shadow-xl">
-              <form action="/jobs" method="get" className="grid md:grid-cols-2 gap-3">
-                <div className="relative">
-                  <label className="block text-gray-700 text-xs font-medium mb-1">
+            <div className="w-full bg-white p-4 rounded-2xl shadow-xl backdrop-blur-sm bg-white/90 border border-gray-100 hover:shadow-2xl transition-shadow duration-200">
+              <form action="/jobs" method="get" className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">
                     What
                   </label>
-                  <input
-                    type="text"
-                    name="search"
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Job title, skill or company"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="search"
+                      placeholder="Job title, keywords..."
+                      className="w-full pl-10 pr-4 py-3.5 rounded-xl border-2 border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 bg-white placeholder:text-gray-400 text-gray-600"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
                 </div>
-                <div className="relative">
-                  <label className="block text-gray-700 text-xs font-medium mb-1">
+
+                <div className="flex-1">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">
                     Where
                   </label>
-                  <input
-                    type="text"
-                    name="location"
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="City or postcode"
-                  />
-                  <button className="absolute right-3 top-7 text-gray-400 hover:text-blue-500">
-                    <MapPinIcon className="w-4 h-4" />
-                  </button>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="location"
+                      placeholder="City or postcode"
+                      className="w-full pl-10 pr-4 py-3.5 rounded-xl border-2 border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 bg-white placeholder:text-gray-400 text-gray-600"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MapPinIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
                 </div>
-                <div className="md:col-span-2">
-                  <button
+
+                <div className="flex items-end">
+                  <button 
                     type="submit"
-                    className="w-full mt-2 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center group"
+                    className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-[1.02] transition-all duration-200 active:scale-[0.98]"
                   >
-                    Search Jobs
-                    <ArrowRightIcon className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    Find Jobs
                   </button>
                 </div>
               </form>
-            </div>
 
-            {/* Job Stats */}
-            <div className="mt-4 text-white/90">
-              <p className="text-sm mb-2">
-                <span className="font-semibold">139,056</span> new jobs -
-                <span className="font-semibold"> 1,598</span> added today
-              </p>
-              <button className="inline-flex items-center text-white text-sm font-medium hover:text-white/80 group">
-                Browse All Jobs
-                <ArrowRightIcon className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-              </button>
+              <div className="mt-4">
+                <p className="text-sm text-gray-600">Popular Searches : </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {['Designer', 'Developer', 'Web', 'IOS', 'PHP', 'Senior', 'Engineer'].map((tag) => (
+                    <a 
+                      key={tag}
+                      href={`/jobs?search=${tag}`}
+                      className="text-sm text-gray-600 hover:text-blue-600 hover:underline"
+                    >
+                      {tag}{tag !== 'Engineer' && ','}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
+          </div>
+          <div className="hidden md:block w-full max-w-3xl">
+            <Image
+              src="/herosection.png"
+              alt="Job Search Illustration"
+              width={1000}
+              height={1000}
+              className="w-full h-auto"
+            />
           </div>
         </div>
 
@@ -652,6 +673,8 @@ export default async function Home() {
           </div>
         </div>
       </div>
+
+     
     </div>
   );
 }
