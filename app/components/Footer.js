@@ -207,6 +207,14 @@ export default function Footer() {
                   <span>Become an instructor</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/instructor/landing"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
+                >
+                  Teach with us
+                </Link>
+              </li>
             </ul>
           </div>
 
