@@ -113,6 +113,14 @@ export default function Footer() {
               </li>
               <li>
                 <Link
+                  href="/recruiter/landing"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
+                >
+                  Recruiter landing
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/recruiter/jobs/create"
                   className="hover:text-white transition-colors duration-300 flex items-center gap-2"
                 >
@@ -147,6 +155,14 @@ export default function Footer() {
                     Join Us
                   </span>
                   <span>Become a recruiter</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/recruiter/landing"
+                  className="hover:text-[#2563eb] transition-colors duration-300"
+                >
+                  recruiter with us
                 </Link>
               </li>
             </ul>
@@ -215,6 +231,7 @@ export default function Footer() {
                   Teach with us
                 </Link>
               </li>
+              
             </ul>
           </div>
 
@@ -266,7 +283,7 @@ export default function Footer() {
         </div>
       </div>
        {/* Footer Copyright */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 pb-5 sm:px-6 lg:px-8">
           <p className="text-center text-gray-600 text-sm">
             © {new Date().getFullYear()} JedMantra. All rights reserved.
           </p>

@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function recruiterLanding() {
+export default function RecruiterLanding() {
   return (
-    <div className="relative w-full overflow-hidden bg-gradient-to-r from-slate-50 to-blue-50">
+    <div className="relative w-full overflow-hidden bg-white  ">
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-slate-50 to-white -z-10"></div>
       <div className="absolute top-0 right-0 w-1/3 h-screen bg-blue-50 -z-10 opacity-70 rounded-bl-full"></div>
@@ -16,24 +16,24 @@ export default function recruiterLanding() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="space-y-8 animate-fadeIn">
             <div className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-m pl-6 pr-6 font-medium mb-3">
-              Teach. Lead
+              Recruit. Connect
             </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 leading-tight">
-              Teach, Inspire, Lead
+              Recruit, Connect, Grow
               <br />
-              <span className="text-blue-600">Become part of something greater. </span>
+              <span className="text-blue-600">Build your talent pipeline with us. </span>
             </h1>
             
             <p className="text-base md:text-lg text-slate-500 max-w-2xl">
-              Share your knowledge, expertise, and passion with millions of eager students worldwide. Our platform provides all the tools you need to create engaging courses and build your teaching business.
+              Connect with top talent from around the world and streamline your hiring process. Our platform provides all the tools you need to find the perfect candidates and build your recruitment strategy.
             </p>
             <div className="flex flex-wrap gap-4 pt-5">
-              <Link href="/instructor/become">
+              <Link href="/recruiter/become">
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   Get started
                 </button>
               </Link>
-              <Link href="/instructor/resources">
+              <Link href="/recruiter/resources">
                 <button className="bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   Learn more
                 </button>
@@ -44,8 +44,8 @@ export default function recruiterLanding() {
           {/* Main Hero Image */}
           <div className="relative h-[600px]">
             <Image 
-              src="/landing.png" 
-              alt="Instructor teaching online" 
+              src="/recruiter.png" 
+              alt="Recruiter connecting with candidates" 
               fill 
               className="object-cover object-center" 
               priority
@@ -108,7 +108,7 @@ export default function recruiterLanding() {
               So many reasons to start
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-              Join thousands of instructors who are already sharing their knowledge and earning income through our platform.
+              Join thousands of recruiters who are already connecting with top talent and building successful teams through our platform.
             </p>
             <div className="w-24 h-1 bg-blue-600 mx-auto mt-6 mb-4 rounded-full"></div>
           </div>
@@ -122,34 +122,34 @@ export default function recruiterLanding() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">Teach your way</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Recruit your way</h3>
                 <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                  Publish the course you want, in the way you want, and always have control of your own content.
+                  Post jobs, search candidates, and manage your recruitment process exactly  over your hiring strategy.
                 </p>
                 <ul className="space-y-3 text-left w-full">
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Create video lectures, quizzes, and assignments</span>
+                    <span className="text-slate-700">Create custom job postings and screening questions</span>
                   </li>
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Set your own pricing and promotional strategies</span>
+                    <span className="text-slate-700">Set your own hiring criteria and recruitment timeline</span>
                   </li>
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Maintain ownership of your intellectual property</span>
+                    <span className="text-slate-700">Maintain full control of your candidate relationships</span>
                   </li>
                 </ul>
               </div>
               <div className="px-8 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-t border-blue-100">
                 <a href="#" className="text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center">
-                  <span>Learn more about course creation</span>
+                  <span>Learn about our recruitment tools</span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
@@ -165,34 +165,34 @@ export default function recruiterLanding() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">Inspire learners</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Connect with talent</h3>
                 <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                  Teach what you know and help learners explore their interests, gain new skills, and advance their careers.
+                  Find the perfect candidates and help professionals discover opportunities that advance their careers.
                 </p>
                 <ul className="space-y-3 text-left w-full">
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Reach students in 180+ countries worldwide</span>
+                    <span className="text-slate-700">Access candidates from 180+ countries worldwide</span>
                   </li>
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Connect with passionate learners in your field</span>
+                    <span className="text-slate-700">Connect with skilled professionals in your industry</span>
                   </li>
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Make a real impact on students' lives and careers</span>
+                    <span className="text-slate-700">Make a real impact on companies and candidates' careers</span>
                   </li>
                 </ul>
               </div>
               <div className="px-8 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-t border-blue-100">
                 <a href="#" className="text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center ne">
-                  <span>See instructor success stories</span>
+                  <span>See recruiter success stories</span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
@@ -208,34 +208,34 @@ export default function recruiterLanding() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">Get rewarded</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Grow your business</h3>
                 <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                  Expand your professional network, build your expertise, and earn money on each paid enrollment.
+                  Expand your professional network, build your expertise, and increase your placement success rate.
                 </p>
                 <ul className="space-y-3 text-left w-full">
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Earn 70% revenue share on course sales</span>
+                    <span className="text-slate-700">Earn competitive placement fees for successful hires</span>
                   </li>
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Build your personal brand and authority</span>
+                    <span className="text-slate-700">Build your recruitment brand and industry authority</span>
                   </li>
                   <li className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-700">Create passive income streams for years to come</span>
+                    <span className="text-slate-700">Develop long-term relationships with top companies</span>
                   </li>
                 </ul>
               </div>
               <div className="px-8 py-4 bg-gradient-to-r from-green-50 to-green-100 border-t border-green-100">
                 <a href="#" className="text-green-600 hover:text-green-800 font-medium flex items-center justify-center ">
-                  <span>Learn about instructor earnings</span>
+                  <span>Learn about recruiter earnings</span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
@@ -257,7 +257,7 @@ export default function recruiterLanding() {
               Everything you need to succeed
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Our platform provides all the tools and resources you need to create, market, and sell your courses effectively.
+              Our platform provides all the tools and resources you need to source, screen, and hire top talent effectively.
             </p>
           </div>
           
@@ -269,28 +269,28 @@ export default function recruiterLanding() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-3">Analytics Dashboard</h3>
+              <h3 className="text-2xl font-bold text-slate-800 mb-3">Recruitment Dashboard</h3>
               <p className="text-slate-600 mb-4">
-                Track your course performance with detailed analytics on student engagement, revenue, and feedback.
+                Track your recruitment performance with detailed analytics on candidate engagement, placement rates, and client feedback.
               </p>
               <ul className="space-y-2">
                 <li className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-green-500 mr-2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>Student engagement metrics</span>
+                  <span>Candidate pipeline metrics</span>
                 </li>
                 <li className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-green-500 mr-2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>Revenue tracking</span>
+                  <span>Placement success tracking</span>
                 </li>
                 <li className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-green-500 mr-2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>Student feedback analysis</span>
+                  <span>Client satisfaction analysis</span>
                 </li>
               </ul>
             </div>
@@ -385,15 +385,15 @@ export default function recruiterLanding() {
       </div>
       
       
-      {/* Instructor Testimonial Section */}
+      {/* recruiter Testimonial Section */}
       <div className="bg-gradient-to-b from-white to-gray-50 py-20 md:py-28 w-full">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-block bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-              Instructor Stories
+              recruiter Stories
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-              Hear from our instructors
+              Hear from our Recruiter
             </h2>
             <div className="w-24 h-1 bg-blue-600 mx-auto mt-6"></div>
           </div>
@@ -429,7 +429,7 @@ export default function recruiterLanding() {
                   </div>
                   
                   <blockquote className="text-lg text-slate-800 font-medium leading-relaxed flex-grow">
-                    "I'm proud to wake up knowing my work is helping people around the world improve their careers and build great things. While being a full-time instructor is hard work, it lets you work when, where, and how you want."
+                    "I'm proud to wake up knowing my work is helping people around the world improve their careers and build great things. While being a full-time recruiter is hard work, it lets you work when, where, and how you want."
                   </blockquote>
                 </div>
               </div>
@@ -462,7 +462,7 @@ export default function recruiterLanding() {
                   </div>
                   
                   <blockquote className="text-lg text-slate-800 font-medium leading-relaxed flex-grow">
-                    "Teaching on this platform has transformed my career. I've connected with students from over 65 countries and built a sustainable income stream doing what I love. The support from both the platform and the instructor community has been invaluable."
+                    "Teaching on this platform has transformed my career. I've connected with students from over 65 countries and built a sustainable income stream doing what I love. The support from both the platform and the recruiter community has been invaluable."
                   </blockquote>
                 </div>
               </div>
@@ -509,7 +509,7 @@ export default function recruiterLanding() {
       {/* Support Section */}
       <div className="bg-slate-50 py-20 md:py-32">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto bg-gradient-to-br from-blue-50 to-blubg-slate-50 py-20 md:py-32e-50 rounded-3xl shadow-lg overflow-hidden">
+          <div className="max-w-6xl mx-auto bg-gradient-to-br from-blue-50 to-blubg-slate-50 rounded-3xl shadow-lg overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
               {/* Content */}
               <div className="p-8 md:p-16 space-y-8">
@@ -520,10 +520,10 @@ export default function recruiterLanding() {
                   You won't have to do it alone
                 </h2>
                 <p className="text-lg text-slate-600 leading-relaxed">
-                  Our <span className="font-semibold text-blue-700">Instructor Support Team</span> is here to answer your questions and review your test video, while our <span className="font-semibold text-blue-700">Teaching Center</span> gives you plenty of resources to help you through the process. Plus, get the support of experienced instructors in our <span className="font-semibold text-blue-700">online community</span>.
+                  Our <span className="font-semibold text-blue-700">recruiter Support Team</span> is here to answer your questions and review your test video, while our <span className="font-semibold text-blue-700">Teaching Center</span> gives you plenty of resources to help you through the process. Plus, get the support of experienced recruiters in our <span className="font-semibold text-blue-700">online community</span>.
                 </p>
                 <div className="pt-4">
-                  <Link href="/instructor/resources" className="inline-flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition-colors group">
+                  <Link href="/recruiter/resources" className="inline-flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition-colors group">
                     <span>Need more details before you start? Learn more</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -534,10 +534,10 @@ export default function recruiterLanding() {
               
               {/* Illustration */}
               <div className="relative h-[350px] md:h-auto bg-white/50">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent z-0"></div>
+                <div className="absolute "></div>
                 <Image 
-                  src="/landing.png" 
-                  alt="Instructor support illustration" 
+                  src="/recruiter.png" 
+                  alt="recruiter support illustration" 
                   fill
                   className="object-contain p-8 z-10 transform transition-transform duration-700 hover:scale-105" 
                 />
@@ -558,7 +558,7 @@ export default function recruiterLanding() {
               Frequently asked questions
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Everything you need to know about becoming an instructor on our platform.
+              Everything you need to know about becoming an recruiter on our platform.
             </p>
           </div>
           
@@ -568,7 +568,7 @@ export default function recruiterLanding() {
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <details className="group">
                   <summary className="flex items-center justify-between p-6 cursor-pointer">
-                    <h3 className="text-xl font-semibold text-slate-800">What qualifications do I need to become an instructor?</h3>
+                    <h3 className="text-xl font-semibold text-slate-800">What qualifications do I need to become an recruiter?</h3>
                     <span className="relative ml-1.5 h-5 w-5 flex-shrink-0">
                       <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-5 h-5 opacity-100 group-open:opacity-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -580,7 +580,7 @@ export default function recruiterLanding() {
                   </summary>
                   <div className="px-6 pb-6 pt-0">
                     <p className="text-slate-600">
-                      You don't need formal teaching qualifications to become an instructor. What matters most is your expertise in your field and your ability to communicate that knowledge effectively. Our platform welcomes experts from all backgrounds – whether you're a professional, academic, entrepreneur, or hobbyist with valuable skills to share.
+                      You don't need formal teaching qualifications to become an recruiter. What matters most is your expertise in your field and your ability to communicate that knowledge effectively. Our platform welcomes experts from all backgrounds – whether you're a professional, academic, entrepreneur, or hobbyist with valuable skills to share.
                     </p>
                   </div>
                 </details>
@@ -590,7 +590,7 @@ export default function recruiterLanding() {
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <details className="group">
                   <summary className="flex items-center justify-between p-6 cursor-pointer">
-                    <h3 className="text-xl font-semibold text-slate-800">How much money can I make as an instructor?</h3>
+                    <h3 className="text-xl font-semibold text-slate-800">How much money can I make as an recruiter?</h3>
                     <span className="relative ml-1.5 h-5 w-5 flex-shrink-0">
                       <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-5 h-5 opacity-100 group-open:opacity-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -602,7 +602,7 @@ export default function recruiterLanding() {
                   </summary>
                   <div className="px-6 pb-6 pt-0">
                     <p className="text-slate-600">
-                      Earnings vary widely based on factors like your course topic, quality, marketing efforts, and audience size. Some instructors earn a few hundred dollars per month, while top performers can generate six-figure annual incomes. You'll earn revenue from course sales, with our standard revenue share giving you 70% of each sale. We also provide promotional opportunities and marketing tools to help maximize your earnings.
+                      Earnings vary widely based on factors like your course topic, quality, marketing efforts, and audience size. Some recruiters earn a few hundred dollars per month, while top performers can generate six-figure annual incomes. You'll earn revenue from course sales, with our standard revenue share giving you 70% of each sale. We also provide promotional opportunities and marketing tools to help maximize your earnings.
                     </p>
                   </div>
                 </details>
@@ -624,7 +624,7 @@ export default function recruiterLanding() {
                   </summary>
                   <div className="px-6 pb-6 pt-0">
                     <p className="text-slate-600">
-                      The time investment varies depending on your course's scope and complexity. On average, instructors spend 1-3 months creating their first course, including planning, recording, editing, and finalizing. Shorter courses might take a few weeks, while comprehensive courses could take several months. Our platform provides tools and resources to streamline the process, and you can work at your own pace.
+                      The time investment varies depending on your course's scope and complexity. On average, recruiters spend 1-3 months creating their first course, including planning, recording, editing, and finalizing. Shorter courses might take a few weeks, while comprehensive courses could take several months. Our platform provides tools and resources to streamline the process, and you can work at your own pace.
                     </p>
                   </div>
                 </details>
@@ -668,7 +668,7 @@ export default function recruiterLanding() {
                   </summary>
                   <div className="px-6 pb-6 pt-0">
                     <p className="text-slate-600">
-                      Your course will be listed in our marketplace, exposing it to millions of potential students. Additionally, we provide marketing tools like promotional coupons, email campaign templates, and social media integration. We also offer guidance on building your personal brand, leveraging your existing network, and optimizing your course for search engines. Many successful instructors combine our platform's built-in marketing with their own promotional efforts.
+                      Your course will be listed in our marketplace, exposing it to millions of potential students. Additionally, we provide marketing tools like promotional coupons, email campaign templates, and social media integration. We also offer guidance on building your personal brand, leveraging your existing network, and optimizing your course for search engines. Many successful recruiters combine our platform's built-in marketing with their own promotional efforts.
                     </p>
                   </div>
                 </details>
@@ -677,8 +677,8 @@ export default function recruiterLanding() {
             
             <div className="text-center mt-12">
               <p className="text-slate-600">Still have questions?</p>
-              <Link href="/instructor/contact" className="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 mt-2">
-                <span>Contact our instructor support team</span>
+              <Link href="/recruiter/contact" className="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 mt-2">
+                <span>Contact our recruiter support team</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 ml-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                 </svg>
@@ -702,13 +702,13 @@ export default function recruiterLanding() {
                   Ready to Start?
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-800 leading-tight">
-                  Become an instructor today
+                  Become an Recruiter today
                 </h2>
                 <p className="text-xl text-slate-600 max-w-xl mx-auto">
                   Join one of the world's largest online learning marketplaces and start changing lives — including your own.
                 </p>
                 <div className="mt-10">
-                  <Link href="/instructor/become">
+                  <Link href="/recruiter/become">
                     <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-4 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                       Get started today
                     </button>
@@ -779,7 +779,7 @@ function HowToBeginTabs() {
                 <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500 mt-8">
                   <h3 className="text-xl font-bold text-slate-800 mb-3">How we help you</h3>
                   <p className="text-lg text-slate-600 leading-relaxed">
-                    We offer plenty of resources on how to create your first course. And, our instructor dashboard and curriculum pages help keep you organized.
+                    We offer plenty of resources on how to create your first course. And, our recruiter dashboard and curriculum pages help keep you organized.
                   </p>
                 </div>
               </div>
@@ -834,7 +834,7 @@ function HowToBeginTabs() {
           <div className="relative h-[350px] md:h-[450px] rounded-xl overflow-hidden shadow-lg transform transition-all duration-500">
             <Image 
               src="/intrcutor2.webp" 
-              alt="Instructor creating course" 
+              alt="recruiter creating course" 
               fill 
               className="object-cover" 
             />
